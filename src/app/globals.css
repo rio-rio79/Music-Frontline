@@ -1,63 +1,119 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap");
+
+body {
+    margin: 0;
+    background: #efede7;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* メインコンテンツ */
+main {
+    background: rgb(255 255 255 / 58%);
+    flex: 1;
+    width: 100%;
+    max-width: 720px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 40px 20px;
+    h1 {
+        margin: 0;
+    }
+}
+
+/* ヘッダー */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 20px;
+    background: rgb(248, 67, 142);
+    h1 {
+        margin: 0;
+        color: white;
+        text-decoration: none;
+    }
+}
+/* フッター */
+footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 15px;
+    background: rgb(252, 195, 219);
+    text-align: center;
+    color: white;
+    p {
+        margin: 0;
+    }
+}
+
 /* ハンバーガーボタン */
 .hamburger {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
 
-  z-index: 1001;
+    z-index: 1001;
 
-  font-size: 32px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: #131313;
+    font-size: 32px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #131313;
 }
 
 /* 背景 */
 .overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 998;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 998;
 }
 
 /* サイドメニュー */
 .sidebar {
-  position: fixed;
-  top: 0;
-  right: -300px;
+    position: fixed;
+    top: 0;
+    right: -300px;
 
-  width: 300px;
-  height: 100vh;
+    width: 300px;
+    height: 100vh;
 
-  background: rgb(248, 67, 142);
+    background: rgb(248, 67, 142);
 
-  transition: right 0.3s ease;
+    transition: right 0.3s ease;
 
-  z-index: 999;
+    z-index: 999;
 
-  padding-top: 80px;
+    padding-top: 80px;
 }
 
 .sidebar.open {
-  right: 0;
+    right: 0;
 }
 
 .sidebar ul {
-  list-style: none;
+    list-style: none;
 }
 
 .sidebar li {
-  border-bottom: 1px solid #444;
+    border-bottom: 1px solid #444;
 }
 
 .sidebar a {
-  display: block;
-  padding: 20px;
-  color: white;
-  text-decoration: none;
+    display: block;
+    padding: 20px;
+    color: white;
+    text-decoration: none;
 }
 
 .sidebar a:hover {
-  background: #333;
+    background: #333;
 }
