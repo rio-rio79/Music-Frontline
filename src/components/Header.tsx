@@ -1,4 +1,5 @@
 import HamburgerMenu from "./HamburgerMenu";
+import MiniPlayer from "./MiniPlayer";
 
 export default function Header() {
     const menuItems = [
@@ -17,7 +18,10 @@ export default function Header() {
     return (
         <header>
             <h1>Music Frontline</h1>
-            <HamburgerMenu items={menuItems} />
+            <MiniPlayer />
+            <div className="header-menu">
+                <HamburgerMenu items={menuItems} />
+            </div>
         </header>
     );
 }
