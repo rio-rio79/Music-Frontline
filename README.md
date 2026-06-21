@@ -21,3 +21,15 @@ src ----  app ---- blog_src ⇐ ブログページのコード
  スライドショーの実装で使用する可能性あり。基本的には1つのjsファイルにまとめる。
 
 ・画像データは全てpublic/imagesに格納。publicフォルダはsrcの外に配置済み。
+
+
+## docker起動方法
+前提条件：docker desktopがすでに入っていること
+
+dockerfile、docker-compose.ymlがプルできていることをビルドしてください。
+
+'''
+docker compose up --build
+'''
+
+上記のコマンドは開発中にプルをした一緒のタイミングで、コマンドを叩くことを推奨します。
