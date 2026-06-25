@@ -1,502 +1,508 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap");
 
 body {
-    margin: 0;
-    background: #efede7;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+  margin: 0;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* ページ本文を画面中央に置く外枠 */
 .content-layout {
-    flex: 1;
-    box-sizing: border-box;
-    width: 100%;
-    display: flex;
-    align-items: stretch;
+  flex: 1;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  align-items: stretch;
 }
 
 /* メインコンテンツはプレイヤーを含めず、常に画面中央へ配置する */
 .page-content {
-    background: rgb(255 255 255 / 58%);
-    width: min(calc(100% - 40px), 720px);
-    box-sizing: border-box;
-    margin: 0 auto;
-    padding: 40px 20px;
+  background: rgba(255, 255, 255, 0);
+  width: min(calc(100% - 40px), 720px);
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 40px 20px;
 
-    h1 {
-        margin: 0;
-    }
+  h1 {
+    margin: 0;
+  }
 }
 
 /* 左側のグローバルプレイヤー枠 */
 .player-dock {
-    position: fixed;
-    top: 150px;
-    right: calc(50% + 450px);
-    width: 330px;
-    min-height: 500px;
-    max-height: 560px;
+  position: fixed;
+  top: 150px;
+  right: calc(50% + 450px);
+  width: 330px;
+  min-height: 500px;
+  max-height: 560px;
 }
 
 .global-player {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    min-height: 500px;
-    padding: 24px;
-    border-radius: 20px;
-    background:
-        radial-gradient(130% 90% at 50% -10%, rgb(111 69 174 / 80%), transparent 62%),
-        linear-gradient(180deg, #21162f, #100c16);
-    box-shadow: 0 18px 40px -18px rgb(30 12 60 / 60%);
-    color: #fff;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 500px;
+  padding: 24px;
+  border-radius: 20px;
+  background:
+    radial-gradient(
+      130% 90% at 50% -10%,
+      rgb(111 69 174 / 80%),
+      transparent 62%
+    ),
+    linear-gradient(180deg, #21162f, #100c16);
+  box-shadow: 0 18px 40px -18px rgb(30 12 60 / 60%);
+  color: #fff;
 }
 
 .player-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .player-cover {
-    width: 190px;
-    height: 190px;
-    border-radius: 20px;
-    object-fit: cover;
-    box-shadow: 0 24px 50px -16px rgb(0 0 0 / 60%);
+  width: 190px;
+  height: 190px;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 24px 50px -16px rgb(0 0 0 / 60%);
 }
 
 .player-meta {
-    margin-top: 20px;
-    text-align: center;
+  margin-top: 20px;
+  text-align: center;
 }
 
 .player-meta strong,
 .player-meta small {
-    display: block;
+  display: block;
 }
 
 .player-meta strong {
-    overflow: hidden;
-    max-width: 260px;
-    font-size: 20px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  max-width: 260px;
+  font-size: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .player-meta small {
-    margin-top: 4px;
-    color: rgb(255 255 255 / 60%);
-    font-size: 12px;
-    letter-spacing: 0.08em;
+  margin-top: 4px;
+  color: rgb(255 255 255 / 60%);
+  font-size: 12px;
+  letter-spacing: 0.08em;
 }
 
 .player-seek-area {
-    width: 100%;
-    margin-top: 20px;
+  width: 100%;
+  margin-top: 20px;
 }
 
 .player-seek {
-    width: 100%;
-    height: 6px;
-    margin: 0;
-    accent-color: #c084fc;
-    cursor: pointer;
+  width: 100%;
+  height: 6px;
+  margin: 0;
+  accent-color: #c084fc;
+  cursor: pointer;
 }
 
 .player-seek:disabled {
-    cursor: wait;
+  cursor: wait;
 }
 
 .player-time {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 7px;
-    color: rgb(255 255 255 / 55%);
-    font: 11px ui-monospace, monospace;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  color: rgb(255 255 255 / 55%);
+  font:
+    11px ui-monospace,
+    monospace;
 }
 
 .player-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .player-controls button {
-    display: grid;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    border: 0;
-    border-radius: 50%;
-    color: rgb(255 255 255 / 85%);
-    background: transparent;
-    font-size: 15px;
-    cursor: pointer;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  color: rgb(255 255 255 / 85%);
+  background: transparent;
+  font-size: 15px;
+  cursor: pointer;
 }
 
 .player-controls .player-primary-control {
-    width: 56px;
-    height: 56px;
-    color: #1a1622;
-    background: #fff;
-    box-shadow: 0 8px 20px -6px rgb(0 0 0 / 50%);
-    font-size: 16px;
+  width: 56px;
+  height: 56px;
+  color: #1a1622;
+  background: #fff;
+  box-shadow: 0 8px 20px -6px rgb(0 0 0 / 50%);
+  font-size: 16px;
 }
 
 .player-volume {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    margin-top: 18px;
-    color: rgb(255 255 255 / 70%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 18px;
+  color: rgb(255 255 255 / 70%);
 }
 
 .player-volume span {
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 0.04em;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
 }
 
 .player-volume input {
-    flex: 1;
-    accent-color: #c084fc;
-    cursor: pointer;
+  flex: 1;
+  accent-color: #c084fc;
+  cursor: pointer;
 }
 
 /* 楽曲名・詳細リンク・再生操作を横並びにする一覧。 */
 .music-list {
-    display: grid;
-    gap: 12px;
-    padding: 0;
-    list-style: none;
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
 }
 
 .music-list-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 12px 16px;
-    border: 1px solid rgb(248 67 142 / 25%);
-    border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 1px solid rgb(248 67 142 / 25%);
+  border-radius: 12px;
 }
 
 .music-link {
-    color: inherit;
-    text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
 .music-link h2 {
-    margin: 0;
-    font-size: 1rem;
+  margin: 0;
+  font-size: 1rem;
 }
 
 /* 一覧・詳細ページでも、再生プレイヤーと同じアイコン操作を使う。 */
 .music-play-button,
 .detail-play-button {
-    display: grid;
-    place-items: center;
-    flex: 0 0 auto;
-    border: 0;
-    border-radius: 50%;
-    color: #1a1622;
-    background: #fff;
-    box-shadow: 0 5px 12px -5px rgb(46 21 71 / 45%);
-    cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 50%;
+  color: #1a1622;
+  background: #fff;
+  box-shadow: 0 5px 12px -5px rgb(46 21 71 / 45%);
+  cursor: pointer;
 }
 
 .music-play-button {
-    width: 38px;
-    height: 38px;
-    font-size: 13px;
+  width: 38px;
+  height: 38px;
+  font-size: 13px;
 }
 
 .detail-play-button {
-    width: 56px;
-    height: 56px;
-    margin-top: 20px;
-    font-size: 16px;
+  width: 56px;
+  height: 56px;
+  margin-top: 20px;
+  font-size: 16px;
 }
 
 /* ヘッダー */
 header {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(360px, 900px) minmax(0, 1fr);
-    align-items: center;
-    gap: 24px;
-    box-sizing: border-box;
-    width: 100%;
-    height: 92px;
-    padding: 12px 20px;
-    background: rgb(248, 67, 142);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 900px) minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 92px;
+  padding: 12px 20px;
+  background: rgb(248, 67, 142);
 
-    h1 {
-        grid-column: 1;
-        margin: 0;
-        color: white;
-        font-size: clamp(1.1rem, 2vw, 1.5rem);
-        text-decoration: none;
-        white-space: nowrap;
-    }
+  h1 {
+    grid-column: 1;
+    margin: 0;
+    color: white;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    text-decoration: none;
+    white-space: nowrap;
+  }
 }
 
 .header-menu {
-    grid-column: 3;
-    justify-self: end;
+  grid-column: 3;
+  justify-self: end;
 }
 
 /* ヘッダー中央に表示する横長プレイヤー。曲が未選択の間はコンポーネント自体を表示しない。 */
 .mini-player {
-    display: flex;
-    grid-column: 2;
-    align-items: center;
-    justify-content: space-between;
-    gap: 32px;
-    box-sizing: border-box;
-    width: 100%;
-    min-width: 0;
-    height: 68px;
-    padding: 6px 16px;
-    border: 1px solid rgb(255 255 255 / 60%);
-    border-radius: 5px;
-    background: rgb(255 255 255 / 96%);
-    box-shadow: 0 2px 8px rgb(93 21 63 / 18%);
-    color: #28212d;
+  display: flex;
+  grid-column: 2;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 68px;
+  padding: 6px 16px;
+  border: 1px solid rgb(255 255 255 / 60%);
+  border-radius: 5px;
+  background: rgb(255 255 255 / 96%);
+  box-shadow: 0 2px 8px rgb(93 21 63 / 18%);
+  color: #28212d;
 }
 
 .mini-controls {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 2px;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
 }
 
 .mini-controls button {
-    display: grid;
-    place-items: center;
-    width: 34px;
-    height: 36px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: #28212d;
-    cursor: pointer;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #28212d;
+  cursor: pointer;
 }
 
 .mini-controls .mini-primary-control {
-    font-size: 15px;
+  font-size: 15px;
 }
 
 .mini-song-info {
-    display: flex;
-    flex: 0 1 360px;
-    align-items: center;
-    gap: 14px;
-    min-width: 0;
+  display: flex;
+  flex: 0 1 360px;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
 }
 
 .mini-cover {
-    flex: 0 0 auto;
-    width: 54px;
-    height: 54px;
-    border-radius: 5px;
-    object-fit: cover;
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+  border-radius: 5px;
+  object-fit: cover;
 }
 
 .mini-meta {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .mini-meta strong,
 .mini-meta small {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mini-meta strong {
-    font-size: 13px;
+  font-size: 13px;
 }
 
 .mini-meta small {
-    margin-top: 1px;
-    color: #81778d;
-    font-size: 10px;
+  margin-top: 1px;
+  color: #81778d;
+  font-size: 10px;
 }
 
 .mini-seek {
-    display: block;
-    width: 100%;
-    height: 4px;
-    margin: 4px 0 0;
-    accent-color: #7b4dbc;
-    cursor: pointer;
+  display: block;
+  width: 100%;
+  height: 4px;
+  margin: 4px 0 0;
+  accent-color: #7b4dbc;
+  cursor: pointer;
 }
 
 .mini-seek:disabled {
-    cursor: wait;
+  cursor: wait;
 }
 
 .mini-volume {
-    display: flex;
-    flex: 0 0 180px;
-    align-items: center;
-    gap: 6px;
-    min-width: 70px;
+  display: flex;
+  flex: 0 0 180px;
+  align-items: center;
+  gap: 6px;
+  min-width: 70px;
 }
 
 .mini-volume span {
-    color: #6f6878;
-    font-size: 10px;
-    font-weight: 800;
+  color: #6f6878;
+  font-size: 10px;
+  font-weight: 800;
 }
 
 .mini-volume input {
-    width: 100%;
-    min-width: 0;
-    accent-color: #7b4dbc;
-    cursor: pointer;
+  width: 100%;
+  min-width: 0;
+  accent-color: #7b4dbc;
+  cursor: pointer;
 }
 /* フッター */
 footer {
-    box-sizing: border-box;
-    width: 100%;
-    padding: 15px;
-    background: rgb(252, 195, 219);
-    text-align: center;
-    color: white;
-    p {
-        margin: 0;
-    }
+  box-sizing: border-box;
+  width: 100%;
+  padding: 15px;
+  background: rgb(252, 195, 219);
+  text-align: center;
+  color: white;
+  p {
+    margin: 0;
+  }
 }
 
 /* ハンバーガーボタン */
 .hamburger {
-    position: fixed;
-    top: 20px;
-    right: 20px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
 
-    z-index: 1001;
+  z-index: 1001;
 
-    font-size: 32px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    color: #131313;
+  font-size: 32px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #131313;
 }
 
 /* 背景 */
 .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 998;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 998;
 }
 
 /* サイドメニュー */
 .sidebar {
-    position: fixed;
-    top: 0;
-    right: -300px;
+  position: fixed;
+  top: 0;
+  right: -300px;
 
-    width: 300px;
-    height: 100vh;
+  width: 300px;
+  height: 100vh;
 
-    background: rgb(248, 67, 142);
+  background: rgb(248, 67, 142);
 
-    transition: right 0.3s ease;
+  transition: right 0.3s ease;
 
-    z-index: 999;
+  z-index: 999;
 
-    padding-top: 80px;
+  padding-top: 80px;
 }
 
 .sidebar.open {
-    right: 0;
+  right: 0;
 }
 
 .sidebar ul {
-    list-style: none;
+  list-style: none;
 }
 
 .sidebar li {
-    border-bottom: 1px solid #444;
+  border-bottom: 1px solid #444;
 }
 
 .sidebar a {
-    display: block;
-    padding: 20px;
-    color: white;
-    text-decoration: none;
+  display: block;
+  padding: 20px;
+  color: white;
+  text-decoration: none;
 }
 
 .sidebar a:hover {
-    background: #333;
+  background: #333;
 }
 
 @media (width <= 1496px) {
-    .player-dock {
-        display: none;
-    }
+  .player-dock {
+    display: none;
+  }
 }
 
 @media (width <= 760px) {
-    header {
-        grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-rows: 20px 54px;
-        grid-template-areas:
-            "brand menu"
-            "mini mini";
-        gap: 10px;
-        height: 104px;
-        padding: 10px 14px;
-    }
+  header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 20px 54px;
+    grid-template-areas:
+      "brand menu"
+      "mini mini";
+    gap: 10px;
+    height: 104px;
+    padding: 10px 14px;
+  }
 
-    header h1 {
-        grid-area: brand;
-        font-size: 1rem;
-    }
+  header h1 {
+    grid-area: brand;
+    font-size: 1rem;
+  }
 
-    .header-menu {
-        grid-area: menu;
-    }
+  .header-menu {
+    grid-area: menu;
+  }
 
-    .mini-player {
-        grid-area: mini;
-        justify-content: normal;
-        gap: 10px;
-        height: 54px;
-        padding: 4px 10px;
-    }
+  .mini-player {
+    grid-area: mini;
+    justify-content: normal;
+    gap: 10px;
+    height: 54px;
+    padding: 4px 10px;
+  }
 
-    .mini-volume {
-        flex-basis: 86px;
-    }
+  .mini-volume {
+    flex-basis: 86px;
+  }
 
-    .mini-song-info {
-        flex: 1 1 auto;
-        gap: 10px;
-    }
+  .mini-song-info {
+    flex: 1 1 auto;
+    gap: 10px;
+  }
 
-    .mini-controls button {
-        width: 28px;
-        height: 32px;
-    }
+  .mini-controls button {
+    width: 28px;
+    height: 32px;
+  }
 
-    .mini-cover {
-        width: 46px;
-        height: 46px;
-    }
+  .mini-cover {
+    width: 46px;
+    height: 46px;
+  }
 }
