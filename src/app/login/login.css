@@ -1,0 +1,180 @@
+/* ─── ログインページ ─── */
+
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 260px);
+    padding: 40px 0;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 20px;
+    background:
+        radial-gradient(
+            120% 80% at 50% -10%,
+            rgb(248 67 142 / 12%),
+            transparent 60%
+        ),
+        #fff;
+    box-shadow:
+        0 4px 24px rgb(248 67 142 / 10%),
+        0 1px 3px rgb(0 0 0 / 6%);
+    overflow: hidden;
+}
+
+/* ─── タブ切替 ─── */
+.login-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid rgb(0 0 0 / 8%);
+}
+
+.login-tab {
+    position: relative;
+    padding: 16px 0;
+    border: none;
+    background: transparent;
+    color: #999;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: color 0.25s;
+}
+
+.login-tab:hover {
+    color: #666;
+}
+
+.login-tab.active {
+    color: rgb(248, 67, 142);
+}
+
+.login-tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 16px;
+    right: 16px;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: rgb(248, 67, 142);
+}
+
+/* ─── フォーム ─── */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 32px 28px 36px;
+}
+
+.login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.login-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    letter-spacing: 0.02em;
+}
+
+.login-field input {
+    padding: 12px 14px;
+    border: 1.5px solid rgb(0 0 0 / 12%);
+    border-radius: 10px;
+    background: rgb(248 249 250);
+    font-size: 15px;
+    color: #222;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-field input:focus {
+    border-color: rgb(248, 67, 142);
+    box-shadow: 0 0 0 3px rgb(248 67 142 / 12%);
+    background: #fff;
+}
+
+.login-field input::placeholder {
+    color: #bbb;
+}
+
+/* ─── 送信ボタン ─── */
+.login-submit {
+    margin-top: 4px;
+    padding: 14px 0;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgb(248, 67, 142), rgb(220, 40, 120));
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+    box-shadow: 0 4px 16px rgb(248 67 142 / 30%);
+}
+
+.login-submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgb(248 67 142 / 40%);
+}
+
+.login-submit:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.login-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ─── エラーメッセージ ─── */
+.login-error {
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: rgb(255 235 238);
+    color: rgb(198, 40, 40);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+    animation: login-error-in 0.3s ease;
+}
+
+@keyframes login-error-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─── ローディングスピナー ─── */
+.login-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgb(255 255 255 / 40%);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: login-spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+@keyframes login-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
