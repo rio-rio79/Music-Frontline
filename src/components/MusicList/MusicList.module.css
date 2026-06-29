@@ -1,0 +1,102 @@
+.songList {
+  list-style: none;
+  background: #fff;
+  border: 1px solid #f0d8e8;
+  border-radius: 14px;
+  /* margin: 0 14px; */
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+}
+
+.songRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f5e8ee;
+  transition: background-color 0.2s ease;
+}
+
+.songRow:last-child {
+  border-bottom: none;
+}
+
+.songRow:hover {
+  background: #fff8fb;
+}
+
+/* サムネイル */
+.thumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  background: #ffe8f2;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 画像の比率を保ったまま領域を埋める */
+  display: block;
+}
+
+/* トラック情報領域 */
+.track {
+  flex: 1;
+  min-width: 0;
+}
+
+.musicLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.musicLink:hover .trackTitle {
+  text-decoration: underline;
+}
+
+.trackTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 0 4px 0;
+}
+
+.trackArtist {
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+}
+
+/* アクションボタン群 */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.actionBtn:hover {
+  opacity: 0.7;
+}

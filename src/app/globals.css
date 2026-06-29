@@ -48,10 +48,13 @@ body {
   padding: 24px;
   border-radius: 20px;
   background:
-    radial-gradient(130% 90% at 50% -10%,
+    <<<<<<< HEAD radial-gradient(130% 90% at 50% -10%,
       rgb(111 69 174 / 80%),
       transparent 62%),
-    linear-gradient(180deg, #21162f, #100c16);
+    =======radial-gradient(130% 90% at 50% -10%,
+      rgb(111 69 174 / 80%),
+      transparent 62%),
+    >>>>>>> 8f84f06976676968604f3221f191e25c2954512c linear-gradient(180deg, #21162f, #100c16);
   box-shadow: 0 18px 40px -18px rgb(30 12 60 / 60%);
   color: #fff;
 }
@@ -527,56 +530,60 @@ body {
 }
 
 @media (width <=1496px) {
-  .player-dock {
-    display: none;
-  }
-}
-
-@media (width <=760px) {
-  header {
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: 20px 54px;
-    grid-template-areas:
-      "brand menu"
-      "mini mini";
-    gap: 10px;
-    height: 104px;
-    padding: 10px 14px;
+  @media (width <=1496px) {
+    .player-dock {
+      display: none;
+    }
   }
 
-  header h1 {
-    grid-area: brand;
-    font-size: 1rem;
-  }
+  @media (width <=760px) {
+    @media (width <=760px) {
+      header {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: 20px 54px;
+        grid-template-areas:
+          "brand menu"
+          "mini mini";
+        gap: 10px;
+        height: 104px;
+        padding: 10px 14px;
+      }
 
-  .header-menu {
-    grid-area: menu;
-  }
+      header h1 {
+        grid-area: brand;
+        font-size: 1rem;
+      }
 
-  .mini-player {
-    grid-area: mini;
-    justify-content: normal;
-    gap: 10px;
-    height: 54px;
-    padding: 4px 10px;
-  }
+      .header-menu {
+        grid-area: menu;
+      }
 
-  .mini-volume {
-    flex-basis: 86px;
-  }
+      .mini-player {
+        grid-area: mini;
+        justify-content: normal;
+        gap: 10px;
+        height: 54px;
+        padding: 4px 10px;
+      }
 
-  .mini-song-info {
-    flex: 1 1 auto;
-    gap: 10px;
-  }
+      .mini-volume {
+        flex-basis: 86px;
+      }
 
-  .mini-controls button {
-    width: 28px;
-    height: 32px;
-  }
+      .mini-song-info {
+        flex: 1 1 auto;
+        gap: 10px;
+      }
 
-  .mini-cover {
-    width: 46px;
-    height: 46px;
+      .mini-controls button {
+        width: 28px;
+        height: 32px;
+      }
+
+      .mini-cover {
+        width: 46px;
+        height: 46px;
+      }
+    }
   }
 }

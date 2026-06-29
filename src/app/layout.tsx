@@ -1,23 +1,27 @@
 import "./globals.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import GlobalPlayer from "../components/GlobalPlayer";
 
 export default function RootLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return (
-    <html lang="ja">
-      <body>
-        <Header />
+    return (
+        <html lang="ja">
+            <body>
+                <Header />
 
-        <main>
-          {children}
-        </main>
+                <div className="content-layout">
+                    <main className="page-content">{children}</main>
+                    <aside className="player-dock" aria-label="再生プレイヤー">
+                        <GlobalPlayer />
+                    </aside>
+                </div>
 
-        <Footer />
-      </body>
-    </html>
-  );
+                <Footer />
+            </body>
+        </html>
+    );
 }
