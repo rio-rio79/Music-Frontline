@@ -1,4 +1,5 @@
 import { createSupabaseServer } from '@/lib/supabase-server'
+import { translateAuthError } from '@/lib/auth-errors'
 
 export async function POST(request: Request) {
     try {
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
 
         if (error) {
             return Response.json(
-                { error: error.message },
+                { error: translateAuthError(error.message) },
                 { status: 400 }
             )
         }
