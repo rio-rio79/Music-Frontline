@@ -16,11 +16,17 @@ export async function proxy(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    // 保護ルートへの未認証アクセスをリダイレクト
+    // 認証されていないユーザーは、/login 以外のページにアクセスした場合に /login へリダイレクト
     const { pathname } = request.nextUrl
-    if (pathname.startsWith('/my') && !user) {
+    if (pathname !== '/login' && !user) {
         const loginUrl = new URL('/login', request.url)
         return NextResponse.redirect(loginUrl)
+    }
+
+    // 逆に、すでにログインしているユーザーが /login にアクセスした場合はトップページへリダイレクト
+    if (pathname === '/login' && user) {
+        const topUrl = new URL('/', request.url)
+        return NextResponse.redirect(topUrl)
     }
 
     return response()
@@ -29,8 +35,8 @@ export async function proxy(request: NextRequest) {
 export const config = {
     matcher: [
         /*
-         * 静的ファイル・画像最適化・favicon 等を除外
+         * api, _next/static, _next/image, 各種アセット(mp3, wav, png, jpg, jpeg, gif, svg, ico)を除外
          */
-        '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+        '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:mp3|wav|png|jpg|jpeg|gif|svg)$).*)',
     ],
 }
