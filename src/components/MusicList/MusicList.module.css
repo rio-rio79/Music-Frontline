@@ -64,7 +64,7 @@
 
 .trackTitle {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   color: #1a1a2e;
   white-space: nowrap;
   overflow: hidden;
@@ -72,10 +72,31 @@
   margin: 0 0 4px 0;
 }
 
-.trackArtist {
-  font-size: 12px;
-  color: #999;
+.artistContainer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
   margin: 0;
+}
+
+.juniorNames {
+  font-size: 12px;
+  color: #777;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.groupTag {
+  font-size: 10px;
+  font-weight: 700;
+  background-color: #FBEAF0;
+  color: #993556;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 /* アクションボタン群 */

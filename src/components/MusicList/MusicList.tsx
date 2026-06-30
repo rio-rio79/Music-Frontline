@@ -56,7 +56,18 @@ export default function MusicList({ songs }: MusicListProps) {
                             <Link href={`/music/${song.id}`} className={styles.musicLink}>
                                 <h2 className={styles.trackTitle}>{song.title}</h2>
                             </Link>
-                            <p className={styles.trackArtist}>{song.artistName || "アーティスト名"}</p>
+                            <div className={styles.artistContainer}>
+                                <span className={styles.juniorNames}>
+                                    {song.juniors && song.juniors.length > 0
+                                        ? song.juniors.join(", ")
+                                        : "アーティスト名"}
+                                </span>
+                                {song.groups && song.groups.map((group) => (
+                                    <span key={group} className={styles.groupTag}>
+                                        {group}
+                                    </span>
+                                ))}
+                            </div>
                         </div>
 
                         {/* アクションボタン */}

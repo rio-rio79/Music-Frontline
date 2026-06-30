@@ -45,24 +45,24 @@ export async function GET(request: Request, context: RouteContext) {
             return Response.json({ error: '楽曲が見つかりません。' }, { status: 404 })
         }
 
-        // アーティスト名の解決
-        let artistName = 'アーティスト名'
+        // グループ名とジュニア名を取得
+        let songGroups: string[] = []
+        let songJuniors: string[] = []
+        
         if (song.song_juniors && song.song_juniors.length > 0) {
             const groups = song.song_juniors
                 .map((sj) => sj.groups?.name)
                 .filter(Boolean) as string[]
-            
-            if (groups.length > 0) {
-                artistName = Array.from(new Set(groups)).join(', ')
-            } else {
-                const juniors = song.song_juniors
-                    .map((sj) => sj.juniors?.name)
-                    .filter(Boolean) as string[]
-                if (juniors.length > 0) {
-                    artistName = Array.from(new Set(juniors)).join(', ')
-                }
-            }
+            songGroups = Array.from(new Set(groups))
+
+            const juniors = song.song_juniors
+                .map((sj) => sj.juniors?.name)
+                .filter(Boolean) as string[]
+            songJuniors = Array.from(new Set(juniors))
         }
+
+        // アーティスト名の解決（後方互換性のため）
+        const artistName = songGroups.length > 0 ? songGroups.join(', ') : (songJuniors.length > 0 ? songJuniors.join(', ') : 'アーティスト名')
 
         // audio_path の解決
         let audioFilePath = song.audio_path || ''
@@ -86,6 +86,8 @@ export async function GET(request: Request, context: RouteContext) {
             artistName,
             playCount: song.play_count,
             publishedAt: song.published_at,
+            juniors: songJuniors,
+            groups: songGroups,
         }
 
         return Response.json({ song: formattedSong })

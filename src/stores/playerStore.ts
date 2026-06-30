@@ -7,6 +7,10 @@ export type Song = {
     audioFilePath: string;
     imagePath?: string;
     artistName?: string;
+    juniors?: string[];
+    groups?: string[];
+    playCount?: number;
+    publishedAt?: string;
 };
 
 // どのコンポーネントからでも参照・更新する再生状態と操作をまとめる。
