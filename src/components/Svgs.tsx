@@ -53,13 +53,13 @@ export function SkipForward(){
 }
 
 // いいねボタン
-export function Heart() { 
-    return(
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="#E8447A" strokeWidth="1.8">
-            <path d="M11 19.5S3 14.5 3 8.5a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 8 2.8c0 6-8 11-8 11z"/>
+export function Heart({ color = "#E8447A" }) {
+    return (
+        <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke={color} strokeWidth="1.8">
+            <path d="M11 19.5S3 14.5 3 8.5a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 8 2.8c0 6-8 11-8 11z" />
         </svg>
     );
- }
+}
 
 // 再生数表示用アイコン
 export function GraySmallPlayMusic() { 
@@ -80,3 +80,29 @@ export function GraySmallHeart() {
     );
 
  }
+
+// 楽曲一覧用アイコン
+export function CdSvg({ color = "#E8447A" }) {
+    return (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="1.5" />
+            <circle cx="12" cy="12" r="3" stroke={color} strokeWidth="1.5" />
+            <circle cx="12" cy="12" r="1" fill={color} />
+        </svg>
+    );
+}
+
+// マイページ用アイコン
+export function PersonSvg({ color = "#E8447A" }) {
+    return (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="8" r="4" stroke={color} strokeWidth="1.5" />
+            <path
+                d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"
+                stroke={color}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+            />
+        </svg>
+    );
+}
