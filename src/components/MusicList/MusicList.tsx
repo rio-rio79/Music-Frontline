@@ -17,8 +17,6 @@ export default function MusicList({ songs }: MusicListProps) {
     const playSong = usePlayerStore((state) => state.playSong);
     const togglePlay = usePlayerStore((state) => state.togglePlay);
 
-    const songImage = "/music_cover_img.png"; // 本番はDBからとってきた楽曲イメージのパスで書き換える
-
     const handlePlay = (song: Song) => {
         // 同じ曲を選んだ場合は、曲を読み込み直さず再生・一時停止だけ切り替える。
         if (currentSong?.id === song.id) {
@@ -26,8 +24,8 @@ export default function MusicList({ songs }: MusicListProps) {
             return;
         }
 
-        // 別の曲なら、ストアに曲を設定して再生を開始する。
-        playSong(song);
+        // 別の曲なら、ストアに曲と再生リスト全体を設定して再生を開始する。
+        playSong(song, songs);
     };
 
     return (
@@ -38,11 +36,11 @@ export default function MusicList({ songs }: MusicListProps) {
 
                 return (
                     <li key={song.id} className={styles.songRow}>
-                        {/* サムネイル (HTMLのSVGデザインを継承) */}
+                        {/* サムネイル */}
                         <div className={styles.thumb}>
-                            {songImage ? (
+                            {song.imagePath ? (
                                 <Image 
-                                    src={songImage} 
+                                    src={song.imagePath} 
                                     alt={`${song.title}のカバー`}
                                     width={56}
                                     height={56}
@@ -58,8 +56,7 @@ export default function MusicList({ songs }: MusicListProps) {
                             <Link href={`/music/${song.id}`} className={styles.musicLink}>
                                 <h2 className={styles.trackTitle}>{song.title}</h2>
                             </Link>
-                            {/* ユーザーデータ構造を考慮し、song.artist または song.singer を想定 */}
-                            <p className={styles.trackArtist}>アーティスト名</p>
+                            <p className={styles.trackArtist}>{song.artistName || "アーティスト名"}</p>
                         </div>
 
                         {/* アクションボタン */}

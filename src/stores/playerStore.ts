@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import songs from "../data/songs";
 
 // プレイヤーが扱う楽曲データの形。
-// data/songs.js の各要素と同じ項目を持たせる。
 export type Song = {
-    id: number;
+    id: string; // number から string に変更 (Supabase UUIDに対応)
     title: string;
     audioFilePath: string;
+    imagePath?: string;
+    artistName?: string;
 };
 
 // どのコンポーネントからでも参照・更新する再生状態と操作をまとめる。
@@ -22,9 +22,11 @@ type PlayerStore = {
     volume: number;
     // ミニプレイヤーなど、audio 要素を持たないUIからのシーク要求。
     seekRequestTime: number | null;
+    // 現在の再生リスト（キュー）
+    queue: Song[];
 
-    // 曲を選択し、再生状態にする。
-    playSong: (song: Song) => void;
+    // 曲を選択し、再生状態にする。現在のプレイリストもキューとして受け取れるようにする。
+    playSong: (song: Song, newQueue?: Song[]) => void;
     // 再生と一時停止を切り替える。
     togglePlay: () => void;
     // 曲の終了時など、再生状態だけを停止にする。
@@ -38,6 +40,8 @@ type PlayerStore = {
     setVolume: (volume: number) => void;
     requestSeek: (time: number) => void;
     clearSeekRequest: () => void;
+    // キューを明示的に更新する。
+    setQueue: (queue: Song[]) => void;
 };
 
 // Zustand のストア。Client Component から usePlayerStore を呼び出して使う。
@@ -48,14 +52,26 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     duration: 0,
     volume: 0.1,
     seekRequestTime: null,
+    queue: [],
 
-    playSong: (song) =>
-        set({
+    playSong: (song, newQueue) => {
+        const updateObj: Partial<PlayerStore> = {
             currentSong: song,
             isPlaying: true,
             currentTime: 0,
             duration: 0,
-        }),
+        };
+        // 新しいキューが指定された場合は設定し、指定がない場合でかつ既存キューになければキューに追加
+        if (newQueue) {
+            updateObj.queue = newQueue;
+        } else {
+            const currentQueue = get().queue;
+            if (!currentQueue.some(s => s.id === song.id)) {
+                updateObj.queue = [...currentQueue, song];
+            }
+        }
+        set(updateObj);
+    },
 
     togglePlay: () =>
         set((state) => ({
@@ -68,17 +84,23 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         }),
 
     previous: () => {
-        const currentSong = get().currentSong;
+        const { currentSong, queue } = get();
 
-        if (!currentSong) {
+        if (!currentSong || queue.length === 0) {
             return;
         }
 
-        const currentIndex = songs.findIndex(
+        const currentIndex = queue.findIndex(
             (song) => song.id === currentSong.id,
         );
+        
+        // キュー内に見つからない場合は処理しない
+        if (currentIndex === -1) {
+            return;
+        }
+
         const previousSong =
-            songs[(currentIndex - 1 + songs.length) % songs.length];
+            queue[(currentIndex - 1 + queue.length) % queue.length];
 
         set({
             currentSong: previousSong,
@@ -89,16 +111,22 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     },
 
     next: () => {
-        const currentSong = get().currentSong;
+        const { currentSong, queue } = get();
 
-        if (!currentSong) {
+        if (!currentSong || queue.length === 0) {
             return;
         }
 
-        const currentIndex = songs.findIndex(
+        const currentIndex = queue.findIndex(
             (song) => song.id === currentSong.id,
         );
-        const nextSong = songs[(currentIndex + 1) % songs.length];
+
+        // キュー内に見つからない場合は処理しない
+        if (currentIndex === -1) {
+            return;
+        }
+
+        const nextSong = queue[(currentIndex + 1) % queue.length];
 
         set({
             currentSong: nextSong,
@@ -131,5 +159,10 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     clearSeekRequest: () =>
         set({
             seekRequestTime: null,
+        }),
+
+    setQueue: (queue) =>
+        set({
+            queue,
         }),
 }));

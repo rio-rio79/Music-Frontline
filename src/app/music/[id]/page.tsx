@@ -1,8 +1,7 @@
 "use client"; // フックを使用するためクライアントコンポーネントにします
 
-import songs from "../../../data/songs";
-import { useRef, useState, use } from "react";
-import { usePlayerStore } from "../../../stores/playerStore"; // ストアをインポート
+import { useRef, useState, use, useEffect } from "react";
+import { type Song, usePlayerStore } from "../../../stores/playerStore"; // ストアをインポート
 import { GraySmallHeart, ThmbSvg, GraySmallPlayMusic, SkipBack, SkipForward, StartMusic, StopMusic } from "@/components/Svgs";
 
 type MusicDetailPageProps = {
@@ -33,6 +32,10 @@ export default function MusicDetailPage({
     const { id } = use(params);
     const [activeTab, setActiveTab] = useState<TabType>("comments");
 
+    const [song, setSong] = useState<Song | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
     // スパチャ用のステート（デザイン確認用）
     const [showScModal, setShowScModal] = useState<boolean>(false); // 金額選択モーダルの開閉
     const [selectedAmount, setSelectedAmount] = useState<ScTier | null>(null); // 選択された金額情報
@@ -50,14 +53,41 @@ export default function MusicDetailPage({
     const next = usePlayerStore((state) => state.next);
     const requestSeek = usePlayerStore((state) => state.requestSeek);
 
-    const song = songs.find((song) => song.id === Number(id));
+    useEffect(() => {
+        const fetchSong = async () => {
+            try {
+                const res = await fetch(`/api/songs/${id}`);
+                if (!res.ok) {
+                    throw new Error("楽曲の取得に失敗しました。");
+                }
+                const data = await res.json();
+                setSong(data.song);
+            } catch (err: any) {
+                setError(err.message || "エラーが発生しました。");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSong();
+    }, [id]);
 
-    if (!song) {
+    if (loading) {
         return (
             <>
                 <style dangerouslySetInnerHTML={{ __html: cssStyles }} />
                 <section className="notFoundSection">
-                    <h1>楽曲が見つかりません</h1>
+                    <h1>読み込み中...</h1>
+                </section>
+            </>
+        );
+    }
+
+    if (error || !song) {
+        return (
+            <>
+                <style dangerouslySetInnerHTML={{ __html: cssStyles }} />
+                <section className="notFoundSection">
+                    <h1>{error || "楽曲が見つかりません"}</h1>
                 </section>
             </>
         );
