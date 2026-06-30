@@ -506,8 +506,8 @@ header,
 footer {
   background: color-mix(
     in srgb,
-    var(--favorite-color) 10%,
-    rgba(235, 235, 235, 0.1) 90%
+    var(--favorite-color) 8%,
+    rgb(252, 252, 252) 92%
   );
 }
 
