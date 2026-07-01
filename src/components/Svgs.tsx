@@ -53,9 +53,9 @@ export function SkipForward(){
 }
 
 // いいねボタン
-export function Heart({ color = "#E8447A" }) {
+export function Heart({ color = "#E8447A", filled = false }: { color?: string; filled?: boolean }) {
     return (
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke={color} strokeWidth="1.8">
+        <svg width="20" height="20" viewBox="0 0 22 22" fill={filled ? color : "none"} stroke={color} strokeWidth="1.8">
             <path d="M11 19.5S3 14.5 3 8.5a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 8 2.8c0 6-8 11-8 11z" />
         </svg>
     );

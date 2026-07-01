@@ -5,17 +5,23 @@ import { type Song, usePlayerStore } from "../../stores/playerStore";
 import styles from './MusicList.module.css';
 import { ThmbSvg, StopMusic, StartMusic, Heart } from "../Svgs";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useLikeStore } from "../../stores/likeStore";
 
 type MusicListProps = {
     songs: Song[];
 };
 
 export default function MusicList({ songs }: MusicListProps) {
+    const router = useRouter();
     // 一覧の再生ボタンはブラウザで操作するため、共有ストアから状態と操作を取得する。
     const currentSong = usePlayerStore((state) => state.currentSong);
     const isPlaying = usePlayerStore((state) => state.isPlaying);
     const playSong = usePlayerStore((state) => state.playSong);
     const togglePlay = usePlayerStore((state) => state.togglePlay);
+
+    const toggleLike = useLikeStore((state) => state.toggleLike);
+    const likedSongIds = useLikeStore((state) => state.likedSongIds);
 
     const handlePlay = (song: Song) => {
         // 同じ曲を選んだ場合は、曲を読み込み直さず再生・一時停止だけ切り替える。
@@ -26,6 +32,15 @@ export default function MusicList({ songs }: MusicListProps) {
 
         // 別の曲なら、ストアに曲と再生リスト全体を設定して再生を開始する。
         playSong(song, songs);
+    };
+
+    const handleLike = async (songId: string) => {
+        const result = await toggleLike(songId);
+        if (result === null) {
+            if (confirm("いいねをするにはログインが必要です。ログインページへ移動しますか？")) {
+                router.push("/login");
+            }
+        }
     };
 
     return (
@@ -94,10 +109,10 @@ export default function MusicList({ songs }: MusicListProps) {
                             <button 
                                 type="button" 
                                 className={styles.actionBtn}
-                                onClick={() => alert(`${song.title}をお気に入りにしました`)} /* ここにいいねの処理を入れる */
-                                aria-label="お気に入りに追加"
+                                onClick={() => handleLike(song.id)}
+                                aria-label={likedSongIds.includes(song.id) ? "お気に入りから削除" : "お気に入りに追加"}
                             >
-                                <Heart/>
+                                <Heart filled={likedSongIds.includes(song.id)} />
                             </button>
                         </div>
                     </li>
