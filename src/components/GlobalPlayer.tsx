@@ -42,8 +42,79 @@ export default function GlobalPlayer() {
         }
 
         audioRef.current.src = currentSong.audioFilePath;
-        audioRef.current.play().catch(() => {});
+        audioRef.current.play().catch(() => { });
     }, [currentSong]);
+
+    const activePlayDurationRef = useRef<number>(0);
+    const hasCountedThisSongRef = useRef<boolean>(false);
+
+    // 曲が切り替わったら再生カウンターをリセット
+    useEffect(() => {
+        activePlayDurationRef.current = 0;
+        hasCountedThisSongRef.current = false;
+    }, [currentSong?.id]);
+
+    // 再生カウントの監視（1秒ごと）
+    useEffect(() => {
+        if (!isPlaying || !currentSong) {
+            return;
+        }
+
+        const interval = setInterval(() => {
+            const audio = audioRef.current;
+            if (!audio) return;
+
+            // 音が出ている状態で実際に再生されているかチェック
+            const isAudible = !audio.paused && !audio.muted && audio.volume > 0;
+
+            if (isAudible) {
+                activePlayDurationRef.current += 1;
+
+                // 30秒に達し、かつ未カウントの場合
+                if (activePlayDurationRef.current >= 30 && !hasCountedThisSongRef.current) {
+                    hasCountedThisSongRef.current = true;
+
+                    // 1ユーザー・1日につき1曲20回までの制限管理（LocalStorage）
+                    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+                    const storageKey = "music_play_counts";
+                    let countsData: { date: string; counts: Record<string, number> } = {
+                        date: today,
+                        counts: {},
+                    };
+
+                    try {
+                        const localData = localStorage.getItem(storageKey);
+                        if (localData) {
+                            const parsed = JSON.parse(localData);
+                            if (parsed && parsed.date === today) {
+                                countsData = parsed;
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse play counts:", e);
+                    }
+
+                    const currentCount = countsData.counts[currentSong.id] || 0;
+                    if (currentCount < 20) {
+                        fetch(`/api/songs/${currentSong.id}/play`, { method: "POST" })
+                            .then((res) => {
+                                if (res.ok) {
+                                    countsData.counts[currentSong.id] = currentCount + 1;
+                                    localStorage.setItem(storageKey, JSON.stringify(countsData));
+                                }
+                            })
+                            .catch((err) => {
+                                console.error("Failed to increment play count:", err);
+                            });
+                    } else {
+                        console.log(`Play count limit (20) reached today for song: ${currentSong.title}`);
+                    }
+                }
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [isPlaying, currentSong]);
 
     // 再生状態が変わったら、実際の音声も再生・一時停止する。
     useEffect(() => {
@@ -52,7 +123,7 @@ export default function GlobalPlayer() {
         }
 
         if (isPlaying) {
-            audioRef.current.play().catch(() => {});
+            audioRef.current.play().catch(() => { });
             return;
         }
 
@@ -141,71 +212,71 @@ export default function GlobalPlayer() {
             />
 
             <div className="player-body">
-                    <Image
-                        src="/music_cover_img.png"
-                        alt="楽曲のカバー画像"
-                        className="player-cover"
-                        width={190}
-                        height={190}
+                <Image
+                    src="/music_cover_img.png"
+                    alt="楽曲のカバー画像"
+                    className="player-cover"
+                    width={190}
+                    height={190}
+                />
+
+                <div className="player-meta">
+                    <strong>{currentSong.title}</strong>
+                    <small>MUSIC FRONTLINE</small>
+                </div>
+
+                <div className="player-seek-area">
+                    <input
+                        type="range"
+                        className="player-seek"
+                        min="0"
+                        max={duration || 0}
+                        step="0.1"
+                        value={Math.min(displayedTime, duration || 0)}
+                        onPointerDown={(event) =>
+                            updateSeekPreview(Number(event.currentTarget.value))
+                        }
+                        onPointerUp={commitSeek}
+                        onPointerCancel={cancelSeek}
+                        onChange={(event) => handleSeekChange(Number(event.target.value))}
+                        aria-label="再生位置"
+                        disabled={!duration}
                     />
-
-                    <div className="player-meta">
-                        <strong>{currentSong.title}</strong>
-                        <small>MUSIC FRONTLINE</small>
+                    <div className="player-time">
+                        <span>{formatTime(displayedTime)}</span>
+                        <span>{formatTime(duration)}</span>
                     </div>
+                </div>
 
-                    <div className="player-seek-area">
-                        <input
-                            type="range"
-                            className="player-seek"
-                            min="0"
-                            max={duration || 0}
-                            step="0.1"
-                            value={Math.min(displayedTime, duration || 0)}
-                            onPointerDown={(event) =>
-                                updateSeekPreview(Number(event.currentTarget.value))
-                            }
-                            onPointerUp={commitSeek}
-                            onPointerCancel={cancelSeek}
-                            onChange={(event) => handleSeekChange(Number(event.target.value))}
-                            aria-label="再生位置"
-                            disabled={!duration}
-                        />
-                        <div className="player-time">
-                            <span>{formatTime(displayedTime)}</span>
-                            <span>{formatTime(duration)}</span>
-                        </div>
-                    </div>
+                <div className="player-controls">
+                    <button type="button" onClick={previous} aria-label="前の曲">
+                        ⏮
+                    </button>
+                    <button
+                        type="button"
+                        className="player-primary-control"
+                        onClick={togglePlay}
+                        aria-label={isPlaying ? "一時停止" : "再生"}
+                    >
+                        {isPlaying ? "❚❚" : "▶"}
+                    </button>
+                    <button type="button" onClick={next} aria-label="次の曲">
+                        ⏭
+                    </button>
+                </div>
 
-                    <div className="player-controls">
-                        <button type="button" onClick={previous} aria-label="前の曲">
-                            ⏮
-                        </button>
-                        <button
-                            type="button"
-                            className="player-primary-control"
-                            onClick={togglePlay}
-                            aria-label={isPlaying ? "一時停止" : "再生"}
-                        >
-                            {isPlaying ? "❚❚" : "▶"}
-                        </button>
-                        <button type="button" onClick={next} aria-label="次の曲">
-                            ⏭
-                        </button>
-                    </div>
-
-                    <label className="player-volume">
-                        <span>Vol</span>
-                        <input
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            value={volume}
-                            onChange={(event) => setVolume(Number(event.target.value))}
-                            aria-label="音量"
-                        />
-                    </label>
+                <label className="player-volume">
+                    <span>Vol</span>
+                    <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={volume}
+                        onChange={(event) => setVolume(Number(event.target.value))}
+                        aria-label="音量"
+                    />
+                </label>
             </div>
         </div>
     );
