@@ -65,12 +65,12 @@ export default function MusicDetailPage({
   const isLoggedIn = useLikeStore((state) => state.isLoggedIn);
 
   // 楽曲データをフェッチする共通関数
-  const fetchSongDetail = async (songId: string, isSilent: boolean = false) => {
+  const fetchSongDetail = async (songId: string, isSilent: boolean = false, signal?: AbortSignal) => {
     if (!isSilent) {
       setLoading(true);
     }
     try {
-      const res = await fetch(`/api/songs/${songId}`);
+      const res = await fetch(`/api/songs/${songId}`, { signal });
       if (!res.ok) {
         throw new Error("楽曲の取得に失敗しました。");
       }
@@ -79,6 +79,10 @@ export default function MusicDetailPage({
       setLikesCount(data.song.likesCount || 0);
       setError(null);
     } catch (err: any) {
+      if (err.name === "AbortError") {
+        // フェッチがキャンセルされた場合は、Stateの更新を行わずに終了します
+        return;
+      }
       if (!isSilent) {
         setError(err.message || "エラーが発生しました。");
       }
@@ -93,18 +97,26 @@ export default function MusicDetailPage({
     // 既に表示されている曲とURLの id が同じであればスキップ
     if (song && song.id === id) return;
 
+    const controller = new AbortController();
+
     if (currentSong && currentSong.id === id) {
       setSong(currentSong);
       setLoading(false);
-      fetchSongDetail(id, true); // バックグラウンドで詳細をフェッチ
+      fetchSongDetail(id, true, controller.signal); // バックグラウンドで詳細をフェッチ
     } else {
-      fetchSongDetail(id, false); // 通常のフェッチ
+      fetchSongDetail(id, false, controller.signal); // 通常のフェッチ
     }
     fetchLikes();
+
+    return () => {
+      controller.abort();
+    };
   }, [id, fetchLikes]);
 
   const prevCurrentSongIdRef = useRef<string | null>(null);
   useEffect(() => {
+    let controller: AbortController | null = null;
+
     if (currentSong && song && prevCurrentSongIdRef.current === song.id && currentSong.id !== song.id) {
       // 1. まず UI に現在のプレイヤーの曲情報を即座に反映（ラグをゼロに）
       setSong(currentSong);
@@ -113,9 +125,16 @@ export default function MusicDetailPage({
       router.replace(`/music/${currentSong.id}`);
       
       // 3. バックグラウンドで残りの詳細情報（歌詞、コメントなど）をフェッチ
-      fetchSongDetail(currentSong.id, true);
+      controller = new AbortController();
+      fetchSongDetail(currentSong.id, true, controller.signal);
     }
     prevCurrentSongIdRef.current = currentSong?.id ?? null;
+
+    return () => {
+      if (controller) {
+        controller.abort();
+      }
+    };
   }, [currentSong, song, router]);
 
   const isLiked = song ? likedSongIds.includes(song.id) : false;
