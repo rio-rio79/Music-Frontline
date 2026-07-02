@@ -11,6 +11,11 @@ export type Song = {
     groups?: string[];
     playCount?: number;
     publishedAt?: string;
+    lyricist?: string;
+    composer?: string;
+    lyrics?: string;
+    likesCount?: number;
+    isLiked?: boolean;
 };
 
 // どのコンポーネントからでも参照・更新する再生状態と操作をまとめる。

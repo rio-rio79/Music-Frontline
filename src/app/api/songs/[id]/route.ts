@@ -23,6 +23,9 @@ export async function GET(request: Request, context: RouteContext) {
                 image_path,
                 play_count,
                 published_at,
+                lyricist,
+                composer,
+                lyrics,
                 song_juniors (
                     junior_id,
                     juniors (
@@ -78,6 +81,27 @@ export async function GET(request: Request, context: RouteContext) {
             imagePath = data.publicUrl
         }
 
+        // 総いいね数の取得
+        const { count: likesCount } = await supabase
+            .from('song_likes')
+            .select('*', { count: 'exact', head: true })
+            .eq('song_id', id)
+
+        // ログインユーザーのいいね状態の取得
+        let isLiked = false
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+            const { data: existingLike } = await supabase
+                .from('song_likes')
+                .select('id')
+                .eq('user_id', user.id)
+                .eq('song_id', id)
+                .maybeSingle()
+            if (existingLike) {
+                isLiked = true
+            }
+        }
+
         const formattedSong = {
             id: song.id,
             title: song.title,
@@ -88,6 +112,11 @@ export async function GET(request: Request, context: RouteContext) {
             publishedAt: song.published_at,
             juniors: songJuniors,
             groups: songGroups,
+            lyricist: song.lyricist,
+            composer: song.composer,
+            lyrics: song.lyrics,
+            likesCount: likesCount || 0,
+            isLiked,
         }
 
         return Response.json({ song: formattedSong })

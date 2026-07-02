@@ -2,6 +2,7 @@
 
 import { useRef, useState, use, useEffect } from "react";
 import { type Song, usePlayerStore } from "../../../stores/playerStore"; // ストアをインポート
+import { useLikeStore } from "../../../stores/likeStore"; // いいねストアを追加
 import { GraySmallHeart, ThmbSvg, GraySmallPlayMusic, SkipBack, SkipForward, StartMusic, StopMusic } from "@/components/Svgs";
 
 type MusicDetailPageProps = {
@@ -36,6 +37,9 @@ export default function MusicDetailPage({
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [likesCount, setLikesCount] = useState<number>(0);
+    const [showLyricsModal, setShowLyricsModal] = useState<boolean>(false);
+
     // スパチャ用のステート（デザイン確認用）
     const [showScModal, setShowScModal] = useState<boolean>(false); // 金額選択モーダルの開閉
     const [selectedAmount, setSelectedAmount] = useState<ScTier | null>(null); // 選択された金額情報
@@ -53,6 +57,11 @@ export default function MusicDetailPage({
     const next = usePlayerStore((state) => state.next);
     const requestSeek = usePlayerStore((state) => state.requestSeek);
 
+    const likedSongIds = useLikeStore((state) => state.likedSongIds);
+    const toggleLikeStore = useLikeStore((state) => state.toggleLike);
+    const fetchLikes = useLikeStore((state) => state.fetchLikes);
+    const isLoggedIn = useLikeStore((state) => state.isLoggedIn);
+
     useEffect(() => {
         const fetchSong = async () => {
             try {
@@ -62,6 +71,7 @@ export default function MusicDetailPage({
                 }
                 const data = await res.json();
                 setSong(data.song);
+                setLikesCount(data.song.likesCount || 0);
             } catch (err: any) {
                 setError(err.message || "エラーが発生しました。");
             } finally {
@@ -69,7 +79,22 @@ export default function MusicDetailPage({
             }
         };
         fetchSong();
-    }, [id]);
+        fetchLikes();
+    }, [id, fetchLikes]);
+
+    const isLiked = song ? likedSongIds.includes(song.id) : false;
+
+    const handleLikeToggle = async () => {
+        if (!song) return;
+        if (!isLoggedIn) {
+            alert("いいねするにはログインが必要です。");
+            return;
+        }
+        const newLiked = await toggleLikeStore(song.id);
+        if (newLiked !== null) {
+            setLikesCount((prev) => (newLiked ? prev + 1 : Math.max(0, prev - 1)));
+        }
+    };
 
     if (loading) {
         return (
@@ -160,25 +185,34 @@ export default function MusicDetailPage({
 
                     {/* Main Player Card */}
                     <div className="mainCard">
-                        <button className="lyricBtn">歌詞表示</button>
+                        <button className="lyricBtn" onClick={() => setShowLyricsModal(true)}>歌詞表示</button>
 
                         <div className="topRow">
                             <div className="musicImg">
-                                <ThmbSvg/>
+                                {song.imagePath ? (
+                                    <img src={song.imagePath} alt={song.title} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "10px" }} />
+                                ) : (
+                                    <ThmbSvg/>
+                                )}
                             </div>
 
                             <div className="trackInfo">
                                 <div className="trackTitle">{song.title}</div>
-                                <div className="trackArtist">グループ名（もしくは、アイドルリスト）</div>
+                                <div className="trackArtist">{song.artistName}</div>
                                 <div className="trackMeta">
                                     <div className="metaItem">
                                         <GraySmallPlayMusic/>
-                                        25,000
+                                        {song.playCount?.toLocaleString() || 0}
                                     </div>
-                                    <div className="metaItem">
-                                        <GraySmallHeart/>
-                                        120
-                                    </div>
+                                    <button 
+                                        className="metaItem"
+                                        onClick={handleLikeToggle}
+                                        style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                                        aria-label="いいね"
+                                    >
+                                        <GraySmallHeart color={isLiked ? "#E8447A" : "#888"} filled={isLiked} />
+                                        {likesCount.toLocaleString()}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -259,28 +293,38 @@ export default function MusicDetailPage({
                         <div className="infoCard">
                             <div className="infoRow">
                                 <div className="infoLbl">作詞者</div>
-                                <div className="infoVal">1&amp;Y</div>
+                                <div className="infoVal">{song.lyricist || "不明"}</div>
                             </div>
                             <div className="infoRow">
                                 <div className="infoLbl">作曲者</div>
-                                <div className="infoVal">TETSU</div>
+                                <div className="infoVal">{song.composer || "不明"}</div>
                             </div>
                             <div className="infoRow">
                                 <div className="infoLbl">グループ / メンバー</div>
                                 <div className="genreTags">
-                                    <span className="genreTag">グループ名</span>
-                                    <span className="genreTag">青木滉平</span>
-                                    <span className="genreTag">浅井乃我</span>
-                                    <span className="genreTag">安嶋秀生</span>
+                                    {song.groups?.map((g) => (
+                                        <span key={g} className="genreTag">{g}</span>
+                                    ))}
+                                    {song.juniors?.map((j) => (
+                                        <span key={j} className="genreTag">{j}</span>
+                                    ))}
+                                    {(!song.groups?.length && !song.juniors?.length) && (
+                                        <span className="genreTag">情報なし</span>
+                                    )}
                                 </div>
                             </div>
                             <div className="infoRow">
                                 <div className="infoLbl">初公開</div>
-                                <div className="infoVal">2024.05.20</div>
+                                <div className="infoVal">
+                                    {song.publishedAt ? (() => {
+                                        const d = new Date(song.publishedAt);
+                                        return isNaN(d.getTime()) ? song.publishedAt : `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+                                    })() : "不明"}
+                                </div>
                             </div>
                             <div className="infoRow">
                                 <div className="infoLbl">再生回数</div>
-                                <div className="infoVal">25,000回</div>
+                                <div className="infoVal">{song.playCount?.toLocaleString() || 0}回</div>
                             </div>
                         </div>
                     )}
@@ -378,6 +422,21 @@ export default function MusicDetailPage({
                                     <span className="gridAmount">￥{tier.amount.toLocaleString()}</span>
                                 </button>
                             ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 歌詞モーダル */}
+            {showLyricsModal && song && (
+                <div className="modalOverlay" onClick={() => setShowLyricsModal(false)}>
+                    <div className="modalContent" onClick={(e) => e.stopPropagation()} style={{ maxHeight: "80vh", overflowY: "auto", display: "flex", flexDirection: "column" }}>
+                        <div className="modalHeader">
+                            <h3>{song.title} - 歌詞</h3>
+                            <button className="closeModalBtn" onClick={() => setShowLyricsModal(false)}>✕</button>
+                        </div>
+                        <div style={{ whiteSpace: "pre-wrap", lineHeight: "1.8", textAlign: "center", padding: "10px 0", color: "#333", fontSize: "15px", flex: 1, overflowY: "auto" }}>
+                            {song.lyrics || "歌詞データが登録されていません。"}
                         </div>
                     </div>
                 </div>
