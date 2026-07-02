@@ -72,9 +72,9 @@ export function GraySmallPlayMusic() {
  }
 
 //  いいね数表示用アイコン
-export function GraySmallHeart() { 
+export function GraySmallHeart({ color = "#bbb", filled = false }: { color?: string; filled?: boolean }) { 
     return(
-        <svg width="14" height="14" viewBox="0 0 22 22" fill="none" stroke="#bbb" strokeWidth="1.5">
+        <svg width="14" height="14" viewBox="0 0 22 22" fill={filled ? color : "none"} stroke={color} strokeWidth="1.5">
             <path d="M11 19.5S3 14.5 3 8.5a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 8 2.8c0 6-8 11-8 11z" />
         </svg>
     );

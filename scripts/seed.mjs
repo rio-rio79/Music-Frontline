@@ -65,7 +65,10 @@ const sampleSongs = [
         audio_path: "/audio/sample-1.mp3",
         image_path: "/music_cover_img.png",
         play_count: 25000,
-        published_at: "2024-05-20T00:00:00Z"
+        published_at: "2024-05-20T00:00:00Z",
+        lyricist: "1&Y",
+        composer: "TETSU",
+        lyrics: "Sample Song 1 の歌詞です。\n楽しいメロディに乗せて歌いましょう。\nサビの部分が盛り上がります！"
     },
     {
         id: SONG_2_ID,
@@ -73,7 +76,10 @@ const sampleSongs = [
         audio_path: "/audio/sample-2.mp3",
         image_path: "/music_cover_img.png",
         play_count: 12000,
-        published_at: "2024-06-01T00:00:00Z"
+        published_at: "2024-06-01T00:00:00Z",
+        lyricist: "作詞者A",
+        composer: "作曲者A",
+        lyrics: "Sample Song 2 の歌詞です。\n少ししっとりした曲調です。\n心に響く歌詞をお届けします。"
     },
     {
         id: SONG_3_ID,
@@ -81,7 +87,10 @@ const sampleSongs = [
         audio_path: "/audio/sample-3.mp3",
         image_path: "/music_cover_img.png",
         play_count: 8500,
-        published_at: "2024-06-10T00:00:00Z"
+        published_at: "2024-06-10T00:00:00Z",
+        lyricist: "作詞者B",
+        composer: "作曲者B",
+        lyrics: "Sample Song 3 の歌詞です。\nアップテンポで元気が出る曲です。\nみんなで一緒に盛り上がりましょう！"
     },
     {
         id: SONG_4_ID,
@@ -89,7 +98,10 @@ const sampleSongs = [
         audio_path: "/audio/sample-4.mp3",
         image_path: "/music_cover_img.png",
         play_count: 3100,
-        published_at: "2024-06-15T00:00:00Z"
+        published_at: "2024-06-15T00:00:00Z",
+        lyricist: "作詞者C",
+        composer: "作曲者C",
+        lyrics: "Sample Song 4 の歌詞です。\nバラード曲です。\n切ないメロディと言葉たち。"
     },
     {
         id: SONG_5_ID,
@@ -97,7 +109,10 @@ const sampleSongs = [
         audio_path: "/audio/sample-5.mp3",
         image_path: "/music_cover_img.png",
         play_count: 9800,
-        published_at: "2024-06-20T00:00:00Z"
+        published_at: "2024-06-20T00:00:00Z",
+        lyricist: "作詞者D",
+        composer: "作曲者D",
+        lyrics: "Sample Song 5 の歌詞です。\nコラボ楽曲の特別な歌詞をお楽しみください。"
     }
 ];
 

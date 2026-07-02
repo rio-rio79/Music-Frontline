@@ -456,9 +456,12 @@ export type Database = {
       songs: {
         Row: {
           audio_path: string | null
+          composer: string | null
           created_at: string
           id: string
           image_path: string | null
+          lyricist: string | null
+          lyrics: string | null
           play_count: number
           published_at: string
           title: string
@@ -466,9 +469,12 @@ export type Database = {
         }
         Insert: {
           audio_path?: string | null
+          composer?: string | null
           created_at?: string
           id?: string
           image_path?: string | null
+          lyricist?: string | null
+          lyrics?: string | null
           play_count?: number
           published_at?: string
           title: string
@@ -476,9 +482,12 @@ export type Database = {
         }
         Update: {
           audio_path?: string | null
+          composer?: string | null
           created_at?: string
           id?: string
           image_path?: string | null
+          lyricist?: string | null
+          lyrics?: string | null
           play_count?: number
           published_at?: string
           title?: string
