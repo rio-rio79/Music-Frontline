@@ -11,13 +11,15 @@ export default function LikeInitializer() {
     useEffect(() => {
         const supabase = createSupabaseBrowser();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            if (session) {
-                fetchLikes();
-            } else {
-                clearLikes();
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+            (_event, session) => {
+                if (session) {
+                    fetchLikes();
+                } else {
+                    clearLikes();
+                }
             }
-        });
+        );
 
         return () => {
             subscription.unsubscribe();

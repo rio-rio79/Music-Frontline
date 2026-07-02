@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { getCurrentUser, logout } from '@/lib/auth'
 
 type User = {
     id: string
@@ -15,12 +16,8 @@ export default function MyProfilePage() {
     const [loggingOut, setLoggingOut] = useState(false)
 
     useEffect(() => {
-        fetch('/api/auth/me')
-            .then((res) => {
-                if (!res.ok) throw new Error()
-                return res.json()
-            })
-            .then((data) => setUser(data.user))
+        getCurrentUser()
+            .then((u) => setUser(u ? { id: u.id, email: u.email } : null))
             .catch(() => setUser(null))
             .finally(() => setLoading(false))
     }, [])
@@ -28,7 +25,8 @@ export default function MyProfilePage() {
     async function handleLogout() {
         setLoggingOut(true)
         try {
-            await fetch('/api/auth/logout', { method: 'POST' })
+            await logout()
+
             router.push('/login')
         } catch {
             setLoggingOut(false)

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { login, signup } from '@/lib/auth'
 import './login.css'
 
 type Tab = 'login' | 'signup'
@@ -20,26 +21,17 @@ export default function LoginPage() {
         setLoading(true)
 
         try {
-            const endpoint =
-                tab === 'login' ? '/api/auth/login' : '/api/auth/signup'
+            const authFn = tab === 'login' ? login : signup
+            await authFn(email, password)
 
-            const res = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            })
 
-            const data = await res.json()
-
-            if (!res.ok) {
-                setError(data.error || 'エラーが発生しました。')
-                return
-            }
-
-            // 成功 → TOPページへ
             router.push('/')
-        } catch {
-            setError('通信エラーが発生しました。')
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message)
+            } else {
+                setError('通信エラーが発生しました。')
+            }
         } finally {
             setLoading(false)
         }
