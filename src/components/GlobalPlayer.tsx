@@ -48,14 +48,10 @@ export default function GlobalPlayer() {
     const activePlayDurationRef = useRef<number>(0);
     const hasCountedThisSongRef = useRef<boolean>(false);
 
-    // 曲が切り替わったら再生カウンターをリセット
     useEffect(() => {
         activePlayDurationRef.current = 0;
         hasCountedThisSongRef.current = false;
-    }, [currentSong?.id]);
 
-    // 再生カウントの監視（1秒ごと）
-    useEffect(() => {
         if (!isPlaying || !currentSong) {
             return;
         }
@@ -88,6 +84,9 @@ export default function GlobalPlayer() {
                             const parsed = JSON.parse(localData);
                             if (parsed && parsed.date === today) {
                                 countsData = parsed;
+                            } else {
+                                // 古い日付のデータであれば、残骸を残さないために明示的にクリア
+                                localStorage.removeItem(storageKey);
                             }
                         }
                     } catch (e) {
@@ -99,8 +98,17 @@ export default function GlobalPlayer() {
                         fetch(`/api/songs/${currentSong.id}/play`, { method: "POST" })
                             .then((res) => {
                                 if (res.ok) {
+                                    return res.json();
+                                }
+                                throw new Error("API response error");
+                            })
+                            .then((data) => {
+                                // サーバーサイドで正常に処理された（ゲストスキップやリミットスキップではない）場合のみ、LocalStorageのカウントをインクリメント
+                                if (data && data.success && !data.skipped) {
                                     countsData.counts[currentSong.id] = currentCount + 1;
                                     localStorage.setItem(storageKey, JSON.stringify(countsData));
+                                } else if (data && data.skipped) {
+                                    console.log(`Playback count skipped on server: ${data.reason}`);
                                 }
                             })
                             .catch((err) => {
@@ -114,7 +122,7 @@ export default function GlobalPlayer() {
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [isPlaying, currentSong]);
+    }, [isPlaying, currentSong?.id]);
 
     // 再生状態が変わったら、実際の音声も再生・一時停止する。
     useEffect(() => {
