@@ -1,19 +1,18 @@
 import { create } from "zustand";
+import type { Database } from "@/types/database.types";
+
+type DbSong = Database["public"]["Tables"]["songs"]["Row"];
 
 // プレイヤーが扱う楽曲データの形。
-export type Song = {
-    id: string; // number から string に変更 (Supabase UUIDに対応)
-    title: string;
+// DBのsongsテーブル定義をベースとし、APIで加工・解決されるプロパティのみをマージ・再定義します。
+export type Song = Omit<DbSong, "audio_path" | "image_path" | "play_count" | "published_at" | "created_at" | "updated_at"> & {
     audioFilePath: string;
     imagePath?: string;
+    playCount?: number;
+    publishedAt?: string;
     artistName?: string;
     juniors?: string[];
     groups?: string[];
-    playCount?: number;
-    publishedAt?: string;
-    lyricist?: string;
-    composer?: string;
-    lyrics?: string;
     likesCount?: number;
     isLiked?: boolean;
 };
