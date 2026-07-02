@@ -106,3 +106,21 @@ export function PersonSvg({ color = "#E8447A" }) {
         </svg>
     );
 }
+
+// やじるし
+export function YajirushiSvg(){
+    return(
+            <svg
+            //   className="blog-list__chevron"
+                width="20px"
+                height="20px"
+                color="#ccc"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+    )
+}

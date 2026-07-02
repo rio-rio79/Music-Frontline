@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import MusicList from "../../components/MusicList/MusicList";
 import { useLikeStore } from "../../stores/likeStore";
+import BlogList from "@/components/BlogList/BlogList";
+import posts from "../../data/posts";
 
 type TabKey = "music" | "blog" | "idol";
 
@@ -165,24 +167,30 @@ export default function Like() {
                 <span className="dots">・ ・ ・</span>
             </div>
 
-             {!isLoggedIn ? (
-                 <div className="like-empty-note">
-                     いいね一覧を表示するにはログインが必要です。<br />
-                     <Link href="/login" style={{ color: "var(--pink)", textDecoration: "underline", marginTop: "10px", display: "inline-block" }}>
-                         ログイン画面へ
-                     </Link>
-                 </div>
-             ) : loading ? (
-                 <div className="like-empty-note">読み込み中...</div>
-             ) : activeTab === "music" ? (
-                 likedSongs.length > 0 ? (
-                     <MusicList songs={likedSongs} />
-                 ) : (
-                     <div className="like-empty-note">いいねした楽曲はありません。</div>
-                 )
-             ) : (
-                 <div className="like-empty-note">{current.note}</div>
-             )}
+            {!isLoggedIn ? (
+                <div className="like-empty-note">
+                    いいね一覧を表示するにはログインが必要です。<br />
+                    <Link href="/login" style={{ color: "var(--pink)", textDecoration: "underline", marginTop: "10px", display: "inline-block" }}>
+                        ログイン画面へ
+                    </Link>
+                </div>
+            ) : loading ? (
+                <div className="like-empty-note">読み込み中...</div>
+            ) : activeTab === "music" ? (
+                likedSongs.length > 0 ? (
+                    <MusicList songs={likedSongs} />
+                ) : (
+                    <div className="like-empty-note">いいねした楽曲はありません。</div>
+                )
+            ) : activeTab === "blog" ? (
+                posts.length > 0 ? (
+                    <BlogList blogs={posts} />
+                ) : (
+                    <div className="like-empty-note">いいねしたブログはありません。</div>
+                )
+            ) : (
+                <div className="like-empty-note">{current.note}</div>
+            )}
  
              {isLoggedIn && !loading && activeTab === "music" && likedSongs.length > 0 && (
                  <div className="like-pagination">
