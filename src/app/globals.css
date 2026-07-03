@@ -47,14 +47,10 @@ body {
   min-height: 500px;
   padding: 24px;
   border-radius: 20px;
-  background:
-    <<<<<<< HEAD radial-gradient(130% 90% at 50% -10%,
+  background: radial-gradient(130% 90% at 50% -10%,
       rgb(111 69 174 / 80%),
       transparent 62%),
-    =======radial-gradient(130% 90% at 50% -10%,
-      rgb(111 69 174 / 80%),
-      transparent 62%),
-    >>>>>>> 8f84f06976676968604f3221f191e25c2954512c linear-gradient(180deg, #21162f, #100c16);
+    linear-gradient(180deg, #21162f, #100c16);
   box-shadow: 0 18px 40px -18px rgb(30 12 60 / 60%);
   color: #fff;
 }
