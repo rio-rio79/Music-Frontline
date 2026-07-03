@@ -246,7 +246,7 @@ header {
   h1 {
     grid-column: 1;
     margin: 0;
-    color: white;
+    color: rgb(37, 37, 37);
     font-size: clamp(1.1rem, 2vw, 1.5rem);
     text-decoration: none;
     white-space: nowrap;
@@ -419,7 +419,6 @@ footer {
   width: 300px;
   height: 100vh;
 
-
   transition: right 0.3s ease;
 
   z-index: 999;
@@ -497,33 +496,33 @@ footer {
   border: none;
   cursor: pointer;
 
-  background: color-mix(in srgb,
-      var(--favorite-color) 50%,
-      white 50%);
+  background: color-mix(in srgb, var(--favorite-color) 50%, white 50%);
 }
 
 header,
 footer {
-  background:
-    linear-gradient(180deg,
-      color-mix(in srgb,
-        var(--favorite-color) 30%,
-        white 70%),
-      white);
+  background: color-mix(
+    in srgb,
+    var(--favorite-color) 8%,
+    rgb(252, 252, 252) 92%
+  );
+}
+
+header {
+  border-bottom: 2px solid rgba(240, 240, 240, 0.5);
 }
 
 .sidebar {
-  background:
-    linear-gradient(180deg,
-      color-mix(in srgb,
-        var(--favorite-color) 30%,
-        white 70%),
-      white);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--favorite-color) 30%, white 70%),
+    white
+  );
 }
 
-body {
+/* body {
   background: #fffafc;
-}
+} */
 
 @media (width <=1496px) {
   @media (width <=1496px) {
