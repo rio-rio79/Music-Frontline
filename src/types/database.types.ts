@@ -133,6 +133,42 @@ export type Database = {
           },
         ]
       }
+      follow_juniors: {
+        Row: {
+          created_at: string
+          id: string
+          junior_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          junior_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          junior_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follow_juniors_junior_id_fkey"
+            columns: ["junior_id"]
+            isOneToOne: false
+            referencedRelation: "juniors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follow_juniors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       groups: {
         Row: {
           created_at: string
@@ -163,34 +199,46 @@ export type Database = {
       juniors: {
         Row: {
           birth_date: string | null
+          birthplace: string | null
           catchphrase: string | null
           created_at: string
           group_id: string | null
+          height: number | null
           id: string
           image_path: string | null
+          join_date: string | null
           name: string
+          name_en: string | null
           profile: string | null
           updated_at: string
         }
         Insert: {
           birth_date?: string | null
+          birthplace?: string | null
           catchphrase?: string | null
           created_at?: string
           group_id?: string | null
+          height?: number | null
           id?: string
           image_path?: string | null
+          join_date?: string | null
           name: string
+          name_en?: string | null
           profile?: string | null
           updated_at?: string
         }
         Update: {
           birth_date?: string | null
+          birthplace?: string | null
           catchphrase?: string | null
           created_at?: string
           group_id?: string | null
+          height?: number | null
           id?: string
           image_path?: string | null
+          join_date?: string | null
           name?: string
+          name_en?: string | null
           profile?: string | null
           updated_at?: string
         }
@@ -273,6 +321,45 @@ export type Database = {
           },
         ]
       }
+      ranking_point_rules: {
+        Row: {
+          action_type: string
+          apply_plan_multiplier: boolean
+          base_points: number
+          calculation_type: string
+          created_at: string
+          is_active: boolean
+          limit_count: number | null
+          limit_type: string
+          oshi_multiplier: number
+          updated_at: string
+        }
+        Insert: {
+          action_type: string
+          apply_plan_multiplier?: boolean
+          base_points: number
+          calculation_type?: string
+          created_at?: string
+          is_active?: boolean
+          limit_count?: number | null
+          limit_type?: string
+          oshi_multiplier?: number
+          updated_at?: string
+        }
+        Update: {
+          action_type?: string
+          apply_plan_multiplier?: boolean
+          base_points?: number
+          calculation_type?: string
+          created_at?: string
+          is_active?: boolean
+          limit_count?: number | null
+          limit_type?: string
+          oshi_multiplier?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ranking_scores: {
         Row: {
           blog_view_points: number
@@ -280,6 +367,7 @@ export type Database = {
           category: string
           comment_points: number
           created_at: string
+          follow_points: number
           id: string
           junior_id: string
           like_points: number
@@ -295,6 +383,7 @@ export type Database = {
           category?: string
           comment_points?: number
           created_at?: string
+          follow_points?: number
           id?: string
           junior_id: string
           like_points?: number
@@ -310,6 +399,7 @@ export type Database = {
           category?: string
           comment_points?: number
           created_at?: string
+          follow_points?: number
           id?: string
           junior_id?: string
           like_points?: number
@@ -540,40 +630,72 @@ export type Database = {
       support_point_logs: {
         Row: {
           action_type: string
+          base_points: number | null
           created_at: string
+          event_id: string | null
           id: string
           junior_id: string
+          oshi_multiplier: number | null
+          period_key: string | null
+          plan_multiplier: number | null
           points: number
+          reversal_of_log_id: string | null
           source_id: string | null
           source_type: string | null
           user_id: string
         }
         Insert: {
           action_type: string
+          base_points?: number | null
           created_at?: string
+          event_id?: string | null
           id?: string
           junior_id: string
+          oshi_multiplier?: number | null
+          period_key?: string | null
+          plan_multiplier?: number | null
           points?: number
+          reversal_of_log_id?: string | null
           source_id?: string | null
           source_type?: string | null
           user_id: string
         }
         Update: {
           action_type?: string
+          base_points?: number | null
           created_at?: string
+          event_id?: string | null
           id?: string
           junior_id?: string
+          oshi_multiplier?: number | null
+          period_key?: string | null
+          plan_multiplier?: number | null
           points?: number
+          reversal_of_log_id?: string | null
           source_id?: string | null
           source_type?: string | null
           user_id?: string
         }
         Relationships: [
           {
+            foreignKeyName: "support_point_logs_action_type_fkey"
+            columns: ["action_type"]
+            isOneToOne: false
+            referencedRelation: "ranking_point_rules"
+            referencedColumns: ["action_type"]
+          },
+          {
             foreignKeyName: "support_point_logs_junior_id_fkey"
             columns: ["junior_id"]
             isOneToOne: false
             referencedRelation: "juniors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_point_logs_reversal_of_log_id_fkey"
+            columns: ["reversal_of_log_id"]
+            isOneToOne: false
+            referencedRelation: "support_point_logs"
             referencedColumns: ["id"]
           },
           {
@@ -587,11 +709,60 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      ranking_leaderboard: {
+        Row: {
+          blog_view_points: number | null
+          calculated_at: string | null
+          category: string | null
+          comment_points: number | null
+          follow_points: number | null
+          group_id: string | null
+          group_name: string | null
+          junior_id: string | null
+          junior_image_path: string | null
+          junior_name: string | null
+          like_points: number | null
+          oshi_points: number | null
+          payment_points: number | null
+          play_points: number | null
+          ranking_position: number | null
+          score: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "juniors_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ranking_scores_junior_id_fkey"
+            columns: ["junior_id"]
+            isOneToOne: false
+            referencedRelation: "juniors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      award_blog_view_points: {
+        Args: { p_blog_post_id: string }
+        Returns: Json
+      }
+      award_song_play_points: { Args: { p_song_id: string }; Returns: Json }
       increment_blog_view: { Args: { blog_id: string }; Returns: undefined }
       increment_play_count: { Args: { song_id: string }; Returns: undefined }
+      sync_blog_comment_points: {
+        Args: { p_blog_post_id: string }
+        Returns: Json
+      }
+      sync_blog_like_points: { Args: { p_blog_post_id: string }; Returns: Json }
+      sync_follow_points: { Args: { p_junior_id: string }; Returns: Json }
+      sync_oshi_points: { Args: never; Returns: Json }
+      sync_song_comment_points: { Args: { p_song_id: string }; Returns: Json }
+      sync_song_like_points: { Args: { p_song_id: string }; Returns: Json }
     }
     Enums: {
       [_ in never]: never
