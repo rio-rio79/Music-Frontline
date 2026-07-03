@@ -5,7 +5,51 @@ import Link from "next/link";
 import MusicList from "../../components/MusicList/MusicList";
 import { useLikeStore } from "../../stores/likeStore";
 import BlogList from "@/components/BlogList/BlogList";
+import IdleList from "@/components/IdleList/IdleList";
 import posts from "../../data/posts";
+
+// ----データに置き換える----
+export type Idle = {
+  id: string;
+  name: string;
+  nameRoma: string;
+  thumbnailUrl?: string;
+};
+
+export const idles: Idle[] = [
+  {
+    id: "1",
+    name: "AAA", // 名前
+    nameRoma: "aaa", // 名前ローマ字
+    thumbnailUrl: "",
+  },
+  {
+    id: "2",
+    name: "BBB",
+    nameRoma: "bbb",
+    thumbnailUrl: "",
+  },
+  {
+    id: "3",
+    name: "CCC",
+    nameRoma: "ccc",
+    thumbnailUrl: "",
+  },
+  {
+    id: "4",
+    name: "DDD",
+    nameRoma: "ddd",
+    thumbnailUrl: "",
+  },
+  {
+    id: "5",
+    name: "EEE",
+    nameRoma: "eee",
+    thumbnailUrl: "",
+  },
+];
+
+// ----データに置き換える----
 
 type TabKey = "music" | "blog" | "idol";
 
@@ -45,6 +89,47 @@ export default function Like() {
     }, [activeTab, fetchLikes]);
 
     const current = TABS.find((t) => t.key === activeTab)!;
+
+    // メインコンテンツの描画ロジックを関数として集約
+    const renderContent = () => {
+        if (!isLoggedIn) {
+            return (
+                <div className="like-empty-note">
+                    いいね一覧を表示するにはログインが必要です。<br />
+                    <Link href="/login" style={{ color: "var(--pink)", textDecoration: "underline", marginTop: "10px", display: "inline-block" }}>
+                        ログイン画面へ
+                    </Link>
+                </div>
+            );
+        }
+
+        if (loading) {
+            return <div className="like-empty-note">読み込み中...</div>;
+        }
+
+        switch (activeTab) {
+            case "music":
+                return likedSongs.length > 0 ? (
+                    <MusicList songs={likedSongs} />
+                ) : (
+                    <div className="like-empty-note">いいねした楽曲はありません。</div>
+                );
+            case "blog":
+                return posts.length > 0 ? (
+                    <BlogList blogs={posts} />
+                ) : (
+                    <div className="like-empty-note">いいねしたブログはありません。</div>
+                );
+            case "idol":
+                return idles.length > 0 ? (
+                    <IdleList idles={idles} />
+                ) : (
+                    <div className="like-empty-note">いいねしたアイドルはありません。</div>
+                );
+            default:
+                return null;
+        }
+    };
 
     return (
         <section className="like-page">
@@ -167,30 +252,7 @@ export default function Like() {
                 <span className="dots">・ ・ ・</span>
             </div>
 
-            {!isLoggedIn ? (
-                <div className="like-empty-note">
-                    いいね一覧を表示するにはログインが必要です。<br />
-                    <Link href="/login" style={{ color: "var(--pink)", textDecoration: "underline", marginTop: "10px", display: "inline-block" }}>
-                        ログイン画面へ
-                    </Link>
-                </div>
-            ) : loading ? (
-                <div className="like-empty-note">読み込み中...</div>
-            ) : activeTab === "music" ? (
-                likedSongs.length > 0 ? (
-                    <MusicList songs={likedSongs} />
-                ) : (
-                    <div className="like-empty-note">いいねした楽曲はありません。</div>
-                )
-            ) : activeTab === "blog" ? (
-                posts.length > 0 ? (
-                    <BlogList blogs={posts} />
-                ) : (
-                    <div className="like-empty-note">いいねしたブログはありません。</div>
-                )
-            ) : (
-                <div className="like-empty-note">{current.note}</div>
-            )}
+            {renderContent()}
  
              {isLoggedIn && !loading && activeTab === "music" && likedSongs.length > 0 && (
                  <div className="like-pagination">
