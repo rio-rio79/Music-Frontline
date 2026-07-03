@@ -210,7 +210,7 @@ export type Database = {
           id: string
           monthly_price: number
           name: string
-          oshi_point_multiplier: number
+          point_multiplier: number
           updated_at: string
         }
         Insert: {
@@ -218,7 +218,7 @@ export type Database = {
           id?: string
           monthly_price?: number
           name: string
-          oshi_point_multiplier?: number
+          point_multiplier?: number
           updated_at?: string
         }
         Update: {
@@ -226,7 +226,7 @@ export type Database = {
           id?: string
           monthly_price?: number
           name?: string
-          oshi_point_multiplier?: number
+          point_multiplier?: number
           updated_at?: string
         }
         Relationships: []

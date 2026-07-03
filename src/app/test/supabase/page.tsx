@@ -132,7 +132,7 @@ export default async function SupabaseTestPage() {
               <tr style={{ backgroundColor: '#f5f5f5' }}>
                 <th style={thStyle}>name</th>
                 <th style={thStyle}>monthly_price</th>
-                <th style={thStyle}>oshi_point_multiplier</th>
+                <th style={thStyle}>point_multiplier</th>
                 <th style={thStyle}>id</th>
               </tr>
             </thead>
@@ -141,7 +141,7 @@ export default async function SupabaseTestPage() {
                 <tr key={plan.id}>
                   <td style={tdStyle}>{plan.name}</td>
                   <td style={tdStyle}>¥{plan.monthly_price}</td>
-                  <td style={tdStyle}>x{plan.oshi_point_multiplier}</td>
+                  <td style={tdStyle}>x{plan.point_multiplier}</td>
                   <td style={{ ...tdStyle, fontSize: '0.75rem', color: '#888' }}>
                     {plan.id}
                   </td>
