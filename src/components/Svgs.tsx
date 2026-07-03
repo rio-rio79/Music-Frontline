@@ -124,3 +124,36 @@ export function YajirushiSvg(){
             </svg>
     )
 }
+
+// 2人アイコン。フォローなどで使用
+export function TwoPersonIcon(){
+    return(
+            // <svg className="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+            <svg width="26px" height="26px" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                <circle cx="9" cy="7" r="3"/>
+                    <path d="M3 19c0-3 2.7-5 6-5s6 2 6 5"/>
+                <circle cx="17" cy="8" r="2.4"/>
+                <path d="M15 13.3c2.4.2 4 1.9 4 4.2"/>
+            </svg>
+    )
+}
+
+// ペンアイコン
+export function Pen(){
+    return(
+            <svg width="26px" height="26px" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                <path d="M4 19l1.2-4L16 4.2c.5-.5 1.3-.5 1.8 0l2 2c.5.5.5 1.3 0 1.8L9 18.8 4 19z"/>
+            </svg>
+    )
+}
+
+// 音符アイコン
+export function MusicalNote(){
+    return(
+            <svg width="26px" height="26px" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                <path d="M9 18V5l11-2v13"/>
+                <circle cx="6" cy="18" r="2.4"/>
+                <circle cx="17" cy="16" r="2.4"/>
+            </svg>
+    )
+}
