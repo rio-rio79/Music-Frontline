@@ -1,10 +1,9 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { getCurrentUser, logout } from '@/lib/auth'
+import { redirect } from 'next/navigation'
+import { createSupabaseServer } from '@/lib/supabase-server'
 import { TwoPersonIcon, Pen, MusicalNote } from '../../../components/Svgs'
 import GiftPanel from '../../../components/GiftPanel/GiftPanel'
+import LogoutButton from './LogoutButton'
+import ProfileCard from './ProfileCard'
 
 // ギフトボックス用データ(colorはハートの色の指定) 要データ置き換え
 const myBreakdown = [
@@ -16,57 +15,60 @@ const myBreakdown = [
 // 総ポイント
 const total = myBreakdown.reduce((s, b) => s + b.value, 0)
 
-type User = {
-    id: string
-    email?: string
+function getRegionLabel(region: string | null) {
+    if (region === 'kanto') return '関東ジュニア'
+    if (region === 'kansai') return '関西ジュニア'
+    return '無所属'
 }
 
-export default function MyProfilePage() {
-    const router = useRouter()
-    const [user, setUser] = useState<User | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [loggingOut, setLoggingOut] = useState(false)
-
-    useEffect(() => {
-        getCurrentUser()
-            .then((u) => setUser(u ? { id: u.id, email: u.email } : null))
-            .catch(() => setUser(null))
-            .finally(() => setLoading(false))
-    }, [])
-
-    async function handleLogout() {
-        setLoggingOut(true)
-        try {
-            await logout()
-            router.push('/login')
-        } catch {
-            setLoggingOut(false)
-        }
-    }
-
-    if (loading) {
-        return (
-            <section style={{ padding: '44px 24px', textAlign: 'center' }}>
-                <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
-                <h1 className="page-title" style={{ marginBottom: '34px !important' }}>マイページ</h1>
-                <p>読み込み中...</p>
-            </section>
-        )
-    }
+export default async function MyProfilePage() {
+    const supabase = await createSupabaseServer()
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
 
     if (!user) {
-        return (
-            <section style={{ padding: '44px 24px', textAlign: 'center' }}>
-                <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
-                <h1 className="page-title" style={{ marginBottom: '34px !important' }}>マイページ</h1>
-                <p>ログインしていません。</p>
-            </section>
-        )
+        redirect('/login')
     }
 
-    const displayInitial = user.email ? user.email.charAt(0).toUpperCase() : 'U'
-    const displayName = user.email ? user.email.split('@')[0] : 'ユーザー'
-    const oshiName = "山田太郎" // データ置き換え
+    const [profileResult, plansResult, juniorsResult] = await Promise.all([
+        supabase
+            .from('profiles')
+            .select(`
+                name,
+                plan:plans(id, name, monthly_price, point_multiplier),
+                oshi:juniors(id, name, image_path, region, group:groups(name))
+            `)
+            .eq('id', user.id)
+            .single(),
+        supabase
+            .from('plans')
+            .select('id, name, monthly_price, point_multiplier')
+            .order('monthly_price'),
+        supabase
+            .from('juniors')
+            .select('id, name, image_path, region, group:groups(name)')
+            .order('name'),
+    ])
+
+    const profile = profileResult.data
+    const plans = plansResult.data ?? []
+    const juniors = (juniorsResult.data ?? []).map((junior) => {
+        const imageUrl = junior.image_path
+            ? supabase.storage.from('images').getPublicUrl(junior.image_path).data.publicUrl
+            : null
+
+        return {
+            id: junior.id,
+            name: junior.name,
+            imageUrl,
+            affiliation: junior.group?.name ?? getRegionLabel(junior.region),
+        }
+    })
+
+    const displayName = profile?.name
+        ?? (user.email ? user.email.split('@')[0] : 'ユーザー')
+    const oshiName = profile?.oshi?.name ?? '未登録'
 
     return (
         <main className="page-wrap">
@@ -74,20 +76,20 @@ export default function MyProfilePage() {
 
             <h1 className="page-title" style={{ marginBottom: '34px' }}>My Page</h1>
 
-            <section className="card">
-                <div className="card-banner">profile</div>
-                <div className="profile-body">
-                    <div className="avatar" id="avatarInitial">{displayInitial}</div>
-                    <div className="profile-info">
-                        <div className="profile-name-row">
-                            <span className="profile-name" id="userName">{displayName}</span>
-                            <span className="plan-pill">プラン: プレミアム</span>
-                        </div>
-                        <div className="info-row"><span className="label">ユーザーID：</span><span className="value masked">●●●●●</span></div>
-                        <div className="info-row"><span className="label">メールアドレス：</span><span className="value">{user.email}</span></div>
-                    </div>
-                </div>
-            </section>
+            <ProfileCard
+                initialName={displayName}
+                initialPlan={profile?.plan ?? null}
+                initialOshi={profile?.oshi ? {
+                    id: profile.oshi.id,
+                    name: profile.oshi.name,
+                    imageUrl: profile.oshi.image_path
+                        ? supabase.storage.from('images').getPublicUrl(profile.oshi.image_path).data.publicUrl
+                        : null,
+                    affiliation: profile.oshi.group?.name ?? getRegionLabel(profile.oshi.region),
+                } : null}
+                plans={plans}
+                juniors={juniors}
+            />
 
             <h2 className="section-title">Favorite</h2>
             <div className="stat-grid">
@@ -120,17 +122,7 @@ export default function MyProfilePage() {
             <GiftPanel breakdown={myBreakdown} />
 
             <a className="withdraw-link">退会する</a>
-            <button 
-                className="logout-btn" 
-                onClick={handleLogout} 
-                disabled={loggingOut}
-                style={{
-                    cursor: loggingOut ? 'not-allowed' : 'pointer',
-                    opacity: loggingOut ? 0.6 : 1
-                }}
-            >
-                {loggingOut ? 'ログアウト中...' : 'ログアウト'}
-            </button>
+            <LogoutButton />
         </main>
     )
 }
@@ -180,84 +172,6 @@ const pageStyles = `
     border-radius: 3px;
     background: var(--pink-main);
     margin: 10px auto 0;
-  }
-
-  .card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    overflow: hidden;
-    box-shadow: 0 6px 20px rgba(255,110,160,.08);
-    margin-bottom: 34px;
-  }
-  .card-banner {
-    background: linear-gradient(90deg,#ffb0cb,var(--pink-main));
-    color: #fff;
-    text-align: center;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 2px;
-    padding: 10px 0;
-    text-transform: lowercase;
-  }
-  .profile-body {
-    display: flex;
-    align-items: center;
-    gap: 26px;
-    padding: 28px 30px;
-  }
-  .avatar {
-    flex: 0 0 96px;
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-    background: linear-gradient(135deg,#ff8fb3,var(--pink-deep));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 40px;
-    font-weight: 800;
-    box-shadow: 0 8px 18px rgba(255,79,139,.3);
-  }
-  .profile-info { flex: 1; }
-  .profile-name-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .profile-name {
-    font-size: 22px;
-    font-weight: 800;
-  }
-  .plan-pill {
-    background: var(--pink-pale);
-    color: var(--pink-deep);
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 999px;
-  }
-  .info-row {
-    display: flex;
-    font-size: 14px;
-    color: var(--ink-soft);
-    margin-bottom: 6px;
-  }
-  .info-row .label {
-    width: 150px;
-    flex-shrink: 0;
-    color: var(--ink-soft);
-  }
-  .info-row .value { color: var(--ink); }
-  .info-row .value.masked {
-    letter-spacing: 3px;
-    color: #1c1a1f;
-  }
-  .info-row .value.highlight {
-    color: var(--pink-deep);
-    font-weight: 700;
   }
 
   .section-title {
@@ -397,8 +311,6 @@ const pageStyles = `
   }
 
   @media (max-width: 520px) {
-    .profile-body { flex-direction: column; text-align: center; padding: 26px 20px; }
-    .info-row { justify-content: center; }
     .gift-panel { flex-direction: column; }
     .gift-scene { width: 260px; height: 220px; }
   }

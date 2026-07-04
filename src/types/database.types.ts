@@ -780,8 +780,10 @@ export type Database = {
         Returns: Json
       }
       award_song_play_points: { Args: { p_song_id: string }; Returns: Json }
+      change_membership_plan: { Args: { p_plan_id: string }; Returns: Json }
       increment_blog_view: { Args: { blog_id: string }; Returns: undefined }
       increment_play_count: { Args: { song_id: string }; Returns: undefined }
+      set_oshi_junior: { Args: { p_junior_id: string }; Returns: Json }
       sync_blog_comment_points: {
         Args: { p_blog_post_id: string }
         Returns: Json
