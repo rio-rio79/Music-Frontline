@@ -12,22 +12,6 @@ type MusicDetailPageProps = {
 
 type TabType = "info" | "comments";
 
-// スパチャの金額選択肢の型定義
-type ScTier = {
-  amount: number;
-  colorClass: string;
-};
-
-// スパチャの金額設定（デザイン確認用）
-const SC_TIERS: ScTier[] = [
-  { amount: 200, colorClass: "tierBlue" },
-  { amount: 500, colorClass: "tierCyan" },
-  { amount: 1000, colorClass: "tierYellow" },
-  { amount: 2000, colorClass: "tierOrange" },
-  { amount: 5000, colorClass: "tierMagenta" },
-  { amount: 10000, colorClass: "tierRed" },
-];
-
 export default function MusicDetailPage({
   params,
 }: MusicDetailPageProps) {
@@ -41,10 +25,6 @@ export default function MusicDetailPage({
 
   const [likesCount, setLikesCount] = useState<number>(0);
   const [showLyricsModal, setShowLyricsModal] = useState<boolean>(false);
-
-  // スパチャ用のステート（デザイン確認用）
-  const [showScModal, setShowScModal] = useState<boolean>(false); // 金額選択モーダルの開閉
-  const [selectedAmount, setSelectedAmount] = useState<ScTier | null>(null); // 選択された金額情報
 
   const [seekPreviewTime, setSeekPreviewTime] = useState<number | null>(null);
   const seekPreviewTimeRef = useRef<number | null>(null);
@@ -220,17 +200,6 @@ export default function MusicDetailPage({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // 金額を選択したときの処理（デザイン変更用）
-  const handleSelectAmount = (tier: ScTier) => {
-    setSelectedAmount(tier);
-    setShowScModal(false);
-  };
-
-  // スパチャのキャンセル
-  const handleCancelSc = () => {
-    setSelectedAmount(null);
-  };
-
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: cssStyles }} />
@@ -386,61 +355,20 @@ export default function MusicDetailPage({
           {activeTab === "comments" && (
             <div className="commentContainer">
 
-              {/* コメント・スパチャ入力フォーム */}
-              <div className={`commentForm ${selectedAmount ? `formScMode ${selectedAmount.colorClass}` : ""}`}>
-                {selectedAmount && (
-                  <div className="formScHeader">
-                    <span>スーパーチャットを送信中</span>
-                    <div className="formScInfo">
-                      <span className="formScAmount">￥{selectedAmount.amount.toLocaleString()}</span>
-                      <button className="cancelScBtn" onClick={handleCancelSc}>✕</button>
-                    </div>
-                  </div>
-                )}
-
+              {/* コメント入力フォーム */}
+              <div className="commentForm">
                 <div className="inputWrapper">
-                  {!selectedAmount && (
-                    <button
-                      className="scButton"
-                      title="金額を選択する"
-                      onClick={() => setShowScModal(true)}
-                    >
-                      ￥
-                    </button>
-                  )}
                   <input
                     type="text"
-                    placeholder={selectedAmount ? "公開メッセージを追加..." : "コメントを入力..."}
+                    placeholder="コメントを入力..."
                     className="commentInput"
                   />
-                  <button className="sendButton">
-                    {selectedAmount ? "購入" : "送信"}
-                  </button>
+                  <button className="sendButton">送信</button>
                 </div>
               </div>
 
               {/* コメント一覧 */}
               <div className="commentList">
-                <div className="scItem scRed">
-                  <div className="scHeader">
-                    <span className="scUser">たかし_推し活中</span>
-                    <span className="scAmount">￥10,000</span>
-                  </div>
-                  <div className="scContent">
-                    この新曲最高すぎます！！ヘビロテ確定です😭✨
-                  </div>
-                </div>
-
-                <div className="scItem scGreen">
-                  <div className="scHeader">
-                    <span className="scUser">りさ</span>
-                    <span className="scAmount">￥2,000</span>
-                  </div>
-                  <div className="scContent">
-                    サビのメロディラインが本当に綺麗！
-                  </div>
-                </div>
-
                 <div className="commentItem">
                   <div className="commentUserRow">
                     <span className="commentUser">音楽ファンA</span>
@@ -456,29 +384,6 @@ export default function MusicDetailPage({
 
         </div>
       </div>
-
-      {/* スパチャ金額選択モーダル（ポップアップ） */}
-      {showScModal && (
-        <div className="modalOverlay" onClick={() => setShowScModal(false)}>
-          <div className="modalContent" onClick={(e) => e.stopPropagation()}>
-            <div className="modalHeader">
-              <h3>スーパーチャットを選択</h3>
-              <button className="closeModalBtn" onClick={() => setShowScModal(false)}>✕</button>
-            </div>
-            <div className="amountGrid">
-              {SC_TIERS.map((tier) => (
-                <button
-                  key={tier.amount}
-                  className={`amountCard ${tier.colorClass}`}
-                  onClick={() => handleSelectAmount(tier)}
-                >
-                  <span className="gridAmount">￥{tier.amount.toLocaleString()}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 歌詞モーダル */}
       {showLyricsModal && song && (
@@ -745,7 +650,7 @@ const cssStyles = `
   transform: scale(1.2);
 }
 
-/* --- コメント・スパチャ関連 --- */
+/* --- コメント関連 --- */
 .commentContainer {
   margin-top: 14px;
   display: flex;
@@ -774,22 +679,6 @@ const cssStyles = `
   gap: 8px;
 }
 
-.scButton {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #e8447a;
-  color: #fff;
-  border: none;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
 .commentInput {
   flex: 1;
   border: 1px solid #e8d0dc;
@@ -814,39 +703,6 @@ const cssStyles = `
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-}
-
-/* スパチャ選択時の入力欄スタイル */
-.formScMode {
-  padding: 0 0 12px 0;
-}
-.formScHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 12px;
-}
-.formScInfo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.formScAmount {
-  font-size: 14px;
-}
-.cancelScBtn {
-  background: transparent;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  font-size: 14px;
-}
-.formScMode .inputWrapper {
-  padding: 0 12px;
 }
 
 /* リストの余白調整 */
@@ -884,26 +740,6 @@ const cssStyles = `
 .commentText {
   font-size: 14px;
   color: #222;
-  line-height: 1.4;
-}
-
-.scItem {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.scHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  font-weight: 700;
-  font-size: 13px;
-}
-
-.scContent {
-  padding: 10px 14px;
-  font-size: 14px;
   line-height: 1.4;
 }
 
@@ -957,52 +793,4 @@ const cssStyles = `
   cursor: pointer;
 }
 
-.amountGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.amountCard {
-  border: none;
-  border-radius: 10px;
-  padding: 14px 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #fff;
-  transition: transform 0.1s;
-}
-
-.amountCard:active {
-  transform: scale(0.95);
-}
-
-/* スパチャカラー */
-.tierBlue { background: #1565c0; }
-.tierBlue.formScHeader { background: #0d47a1; }
-
-.tierCyan { background: #00b0ff; color: #000 !important; }
-.tierCyan.formScHeader { background: #00b0ff; color: #000 !important; }
-.tierCyan .cancelScBtn { color: #000; }
-
-.tierYellow { background: #ffca28; color: #000 !important; }
-.tierYellow.formScHeader { background: #ffca28; color: #000 !important; }
-.tierYellow .cancelScBtn { color: #000; }
-
-.tierOrange { background: #f57c00; }
-.tierOrange.formScHeader { background: #e65100; }
-
-.tierMagenta { background: #e91e63; }
-.tierMagenta.formScHeader { background: #c2185b; }
-
-.tierRed { background: #e53935; }
-.tierRed.formScHeader { background: #b71c1c; }
-
-.scRed .scHeader { background: #b71c1c; color: #fff; }
-.scRed .scContent { background: #e53935; color: #fff; }
-.scGreen .scHeader { background: #00875a; color: #fff; }
-.scGreen .scContent { background: #24a148; color: #fff; }
 `;
