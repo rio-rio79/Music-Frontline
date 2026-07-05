@@ -39,7 +39,7 @@ export default async function TipPage() {
   ]);
 
   if (profileResult.error || juniorsResult.error || historyResult.error) {
-    throw new Error("スーパーチャットの送信先情報を取得できませんでした。");
+    throw new Error("ファンレターの送信先情報を取得できませんでした。");
   }
 
   const juniors: TipJunior[] = (juniorsResult.data ?? []).map((junior) => ({
