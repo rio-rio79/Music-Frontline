@@ -313,7 +313,7 @@ export type Database = {
           id: string
           name: string
           oshi_junior_id: string | null
-          plan_id: string | null
+          plan_id: string
           updated_at: string
         }
         Insert: {
@@ -321,7 +321,7 @@ export type Database = {
           id: string
           name?: string
           oshi_junior_id?: string | null
-          plan_id?: string | null
+          plan_id?: string
           updated_at?: string
         }
         Update: {
@@ -329,7 +329,7 @@ export type Database = {
           id?: string
           name?: string
           oshi_junior_id?: string | null
-          plan_id?: string | null
+          plan_id?: string
           updated_at?: string
         }
         Relationships: [
