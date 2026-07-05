@@ -783,6 +783,10 @@ export type Database = {
       change_membership_plan: { Args: { p_plan_id: string }; Returns: Json }
       increment_blog_view: { Args: { blog_id: string }; Returns: undefined }
       increment_play_count: { Args: { song_id: string }; Returns: undefined }
+      send_fan_letter: {
+        Args: { p_amount: number; p_junior_id: string; p_message: string }
+        Returns: Json
+      }
       set_oshi_junior: { Args: { p_junior_id: string }; Returns: Json }
       sync_blog_comment_points: {
         Args: { p_blog_post_id: string }
