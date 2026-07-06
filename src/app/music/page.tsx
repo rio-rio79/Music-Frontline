@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MusicList from "../components/MusicList/MusicList";
-import { type Song } from "../stores/playerStore";
+import MusicList from "../../components/MusicList/MusicList";
+import { type Song } from "../../stores/playerStore";
 import styles from "./MyComponent.module.css"; // スタイルのインポート
 
-export default function Top() {
+export default function Music() {
     const [songs, setSongs] = useState<Song[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -48,11 +48,6 @@ export default function Top() {
 
     return (
         <section className={styles.container}>
-            <h1>
-                トップページに差し替えるかも！！
-            </h1>
-
-
             {/* 検索ボックスとドロップダウンのラッパー */}
             <div className={styles.searchContainer}>
                 {/* 右上のドロップダウンリスト */}
