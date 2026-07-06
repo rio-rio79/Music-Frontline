@@ -7,7 +7,7 @@ import { useLikeStore } from "../../../stores/likeStore"; // いいねストア�
 import { GraySmallHeart, ThmbSvg, GraySmallPlayMusic, SkipBack, SkipForward, StartMusic, StopMusic } from "@/components/Svgs";
 
 type MusicDetailPageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ songId: string }>;
 };
 
 type TabType = "info" | "comments";
@@ -15,7 +15,7 @@ type TabType = "info" | "comments";
 export default function MusicDetailPage({
   params,
 }: MusicDetailPageProps) {
-  const { id } = use(params);
+  const { songId } = use(params);
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>("comments");
 
@@ -75,23 +75,23 @@ export default function MusicDetailPage({
 
   useEffect(() => {
     // 既に表示されている曲とURLの id が同じであればスキップ
-    if (song && song.id === id) return;
+    if (song && song.id === songId) return;
 
     const controller = new AbortController();
 
-    if (currentSong && currentSong.id === id) {
+    if (currentSong && currentSong.id === songId) {
       setSong(currentSong);
       setLoading(false);
-      fetchSongDetail(id, true, controller.signal); // バックグラウンドで詳細をフェッチ
+      fetchSongDetail(songId, true, controller.signal); // バックグラウンドで詳細をフェッチ
     } else {
-      fetchSongDetail(id, false, controller.signal); // 通常のフェッチ
+      fetchSongDetail(songId, false, controller.signal); // 通常のフェッチ
     }
     fetchLikes();
 
     return () => {
       controller.abort();
     };
-  }, [id, fetchLikes]);
+  }, [songId, fetchLikes]);
 
   const prevCurrentSongIdRef = useRef<string | null>(null);
   useEffect(() => {
