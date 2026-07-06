@@ -9,7 +9,7 @@ export default async function BlogDetailPage({
 }: BlogDetailPageProps) {
     const { id } = await params;
 
-    const post = posts.find((post) => post.id === Number(id));
+    const post = posts.find((post) => post.id === id);
 
     return (
         <section>

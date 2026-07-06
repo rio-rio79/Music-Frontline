@@ -1,14 +1,14 @@
 import { createSupabaseServer } from '@/lib/supabase-server'
 
 type RouteContext = {
-    params: Promise<{ id: string }>
+    params: Promise<{ songId: string }>
 }
 
 export async function GET(request: Request, context: RouteContext) {
     try {
-        const { id } = await context.params
+        const { songId } = await context.params
 
-        if (!id) {
+        if (!songId) {
             return Response.json({ error: '楽曲IDが必要です。' }, { status: 400 })
         }
 
@@ -37,7 +37,7 @@ export async function GET(request: Request, context: RouteContext) {
                     )
                 )
             `)
-            .eq('id', id)
+            .eq('id', songId)
             .single()
 
         if (error) {
@@ -85,7 +85,7 @@ export async function GET(request: Request, context: RouteContext) {
         const { count: likesCount } = await supabase
             .from('song_likes')
             .select('*', { count: 'exact', head: true })
-            .eq('song_id', id)
+            .eq('song_id', songId)
 
         // ログインユーザーのいいね状態の取得
         let isLiked = false
@@ -95,7 +95,7 @@ export async function GET(request: Request, context: RouteContext) {
                 .from('song_likes')
                 .select('id')
                 .eq('user_id', user.id)
-                .eq('song_id', id)
+                .eq('song_id', songId)
                 .maybeSingle()
             if (existingLike) {
                 isLiked = true

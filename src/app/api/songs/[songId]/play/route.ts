@@ -1,14 +1,14 @@
 import { createSupabaseServer } from '@/lib/supabase-server'
 
 type RouteContext = {
-    params: Promise<{ id: string }>
+    params: Promise<{ songId: string }>
 }
 
 export async function POST(request: Request, context: RouteContext) {
     try {
-        const { id } = await context.params
+        const { songId } = await context.params
 
-        if (!id) {
+        if (!songId) {
             return Response.json({ error: '楽曲IDが必要です。' }, { status: 400 })
         }
 
@@ -31,7 +31,7 @@ export async function POST(request: Request, context: RouteContext) {
             .from('support_point_logs')
             .select('*', { count: 'exact', head: true })
             .eq('user_id', user.id)
-            .eq('source_id', id)
+            .eq('source_id', songId)
             .eq('action_type', 'play')
             .gte('created_at', todayIso)
 
@@ -47,7 +47,7 @@ export async function POST(request: Request, context: RouteContext) {
 
         // Supabase の RPC で再生回数をインクリメント
         const { error } = await supabase.rpc('increment_play_count', {
-            song_id: id,
+            song_id: songId,
         })
 
         if (error) {
@@ -59,7 +59,7 @@ export async function POST(request: Request, context: RouteContext) {
         const { data: songJuniors } = await supabase
             .from('song_juniors')
             .select('junior_id')
-            .eq('song_id', id)
+            .eq('song_id', songId)
             .limit(1)
 
         if (songJuniors && songJuniors.length > 0) {
@@ -71,7 +71,7 @@ export async function POST(request: Request, context: RouteContext) {
                     junior_id: juniorId,
                     action_type: 'play',
                     source_type: 'song',
-                    source_id: id,
+                    source_id: songId,
                     points: 1
                 })
 
