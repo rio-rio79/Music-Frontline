@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import styles from "./JuniorList.module.css";
+import { Heart } from "@/components/Svgs";
+import { useLikeStore } from "@/stores/likeStore";
 
 // グラデーションの定義（oshi_list.html から移植）
 const gradients = [
@@ -67,6 +69,15 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
   const [groups, setGroups] = useState<GroupItem[]>(initialGroups);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const fetchJuniorLikes = useLikeStore((state) => state.fetchJuniorLikes);
+  const toggleJuniorLike = useLikeStore((state) => state.toggleJuniorLike);
+  const likedJuniorIds = useLikeStore((state) => state.likedJuniorIds);
+
+  // 初回マウント時にお気に入り情報を取得
+  useEffect(() => {
+    fetchJuniorLikes();
+  }, [fetchJuniorLikes]);
 
   // マウント後のAPI再取得判定用（初回読み込み時はサーバーサイドから渡された initial データを表示）
   const isFirstRender = useRef(true);
@@ -204,7 +215,18 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
                     <span className={styles.cardPoints}>
                       推しポイント <b>{junior.score.toLocaleString()}pt</b>
                     </span>
-                    {heartIconSvg}
+                    <button
+                      type="button"
+                      className={styles.heartBtn}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleJuniorLike(junior.id);
+                      }}
+                      aria-label="お気に入り登録・解除"
+                    >
+                      <Heart filled={likedJuniorIds.includes(junior.id)} />
+                    </button>
                   </div>
                 </Link>
               );

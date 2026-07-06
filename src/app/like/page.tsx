@@ -78,15 +78,20 @@ export default function Like() {
     const [activeTab, setActiveTab] = useState<TabKey>("music");
 
     const likedSongs = useLikeStore((state) => state.likedSongs);
+    const likedJuniors = useLikeStore((state) => state.likedJuniors);
     const loading = useLikeStore((state) => state.loading);
     const isLoggedIn = useLikeStore((state) => state.isLoggedIn);
     const fetchLikes = useLikeStore((state) => state.fetchLikes);
+    const fetchJuniorLikes = useLikeStore((state) => state.fetchJuniorLikes);
+    const toggleJuniorLike = useLikeStore((state) => state.toggleJuniorLike);
 
     useEffect(() => {
         if (activeTab === "music") {
             fetchLikes();
+        } else if (activeTab === "idol") {
+            fetchJuniorLikes();
         }
-    }, [activeTab, fetchLikes]);
+    }, [activeTab, fetchLikes, fetchJuniorLikes]);
 
     const current = TABS.find((t) => t.key === activeTab)!;
 
@@ -121,8 +126,8 @@ export default function Like() {
                     <div className="like-empty-note">いいねしたブログはありません。</div>
                 );
             case "idol":
-                return idles.length > 0 ? (
-                    <IdleList idles={idles} />
+                return likedJuniors.length > 0 ? (
+                    <IdleList idles={likedJuniors} onToggleLike={toggleJuniorLike} />
                 ) : (
                     <div className="like-empty-note">いいねしたアイドルはありません。</div>
                 );

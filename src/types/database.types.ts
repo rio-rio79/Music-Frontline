@@ -797,6 +797,7 @@ export type Database = {
       sync_oshi_points: { Args: never; Returns: Json }
       sync_song_comment_points: { Args: { p_song_id: string }; Returns: Json }
       sync_song_like_points: { Args: { p_song_id: string }; Returns: Json }
+      toggle_follow_junior: { Args: { p_junior_id: string }; Returns: Json }
     }
     Enums: {
       [_ in never]: never

@@ -1,38 +1,50 @@
 "use client";
 
 import { Heart, YajirushiSvg } from "../Svgs";
-
-export type Idle = {
-  id: string;
-  name: string;
-  nameRoma: string;
-  thumbnailUrl?: string;
-};
+import { type JuniorLikeItem, useLikeStore } from "@/stores/likeStore";
 
 type IdleListProps = {
-  idles: Idle[];
+  idles: JuniorLikeItem[];
+  onToggleLike?: (id: string) => void;
 };
 
-export default function IdleList({ idles }: IdleListProps) {
+export default function IdleList({ idles, onToggleLike }: IdleListProps) {
+  const likedJuniorIds = useLikeStore((state) => state.likedJuniorIds);
+
   return (
     <ul className="idle-list">
       {idles.map((idle) => (
         <li key={idle.id} className="idle-list__item">
-          <a href={`/idle/${idle.id}`} className="idle-list__link">
+          <a href={`/junior/${idle.id}`} className="idle-list__link">
             <div className="idle-list__thumb">
-              {idle.thumbnailUrl && (
-                <img src={idle.thumbnailUrl} alt={idle.name} />
+              {idle.imageUrl && (
+                <img src={idle.imageUrl} alt={idle.name} />
               )}
             </div>
 
             <div className="idle-list__body">
               <p className="idle-list__name">{idle.name}</p>
-              <div className="idle-list__meta">
-                <span className="idle-list__nameRoma">{idle.nameRoma}</span>
-              </div>
+              {idle.groupName && (
+                <div className="idle-list__meta">
+                  <span className="idle-list__nameRoma">{idle.groupName}</span>
+                </div>
+              )}
             </div>
 
-            <Heart/>
+            <button
+              type="button"
+              className="idle-list__heart-btn"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (onToggleLike) {
+                  onToggleLike(idle.id);
+                }
+              }}
+              aria-label="お気に入り解除"
+            >
+              <Heart filled={likedJuniorIds.includes(idle.id)} />
+            </button>
             <YajirushiSvg/>
           </a>
         </li>
@@ -104,12 +116,19 @@ export default function IdleList({ idles }: IdleListProps) {
           color: #999;
         }
 
-        .idle-list__category {
-          font-size: 12px;
-          color: #d4537e;
-          background: #fbeaf0;
-          padding: 2px 10px;
-          border-radius: 10px;
+        .idle-list__heart-btn {
+          background: none;
+          border: none;
+          padding: 4px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.2s;
+        }
+
+        .idle-list__heart-btn:hover {
+          transform: scale(1.1);
         }
 
         .idle-list__chevron {
