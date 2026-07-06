@@ -157,11 +157,11 @@ export default function GiftPanel({ breakdown }: GiftPanelProps) {
                                     <path d="M58 70 L165 40 L165 112 Z" fill="#ffd6e7" opacity="0.5"/>
                                     <g opacity="0.5">
                                         <path d="M85 64 L92 80" stroke="#ffffff" strokeWidth="5"/>
-                                        <path d="M115 56 L122 73" stroke="#ffffff" stroke-width="5"/>
-                                        <path d="M148 47 L155 65" stroke="#ffffff" stroke-width="5"/>
-                                        <path d="M182 50 L188 67" stroke="#ffffff" stroke-width="5"/>
-                                        <path d="M215 60 L221 77" stroke="#ffffff" stroke-width="5"/>
-                                        <path d="M248 70 L253 86" stroke="#ffffff" stroke-width="5"/>
+                                        <path d="M115 56 L122 73" stroke="#ffffff" strokeWidth="5"/>
+                                        <path d="M148 47 L155 65" stroke="#ffffff" strokeWidth="5"/>
+                                        <path d="M182 50 L188 67" stroke="#ffffff" strokeWidth="5"/>
+                                        <path d="M215 60 L221 77" stroke="#ffffff" strokeWidth="5"/>
+                                        <path d="M248 70 L253 86" stroke="#ffffff" strokeWidth="5"/>
                                     </g>
                                     <path d="M58 70 L165 40 L280 78 L165 112 Z" fill="none" stroke="#ff8fb6" strokeWidth="3" strokeLinejoin="round"/>
                                 </g>
