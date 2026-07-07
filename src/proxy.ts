@@ -16,9 +16,10 @@ export async function proxy(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    // 認証されていないユーザーは、/login 以外のページにアクセスした場合に /login へリダイレクト
+    // 認証されていないユーザーでも、ブログ一覧と詳細は案内表示のため公開する。
     const { pathname } = request.nextUrl
-    if (pathname !== '/login' && !user) {
+    const isPublicBlogRoute = pathname === '/blog' || pathname.startsWith('/blog/')
+    if (pathname !== '/login' && !isPublicBlogRoute && !user) {
         const loginUrl = new URL('/login', request.url)
         return NextResponse.redirect(loginUrl)
     }
