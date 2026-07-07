@@ -239,7 +239,7 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
               };
 
               return (
-                <div key={group.id} className={styles.card}>
+                <Link href={`/group/${group.id}`} key={group.id} className={styles.card}>
                   <div className={styles.cardPhoto} style={group.imageUrl ? undefined : gradientStyle}>
                     {group.imageUrl ? (
                       <img src={group.imageUrl} alt={group.name} />
@@ -253,7 +253,7 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
                       {group.description || "グループ"}
                     </span>
                   </div>
-                </div>
+                </Link>
               );
             })
           )}

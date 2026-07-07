@@ -1,0 +1,288 @@
+.page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 32px 32px 80px;
+}
+
+/* ===== Group photo ===== */
+.groupPhoto {
+  position: relative;
+  height: 320px;
+  margin-bottom: 32px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.groupPhotoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.groupPhotoPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+}
+
+.groupPhotoPlaceholder svg {
+  width: 80px;
+  height: 80px;
+  color: #fff;
+}
+
+.groupDescription {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink, #1a1a1a);
+  margin-bottom: 44px;
+  padding: 0 4px;
+}
+
+/* ===== Section titles ===== */
+.sectionTitle {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  margin: 0 0 4px;
+}
+
+.sectionTitleUnderline {
+  width: 36px;
+  height: 3px;
+  background: var(--pink, #FF4B91);
+  border-radius: 2px;
+  margin-bottom: 22px;
+}
+
+.groupTitle {
+  font-size: 32px;
+}
+
+/* ===== Members ===== */
+.memberGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.memberCard {
+  border: 1px solid var(--line, #ececec);
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.memberCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.mAvatar {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mAvatar svg {
+  width: 58%;
+  height: 58%;
+  color: #fff;
+  opacity: .92;
+}
+
+.mInfo {
+  min-width: 0;
+}
+
+.mName {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mRomaji {
+  font-size: 12px;
+  color: var(--sub, #8a8a8a);
+}
+
+.noMembers {
+  text-align: center;
+  font-size: 16px;
+  color: var(--sub, #8a8a8a);
+  grid-column: 1 / -1;
+  margin: 24px 0;
+}
+
+/* ===== Music (reuses styles from JuniorDetail.module.css) ===== */
+.trackList {
+  border-top: 1px solid var(--line, #ececec);
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 4px;
+  border-bottom: 1px solid var(--line, #ececec);
+}
+
+.trackArt {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  object-fit: cover;
+}
+
+.art1 {
+  background: linear-gradient(160deg, #f7c9d9, #e28aa8 60%, #8a5c78);
+}
+
+.art2 {
+  background: linear-gradient(160deg, #cfe8f7, #7fb8e0 60%, #3a6b93);
+}
+
+.art3 {
+  background: linear-gradient(160deg, #26314f, #0d1220 70%);
+}
+
+.art4 {
+  background: linear-gradient(160deg, #ffd9c2, #f2a98f 55%, #d9748f);
+}
+
+.trackMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.trackTitle {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trackLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.trackLink:hover {
+  text-decoration: underline;
+}
+
+.trackArtist {
+  font-size: 13px;
+  color: var(--sub, #8a8a8a);
+}
+
+.trackActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.likeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  transition: transform .15s ease;
+  padding: 0;
+}
+
+.likeBtn:hover {
+  transform: scale(1.1);
+}
+
+.playBtn {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--pink-soft, #FFE3EF);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .2s ease, transform .15s ease;
+  padding: 0;
+}
+
+.playBtn:hover {
+  background: var(--pink, #FF4B91);
+  transform: scale(1.05);
+}
+
+.playBtn:hover svg {
+  fill: #fff;
+}
+
+.playBtn svg {
+  fill: var(--pink, #FF4B91);
+  width: 16px;
+  height: 16px;
+  transition: fill .2s ease;
+}
+
+.playBtn svg.playIcon {
+  margin-left: 2px;
+}
+
+.noMusic {
+  text-align: center;
+  font-size: 16px;
+  color: var(--sub, #8a8a8a);
+  margin-top: 24px;
+}
+
+@media (max-width: 560px) {
+  .page {
+    padding: 20px;
+  }
+
+  .groupPhoto {
+    height: 200px;
+  }
+
+  .memberGrid {
+    grid-template-columns: 1fr;
+  }
+}
