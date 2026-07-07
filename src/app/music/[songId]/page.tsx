@@ -1,765 +1,169 @@
-"use client"; // フックを使用するためクライアントコンポーネントにします
-
-import { useRef, useState, use, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { type Song, usePlayerStore } from "../../../stores/playerStore"; // ストアをインポート
-import { useLikeStore } from "../../../stores/likeStore"; // いいねストアを追加
-import { GraySmallHeart, ThmbSvg, GraySmallPlayMusic, SkipBack, SkipForward, StartMusic, StopMusic } from "@/components/Svgs";
+import { createSupabaseServer } from "@/lib/supabase-server";
+import { notFound } from "next/navigation";
+import MusicDetailClient from "./MusicDetailClient";
 
 type MusicDetailPageProps = {
   params: Promise<{ songId: string }>;
 };
 
-type TabType = "info" | "comments";
-
-export default function MusicDetailPage({
+export default async function MusicDetailPage({
   params,
 }: MusicDetailPageProps) {
-  const { songId } = use(params);
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState<TabType>("comments");
-
-  const [song, setSong] = useState<Song | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [likesCount, setLikesCount] = useState<number>(0);
-  const [showLyricsModal, setShowLyricsModal] = useState<boolean>(false);
-
-  const [seekPreviewTime, setSeekPreviewTime] = useState<number | null>(null);
-  const seekPreviewTimeRef = useRef<number | null>(null);
-
-  const currentSong = usePlayerStore((state) => state.currentSong);
-  const isPlaying = usePlayerStore((state) => state.isPlaying);
-  const currentTime = usePlayerStore((state) => state.currentTime);
-  const duration = usePlayerStore((state) => state.duration);
-  const togglePlay = usePlayerStore((state) => state.togglePlay);
-  const playSong = usePlayerStore((state) => state.playSong);
-  const previous = usePlayerStore((state) => state.previous);
-  const next = usePlayerStore((state) => state.next);
-  const requestSeek = usePlayerStore((state) => state.requestSeek);
-
-  const likedSongIds = useLikeStore((state) => state.likedSongIds);
-  const toggleLikeStore = useLikeStore((state) => state.toggleLike);
-  const fetchLikes = useLikeStore((state) => state.fetchLikes);
-  const isLoggedIn = useLikeStore((state) => state.isLoggedIn);
-
-  // 楽曲データをフェッチする共通関数
-  const fetchSongDetail = async (songId: string, isSilent: boolean = false, signal?: AbortSignal) => {
-    if (!isSilent) {
-      setLoading(true);
-    }
-    try {
-      const res = await fetch(`/api/songs/${songId}`, { signal });
-      if (!res.ok) {
-        throw new Error("楽曲の取得に失敗しました。");
-      }
-      const data = await res.json();
-      setSong(data.song);
-      setLikesCount(data.song.likesCount || 0);
-      setError(null);
-    } catch (err: any) {
-      if (err.name === "AbortError") {
-        // フェッチがキャンセルされた場合は、Stateの更新を行わずに終了します
-        return;
-      }
-      if (!isSilent) {
-        setError(err.message || "エラーが発生しました。");
-      }
-    } finally {
-      if (!isSilent) {
-        setLoading(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    // 既に表示されている曲とURLの id が同じであればスキップ
-    if (song && song.id === songId) return;
-
-    const controller = new AbortController();
-
-    if (currentSong && currentSong.id === songId) {
-      setSong(currentSong);
-      setLoading(false);
-      fetchSongDetail(songId, true, controller.signal); // バックグラウンドで詳細をフェッチ
-    } else {
-      fetchSongDetail(songId, false, controller.signal); // 通常のフェッチ
-    }
-    fetchLikes();
-
-    return () => {
-      controller.abort();
-    };
-  }, [songId, fetchLikes]);
-
-  const prevCurrentSongIdRef = useRef<string | null>(null);
-  useEffect(() => {
-    let controller: AbortController | null = null;
-
-    if (currentSong && song && prevCurrentSongIdRef.current === song.id && currentSong.id !== song.id) {
-      // 1. まず UI に現在のプレイヤーの曲情報を即座に反映（ラグをゼロに）
-      setSong(currentSong);
-      
-      // 2. URLを更新
-      router.replace(`/music/${currentSong.id}`);
-      
-      // 3. バックグラウンドで残りの詳細情報（歌詞、コメントなど）をフェッチ
-      controller = new AbortController();
-      fetchSongDetail(currentSong.id, true, controller.signal);
-    }
-    prevCurrentSongIdRef.current = currentSong?.id ?? null;
-
-    return () => {
-      if (controller) {
-        controller.abort();
-      }
-    };
-  }, [currentSong, song, router]);
-
-  const isLiked = song ? likedSongIds.includes(song.id) : false;
-
-  const handleLikeToggle = async () => {
-    if (!song) return;
-    if (!isLoggedIn) {
-      alert("いいねするにはログインが必要です。");
-      return;
-    }
-    const newLiked = await toggleLikeStore(song.id);
-    if (newLiked !== null) {
-      setLikesCount((prev) => (newLiked ? prev + 1 : Math.max(0, prev - 1)));
-    }
-  };
-
-  if (loading) {
-    return (
-      <>
-        <style dangerouslySetInnerHTML={{ __html: cssStyles }} />
-        <section className="notFoundSection">
-          <h1>読み込み中...</h1>
-        </section>
-      </>
-    );
+  const { songId } = await params;
+  if (!songId) {
+    notFound();
   }
 
-  if (error || !song) {
-    return (
-      <>
-        <style dangerouslySetInnerHTML={{ __html: cssStyles }} />
-        <section className="notFoundSection">
-          <h1>{error || "楽曲が見つかりません"}</h1>
-        </section>
-      </>
-    );
+  const supabase = await createSupabaseServer();
+
+  // 1. 楽曲データのフェッチ
+  const { data: song, error: songError } = await supabase
+    .from("songs")
+    .select(`
+        id,
+        title,
+        audio_path,
+        image_path,
+        play_count,
+        published_at,
+        lyricist,
+        composer,
+        lyrics,
+        song_juniors (
+            junior_id,
+            juniors (
+                name
+            ),
+            group_id,
+            groups (
+                name
+            )
+        )
+    `)
+    .eq("id", songId)
+    .single();
+
+  if (songError || !song) {
+    notFound();
   }
 
-  const isCurrentSong = currentSong?.id === song.id;
-  const isCurrentPlaying = isCurrentSong && isPlaying;
+  // 2. コメントデータのフェッチ
+  const { data: comments, error: commentsError } = await supabase
+    .from("song_comments")
+    .select(`
+        id,
+        body,
+        created_at,
+        user_id,
+        profiles (
+            name
+        )
+    `)
+    .eq("song_id", songId)
+    .order("created_at", { ascending: false });
 
-  const handlePlay = () => {
-    if (isCurrentSong) {
-      togglePlay();
-      return;
+  if (commentsError) {
+    throw new Error(commentsError.message);
+  }
+
+  // 3. ログインユーザーの取得
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let isLiked = false;
+  if (user) {
+    const { data: existingLike } = await supabase
+      .from("song_likes")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("song_id", songId)
+      .maybeSingle();
+    if (existingLike) {
+      isLiked = true;
     }
-    playSong(song);
+  }
+
+  // グループ情報とジュニア情報の解決
+  let songGroups: string[] = [];
+  let songJuniors: string[] = [];
+  let groupsDetail: { id: string; name: string }[] = [];
+  let juniorsDetail: { id: string; name: string }[] = [];
+
+  if (song.song_juniors && song.song_juniors.length > 0) {
+    const groupMap = new Map<string, string>();
+    const juniorMap = new Map<string, string>();
+
+    song.song_juniors.forEach((sj) => {
+      if (sj.group_id && sj.groups?.name) {
+        groupMap.set(sj.group_id, sj.groups.name);
+      }
+      if (sj.junior_id && sj.juniors?.name) {
+        juniorMap.set(sj.junior_id, sj.juniors.name);
+      }
+    });
+
+    groupsDetail = Array.from(groupMap.entries()).map(([id, name]) => ({ id, name }));
+    juniorsDetail = Array.from(juniorMap.entries()).map(([id, name]) => ({ id, name }));
+
+    songGroups = groupsDetail.map((g) => g.name);
+    songJuniors = juniorsDetail.map((j) => j.name);
+  }
+
+  const artistName = songGroups.length > 0 ? songGroups.join(", ") : (songJuniors.length > 0 ? songJuniors.join(", ") : "アーティスト名");
+
+  // audio_path の解決
+  let audioFilePath = song.audio_path || "";
+  if (audioFilePath && !audioFilePath.startsWith("http") && !audioFilePath.startsWith("/")) {
+    const { data } = supabase.storage.from("audio").getPublicUrl(audioFilePath);
+    audioFilePath = data.publicUrl;
+  }
+
+  // image_path の解決
+  let imagePath = song.image_path || "/music_cover_img.png";
+  if (imagePath && !imagePath.startsWith("http") && !imagePath.startsWith("/")) {
+    const { data } = supabase.storage.from("images").getPublicUrl(imagePath);
+    imagePath = data.publicUrl;
+  }
+
+  // 総いいね数の取得
+  const { count: likesCount } = await supabase
+    .from("song_likes")
+    .select("*", { count: "exact", head: true })
+    .eq("song_id", songId);
+
+  const formattedSong = {
+    id: song.id,
+    title: song.title,
+    audioFilePath,
+    imagePath,
+    artistName,
+    playCount: song.play_count,
+    publishedAt: song.published_at,
+    juniors: songJuniors,
+    groups: songGroups,
+    lyricist: song.lyricist,
+    composer: song.composer,
+    lyrics: song.lyrics,
+    likesCount: likesCount || 0,
+    isLiked,
   };
 
-  const updateSeekPreview = (time: number) => {
-    const safeTime = Math.max(0, Math.min(time, duration));
-    seekPreviewTimeRef.current = safeTime;
-    setSeekPreviewTime(safeTime);
-  };
-
-  const commitSeek = () => {
-    const time = seekPreviewTimeRef.current;
-    if (time === null) return;
-    requestSeek(time);
-    seekPreviewTimeRef.current = null;
-    setSeekPreviewTime(null);
-  };
-
-  const cancelSeek = () => {
-    seekPreviewTimeRef.current = null;
-    setSeekPreviewTime(null);
-  };
-
-  const handleSeekChange = (time: number) => {
-    if (seekPreviewTimeRef.current !== null) {
-      updateSeekPreview(time);
-      return;
-    }
-    requestSeek(time);
-  };
-
-  const displayedTime = seekPreviewTime ?? currentTime;
-
-  const formatTime = (seconds: number) => {
-    if (isNaN(seconds)) return "0:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
+  const formattedComments = (comments || []).map((c: any) => ({
+    id: c.id,
+    body: c.body,
+    createdAt: c.created_at,
+    userId: c.user_id,
+    userName: c.profiles?.name || "ユーザー",
+    canDelete: user ? c.user_id === user.id : false,
+  }));
 
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: cssStyles }} />
-
-      <div className="bodyWrapper">
-        <div className="content">
-
-          {/* Main Player Card */}
-          <div className="mainCard">
-            <button className="lyricBtn" onClick={() => setShowLyricsModal(true)}>歌詞表示</button>
-
-            <div className="topRow">
-              <div className="musicImg">
-                {song.imagePath ? (
-                  <img src={song.imagePath} alt={song.title} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "10px" }} />
-                ) : (
-                  <ThmbSvg />
-                )}
-              </div>
-
-              <div className="trackInfo">
-                <div className="trackTitle">{song.title}</div>
-                <div className="trackArtist">{song.artistName}</div>
-                <div className="trackMeta">
-                  <div className="metaItem">
-                    <GraySmallPlayMusic />
-                    {song.playCount?.toLocaleString() || 0}
-                  </div>
-                  <button
-                    className="metaItem"
-                    onClick={handleLikeToggle}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
-                    aria-label="いいね"
-                  >
-                    <GraySmallHeart color={isLiked ? "#E8447A" : "#888"} filled={isLiked} />
-                    {likesCount.toLocaleString()}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* コントロール */}
-            <div className="controls">
-              <div className="ctrlBtn" onClick={previous} style={{ cursor: "pointer" }}>
-                <SkipBack />
-              </div>
-
-              <div
-                className="playBtn"
-                onClick={handlePlay}
-                style={{ cursor: "pointer" }}
-                role="button"
-                aria-label={`${song.title}を${isCurrentPlaying ? "一時停止" : "再生"}`}
-              >
-                {isCurrentPlaying ? <StopMusic color="white" /> : <StartMusic color="white" />}
-              </div>
-
-              <div className="ctrlBtn" onClick={next} style={{ cursor: "pointer" }}>
-                <SkipForward />
-              </div>
-            </div>
-
-            {/* タブ */}
-            <div className="tabs">
-              <div
-                className={`tab ${activeTab === "info" ? "active" : ""}`}
-                onClick={() => setActiveTab("info")}
-              >
-                楽曲情報
-              </div>
-              <div
-                className={`tab ${activeTab === "comments" ? "active" : ""}`}
-                onClick={() => setActiveTab("comments")}
-              >
-                コメント
-              </div>
-            </div>
-          </div>
-
-          {/* 楽曲情報タブ */}
-          {activeTab === "info" && (
-            <div className="infoCard">
-              <div className="infoRow">
-                <div className="infoLbl">作詞者</div>
-                <div className="infoVal">{song.lyricist || "不明"}</div>
-              </div>
-              <div className="infoRow">
-                <div className="infoLbl">作曲者</div>
-                <div className="infoVal">{song.composer || "不明"}</div>
-              </div>
-              <div className="infoRow">
-                <div className="infoLbl">グループ / メンバー</div>
-                <div className="genreTags">
-                  {song.groups?.map((g) => (
-                    <span key={g} className="genreTag">{g}</span>
-                  ))}
-                  {song.juniors?.map((j) => (
-                    <span key={j} className="genreTag">{j}</span>
-                  ))}
-                  {(!song.groups?.length && !song.juniors?.length) && (
-                    <span className="genreTag">情報なし</span>
-                  )}
-                </div>
-              </div>
-              <div className="infoRow">
-                <div className="infoLbl">初公開</div>
-                <div className="infoVal">
-                  {song.publishedAt ? (() => {
-                    const d = new Date(song.publishedAt);
-                    return isNaN(d.getTime()) ? song.publishedAt : `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
-                  })() : "不明"}
-                </div>
-              </div>
-              <div className="infoRow">
-                <div className="infoLbl">再生回数</div>
-                <div className="infoVal">{song.playCount?.toLocaleString() || 0}回</div>
-              </div>
-            </div>
-          )}
-
-          {/* コメントタブ */}
-          {activeTab === "comments" && (
-            <div className="commentContainer">
-
-              {/* コメント入力フォーム */}
-              <div className="commentForm">
-                <div className="inputWrapper">
-                  <input
-                    type="text"
-                    placeholder="コメントを入力..."
-                    className="commentInput"
-                  />
-                  <button className="sendButton">送信</button>
-                </div>
-              </div>
-
-              {/* コメント一覧 */}
-              <div className="commentList">
-                <div className="commentItem">
-                  <div className="commentUserRow">
-                    <span className="commentUser">音楽ファンA</span>
-                    <span className="commentTime">2時間前</span>
-                  </div>
-                  <div className="commentText">
-                    ダンスの振り付け動画も早く見たいな〜。
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-        </div>
-      </div>
-
-      {/* 歌詞モーダル */}
-      {showLyricsModal && song && (
-        <div className="modalOverlay" onClick={() => setShowLyricsModal(false)}>
-          <div className="modalContent" onClick={(e) => e.stopPropagation()} style={{ maxHeight: "80vh", overflowY: "auto", display: "flex", flexDirection: "column" }}>
-            <div className="modalHeader">
-              <h3>{song.title} - 歌詞</h3>
-              <button className="closeModalBtn" onClick={() => setShowLyricsModal(false)}>✕</button>
-            </div>
-            <div style={{ whiteSpace: "pre-wrap", lineHeight: "1.8", textAlign: "center", padding: "10px 0", color: "#333", fontSize: "15px", flex: 1, overflowY: "auto" }}>
-              {song.lyrics || "歌詞データが登録されていません。"}
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+    <MusicDetailClient
+      key={songId}
+      song={formattedSong}
+      initialComments={formattedComments}
+      currentUserId={user ? user.id : null}
+      groupsDetail={groupsDetail}
+      juniorsDetail={juniorsDetail}
+    />
   );
 }
-
-// スタイル定義の文字列
-const cssStyles = `
-.notFoundSection {
-  padding: 20px;
-  text-align: center;
-}
-
-.bodyWrapper {
-  font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
-  color: #1a1a2e;
-  min-height: 100vh;
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-.content {
-  padding: 0 14px 24px;
-}
-
-.mainCard {
-  background: #fff;
-  border: 1px solid #f0d8e8;
-  border-radius: 14px;
-  padding: 18px 16px 20px;
-  position: relative;
-}
-
-.lyricBtn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: #fff;
-  border: 1.5px solid #ddd;
-  border-radius: 8px;
-  padding: 6px 14px;
-  font-size: 12px;
-  color: #444;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.topRow {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
-
-.musicImg {
-  width: 130px;
-  height: 130px;
-  flex-shrink: 0;
-  background: #ffe8f2;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.trackInfo {
-  flex: 1;
-  padding-top: 28px;
-}
-
-.trackTitle {
-  font-size: 17px;
-  font-weight: 700;
-  margin-bottom: 5px;
-}
-
-.trackArtist {
-  font-size: 12px;
-  color: #777;
-  margin-bottom: 10px;
-}
-
-.trackMeta {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-
-.metaItem {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 13px;
-  color: #888;
-}
-
-.playerProgress {
-  margin-bottom: 6px;
-}
-
-.timeBar {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 6px;
-  background: #ffe3f1;
-  border-radius: 3px;
-  outline: none;
-  margin-bottom: 6px;
-}
-
-.timeLabels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: #aaa;
-}
-
-.controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 40px;
-  padding: 18px 0 6px;
-}
-
-.ctrlBtn {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.playBtn {
-  width: 54px;
-  height: 54px;
-  background: #e8447a;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.tabs {
-  display: flex;
-  border-bottom: 1.5px solid #e8d0dc;
-  margin: 20px 0 0;
-}
-
-.tab {
-  flex: 1;
-  text-align: center;
-  padding: 12px 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: #aaa;
-  cursor: pointer;
-  position: relative;
-}
-
-.tab.active {
-  color: #e8447a;
-  font-weight: 700;
-}
-
-.tab.active::after {
-  content: "";
-  position: absolute;
-  bottom: -1.5px;
-  left: 0;
-  right: 0;
-  height: 2.5px;
-  background: #e8447a;
-  border-radius: 2px 2px 0 0;
-}
-
-.infoCard {
-  background: #fff;
-  border: 1px solid #f0d8e8;
-  border-radius: 14px;
-  overflow: hidden;
-  margin-top: 14px;
-}
-
-.infoRow {
-  padding: 14px 18px;
-  border-bottom: 1px solid #f5e8ee;
-}
-
-.infoRow:last-child {
-  border-bottom: none;
-}
-
-.infoLbl {
-  font-size: 11.5px;
-  color: #aaa;
-  margin-bottom: 5px;
-}
-
-.infoVal {
-  font-size: 15px;
-  font-weight: 600;
-  color: #222;
-}
-
-.genreTags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.genreTag {
-  background: #fff;
-  border: 1.5px solid #ddd;
-  border-radius: 20px;
-  padding: 4px 14px;
-  font-size: 12.5px;
-  color: #555;
-}
-
-.timeBar::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  background: #e8447a;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.1s ease;
-}
-
-.timeBar::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-}
-
-.timeBar::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  background: #e8447a;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.1s ease;
-}
-
-.timeBar::-moz-range-thumb:hover {
-  transform: scale(1.2);
-}
-
-/* --- コメント関連 --- */
-.commentContainer {
-  margin-top: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  
-  /* コメントエリア全体の枠線設定を追加 */
-  background: #fff;
-  border: 1px solid #f0d8e8;
-  border-radius: 14px;
-  padding: 16px;
-}
-
-.commentForm {
-  background: #fff;
-  border: 1px solid #fdf0f6; /* 外枠ができたので少し薄めに調整 */
-  border-radius: 14px;
-  padding: 12px;
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.inputWrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.commentInput {
-  flex: 1;
-  border: 1px solid #e8d0dc;
-  border-radius: 20px;
-  padding: 8px 14px;
-  font-size: 14px;
-  outline: none;
-  background: #fdf8fa;
-}
-
-.commentInput:focus {
-  border-color: #e8447a;
-  background: #fff;
-}
-
-.sendButton {
-  background: #e8447a;
-  color: #fff;
-  border: none;
-  border-radius: 20px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* リストの余白調整 */
-.commentList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 4px; 
-}
-
-.commentItem {
-  background: #fff;
-  border: 1px solid #fdf0f6; /* 外枠に合わせて少し薄めに調整 */
-  border-radius: 12px;
-  padding: 12px 14px;
-}
-
-.commentUserRow {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
-
-.commentUser {
-  font-size: 13px;
-  font-weight: 600;
-  color: #444;
-}
-
-.commentTime {
-  font-size: 11px;
-  color: #aaa;
-}
-
-.commentText {
-  font-size: 14px;
-  color: #222;
-  line-height: 1.4;
-}
-
-/* モーダル（ポップアップ）スタイル */
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modalContent {
-  background: #fff;
-  width: 100%;
-  max-width: 480px;
-  border-radius: 20px 20px 0 0;
-  padding: 20px 16px;
-  box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
-  animation: slideUp 0.2s ease-out;
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.modalHeader h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.closeModalBtn {
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: #888;
-  cursor: pointer;
-}
-
-`;
