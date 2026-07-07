@@ -11,17 +11,19 @@ export type BlogListItem = {
     isOshi: boolean;
     date: string;
     title: string;
-    body: string;
     viewCount: number;
     likeCount: number;
     commentCount: number;
     liked: boolean;
+    canInteract: boolean;
 };
 
 export type BlogCommentItem = {
+    id: string;
     author: string;
     text: string;
     date: string;
+    canDelete: boolean;
 };
 
 export type BlogOtherPost = {
@@ -33,6 +35,8 @@ export type BlogOtherPost = {
 };
 
 export type BlogDetailItem = BlogListItem & {
+    body: string;
+    canReadBody: boolean;
     otherPosts: BlogOtherPost[];
     comments: BlogCommentItem[];
 };
@@ -52,23 +56,24 @@ type RawBlogPost = {
     id: string;
     junior_id: string;
     title: string;
-    body: string;
+    body?: string;
     published_at: string;
     view_count: number;
     juniors: RelatedJunior | null;
 };
 
 type RawBlogComment = {
+    id: string;
     body: string;
     created_at: string;
+    user_id: string;
     profiles: { name: string } | null;
 };
 
-const blogPostSelection = `
+const blogPostOverviewSelection = `
     id,
     junior_id,
     title,
-    body,
     published_at,
     view_count,
     juniors!inner (
@@ -81,7 +86,7 @@ const blogPostSelection = `
     )
 `;
 
-function formatDate(value: string) {
+export function formatBlogDate(value: string) {
     return new Intl.DateTimeFormat("ja-JP", {
         timeZone: "Asia/Tokyo",
         year: "numeric",
@@ -129,7 +134,7 @@ export async function getBlogListPage({
         user
             ? supabase
                 .from("profiles")
-                .select("oshi_junior_id")
+                .select("oshi_junior_id,plan:plans(monthly_price)")
                 .eq("id", user.id)
                 .maybeSingle()
             : Promise.resolve({ data: null, error: null }),
@@ -153,7 +158,7 @@ export async function getBlogListPage({
     const to = from + pageSize - 1;
     let query = supabase
         .from("blog_posts")
-        .select(blogPostSelection, { count: "exact" })
+        .select(blogPostOverviewSelection, { count: "exact" })
         .order("published_at", { ascending: false })
         .range(from, to);
 
@@ -186,10 +191,16 @@ export async function getBlogListPage({
     const likes = likesResult.data ?? [];
     const likeCounts = countByPostId(likes);
     const commentCounts = countByPostId(commentsResult.data ?? []);
+    const profileData = profileResult.data as {
+        oshi_junior_id: string | null;
+        plan: { monthly_price: number } | null;
+    } | null;
+    const canInteract = Boolean(user && (profileData?.plan?.monthly_price ?? 0) > 0);
+    const userId = user?.id;
     const likedPostIds = new Set(
-        user ? likes.filter((like) => like.user_id === user.id).map((like) => like.blog_posts_id) : [],
+        canInteract && userId ? likes.filter((like) => like.user_id === userId).map((like) => like.blog_posts_id) : [],
     );
-    const oshiJuniorId = profileResult.data?.oshi_junior_id ?? null;
+    const oshiJuniorId = profileData?.oshi_junior_id ?? null;
 
     const posts = rawPosts.flatMap((post): BlogListItem[] => {
         if (!post.juniors) return [];
@@ -201,13 +212,13 @@ export async function getBlogListPage({
             authorInitials: getInitials(post.juniors.name),
             authorAffiliation: formatAffiliation(post.juniors),
             isOshi: post.junior_id === oshiJuniorId,
-            date: formatDate(post.published_at),
+            date: formatBlogDate(post.published_at),
             title: post.title,
-            body: post.body,
             viewCount: post.view_count,
             likeCount: likeCounts.get(post.id) ?? 0,
             commentCount: commentCounts.get(post.id) ?? 0,
             liked: likedPostIds.has(post.id),
+            canInteract,
         }];
     });
 
@@ -222,7 +233,7 @@ export async function getBlogDetail(postId: string): Promise<BlogDetailItem | nu
 
     const { data, error } = await supabase
         .from("blog_posts")
-        .select(blogPostSelection)
+        .select(blogPostOverviewSelection)
         .eq("id", postId)
         .maybeSingle();
 
@@ -232,11 +243,11 @@ export async function getBlogDetail(postId: string): Promise<BlogDetailItem | nu
     const post = data as unknown as RawBlogPost;
     if (!post.juniors) return null;
 
-    const [profileResult, likesResult, commentsResult, otherPostsResult] = await Promise.all([
+    const [profileResult, likesResult, otherPostsResult] = await Promise.all([
         user
             ? supabase
                 .from("profiles")
-                .select("oshi_junior_id")
+                .select("oshi_junior_id,plan:plans(monthly_price)")
                 .eq("id", user.id)
                 .maybeSingle()
             : Promise.resolve({ data: null, error: null }),
@@ -245,30 +256,56 @@ export async function getBlogDetail(postId: string): Promise<BlogDetailItem | nu
             .select("user_id", { count: "exact" })
             .eq("blog_posts_id", postId),
         supabase
-            .from("blog_comments")
-            .select("body,created_at,profiles(name)", { count: "exact" })
-            .eq("blog_posts_id", postId)
-            .order("created_at", { ascending: false }),
-        supabase
             .from("blog_posts")
-            .select(blogPostSelection)
+            .select(blogPostOverviewSelection)
             .neq("junior_id", post.junior_id)
             .order("published_at", { ascending: false })
             .limit(3),
     ]);
 
-    for (const result of [profileResult, likesResult, commentsResult, otherPostsResult]) {
+    for (const result of [profileResult, likesResult, otherPostsResult]) {
         if (result.error) throw new Error(result.error.message);
     }
 
+    const profileData = profileResult.data as {
+        oshi_junior_id: string | null;
+        plan: { monthly_price: number } | null;
+    } | null;
+    const canReadBody = Boolean(user && (profileData?.plan?.monthly_price ?? 0) > 0);
+
+    const [bodyResult, commentsResult] = await Promise.all([
+        canReadBody
+            ? supabase
+                .from("blog_posts")
+                .select("body")
+                .eq("id", postId)
+                .maybeSingle()
+            : Promise.resolve({ data: null, error: null }),
+        canReadBody
+            ? supabase
+                .from("blog_comments")
+                .select("id,body,created_at,user_id,profiles(name)", { count: "exact" })
+                .eq("blog_posts_id", postId)
+                .order("created_at", { ascending: false })
+            : supabase
+                .from("blog_comments")
+                .select("id", { count: "exact", head: true })
+                .eq("blog_posts_id", postId),
+    ]);
+
+    if (bodyResult.error) throw new Error(bodyResult.error.message);
+    if (commentsResult.error) throw new Error(commentsResult.error.message);
+
     const liked = Boolean(
-        user && (likesResult.data ?? []).some((like) => like.user_id === user.id),
+        canReadBody && user && (likesResult.data ?? []).some((like) => like.user_id === user.id),
     );
     const comments = ((commentsResult.data ?? []) as unknown as RawBlogComment[]).map(
         (comment): BlogCommentItem => ({
+            id: comment.id,
             author: comment.profiles?.name ?? "ユーザー",
             text: comment.body,
-            date: formatDate(comment.created_at),
+            date: formatBlogDate(comment.created_at),
+            canDelete: comment.user_id === user?.id,
         }),
     );
     const otherPosts = ((otherPostsResult.data ?? []) as unknown as RawBlogPost[]).flatMap(
@@ -277,7 +314,7 @@ export async function getBlogDetail(postId: string): Promise<BlogDetailItem | nu
             return [{
                 id: other.id,
                 title: other.title,
-                date: formatDate(other.published_at),
+                date: formatBlogDate(other.published_at),
                 authorName: other.juniors.name,
                 authorInitials: getInitials(other.juniors.name),
             }];
@@ -290,10 +327,14 @@ export async function getBlogDetail(postId: string): Promise<BlogDetailItem | nu
         authorName: post.juniors.name,
         authorInitials: getInitials(post.juniors.name),
         authorAffiliation: formatAffiliation(post.juniors),
-        isOshi: post.junior_id === profileResult.data?.oshi_junior_id,
-        date: formatDate(post.published_at),
+        isOshi: post.junior_id === profileData?.oshi_junior_id,
+        date: formatBlogDate(post.published_at),
         title: post.title,
-        body: post.body,
+        body: canReadBody
+            ? ((bodyResult.data as { body: string } | null)?.body ?? "")
+            : "ブログの本文閲覧は有料プランに加入する必要があります",
+        canReadBody,
+        canInteract: canReadBody,
         viewCount: post.view_count,
         likeCount: likesResult.count ?? 0,
         commentCount: commentsResult.count ?? 0,
