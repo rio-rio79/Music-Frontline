@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type BlogListItem, type BlogTab } from "@/lib/blog-data";
-import { toggleBlogLike } from "./actions";
-import { CommentIcon, HeartIcon } from "./BlogIcons";
+import BlogPostList from "./BlogPostList";
 import styles from "./Blog.module.css";
 
 type BlogListClientProps = {
@@ -14,11 +12,6 @@ type BlogListClientProps = {
     currentPage: number;
     totalPages: number;
     authorId?: string;
-};
-
-type LikeState = {
-    liked: boolean;
-    likeCount: number;
 };
 
 function getPageItems(currentPage: number, totalPages: number) {
@@ -52,56 +45,6 @@ export default function BlogListClient({
     authorId,
 }: BlogListClientProps) {
     const router = useRouter();
-    const [likeStates, setLikeStates] = useState<Record<string, LikeState>>({});
-    const [pendingLikeIds, setPendingLikeIds] = useState<Record<string, boolean>>({});
-    const [errorMessage, setErrorMessage] = useState("");
-
-    const getLikeState = (post: BlogListItem) => likeStates[post.id] ?? {
-        liked: post.liked,
-        likeCount: post.likeCount,
-    };
-
-    const handleToggleLike = async (post: BlogListItem) => {
-        if (pendingLikeIds[post.id]) return;
-
-        const currentState = getLikeState(post);
-        const optimisticState = {
-            liked: !currentState.liked,
-            likeCount: currentState.likeCount + (currentState.liked ? -1 : 1),
-        };
-
-        setErrorMessage("");
-        setPendingLikeIds((current) => ({ ...current, [post.id]: true }));
-        setLikeStates((current) => ({
-            ...current,
-            [post.id]: optimisticState,
-        }));
-
-        const result = await toggleBlogLike(post.id);
-
-        setPendingLikeIds((current) => {
-            const next = { ...current };
-            delete next[post.id];
-            return next;
-        });
-
-        if (result.status === "success") {
-            setLikeStates((current) => ({
-                ...current,
-                [post.id]: {
-                    liked: result.liked,
-                    likeCount: result.likeCount,
-                },
-            }));
-            return;
-        }
-
-        setLikeStates((current) => ({
-            ...current,
-            [post.id]: currentState,
-        }));
-        setErrorMessage(result.message);
-    };
 
     const selectTab = (tab: BlogTab) => {
         router.push(buildBlogHref(1, tab));
@@ -132,79 +75,20 @@ export default function BlogListClient({
                     フォロー中
                 </button>
             </div>
-            {errorMessage && <p className={styles.formError} role="alert">{errorMessage}</p>}
 
-            {posts.length > 0 ? (
-                <div>
-                    {posts.map((post) => {
-                        const likeState = getLikeState(post);
-                        const likePending = Boolean(pendingLikeIds[post.id]);
-
-                        return (
-                            <article
-                                key={post.id}
-                                className={styles.postCard}
-                                data-post-id={post.id}
-                                role="link"
-                                tabIndex={0}
-                                onClick={() => router.push(`/blog/${post.id}`)}
-                                onKeyDown={(event) => {
-                                    if (event.key === "Enter") router.push(`/blog/${post.id}`);
-                                }}
-                            >
-                                <span className={styles.avatar}>{post.authorInitials}</span>
-                                <div className={styles.postContent}>
-                                    <div className={styles.postMeta}>
-                                        <span className={styles.authorName}>{post.authorName}</span>
-                                        {post.isOshi && <span className={styles.oshiBadge}>推し</span>}
-                                        <span className={styles.affiliation}>{post.authorAffiliation}</span>
-                                        <time className={styles.date}>{post.date}</time>
-                                    </div>
-                                    <h2 className={styles.postTitle}>{post.title}</h2>
-                                    <div className={styles.actions}>
-                                        {post.canInteract ? (
-                                            <button
-                                                type="button"
-                                                className={`${styles.likeButton} ${likeState.liked ? styles.likeButtonLiked : ""}`}
-                                                aria-pressed={likeState.liked}
-                                                aria-label={`${post.title}にいいね`}
-                                                disabled={likePending}
-                                                onClick={(event) => {
-                                                    event.stopPropagation();
-                                                    void handleToggleLike(post);
-                                                }}
-                                            >
-                                                <HeartIcon />
-                                                <span>{likeState.likeCount.toLocaleString()}</span>
-                                            </button>
-                                        ) : (
-                                            <span className={styles.stat} aria-label={`いいね数 ${post.likeCount.toLocaleString()}`}>
-                                                <HeartIcon />
-                                                <span>{post.likeCount.toLocaleString()}</span>
-                                            </span>
-                                        )}
-                                        <span className={styles.stat} aria-label={`コメント数 ${post.commentCount}`}>
-                                            <CommentIcon />
-                                            <span>{post.commentCount}</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </article>
-                        );
-                    })}
-                </div>
-            ) : (
-                <div className={styles.emptyState}>
-                    {activeTab === "following" ? (
+            <BlogPostList
+                posts={posts}
+                emptyMessage={
+                    activeTab === "following" ? (
                         <>
                             フォロー中のジュニアの投稿はまだありません。<br />
                             気になるジュニアをフォローしてみましょう。
                         </>
                     ) : (
                         <>表示できる投稿はありません。</>
-                    )}
-                </div>
-            )}
+                    )
+                }
+            />
 
             {totalPages > 1 && (
                 <nav className={styles.pagination} aria-label="ブログ一覧のページ切り替え">

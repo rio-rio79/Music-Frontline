@@ -9,6 +9,10 @@ import styles from "../Blog.module.css";
 
 type BlogPostClientProps = {
     post: BlogDetailItem;
+    backLink: {
+        href: string;
+        label: string;
+    };
 };
 
 function LockIcon({ size = 22 }: { size?: number }) {
@@ -20,7 +24,7 @@ function LockIcon({ size = 22 }: { size?: number }) {
     );
 }
 
-export default function BlogPostClient({ post }: BlogPostClientProps) {
+export default function BlogPostClient({ post, backLink }: BlogPostClientProps) {
     const [liked, setLiked] = useState(post.liked);
     const [likeCount, setLikeCount] = useState(post.likeCount);
     const [commentDraft, setCommentDraft] = useState("");
@@ -117,7 +121,7 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
 
     return (
         <article className={styles.page}>
-            <Link href="/blog" className={styles.backLink}>‹ ブログ一覧に戻る</Link>
+            <Link href={backLink.href} className={styles.backLink}>‹ {backLink.label}</Link>
 
             <div className={styles.detailHeader}>
                 <span className={`${styles.avatar} ${styles.detailAvatar}`}>{post.authorInitials}</span>

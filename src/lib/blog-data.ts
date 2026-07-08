@@ -62,6 +62,10 @@ type RawBlogPost = {
     juniors: RelatedJunior | null;
 };
 
+type RawLikedBlogPost = {
+    blog_posts: RawBlogPost | null;
+};
+
 type RawBlogComment = {
     id: string;
     body: string;
@@ -114,6 +118,54 @@ function countByPostId(rows: { blog_posts_id: string }[]) {
     return counts;
 }
 
+function buildBlogListItems({
+    rawPosts,
+    likes,
+    commentRows,
+    userId,
+    canInteract,
+    oshiJuniorId,
+}: {
+    rawPosts: RawBlogPost[];
+    likes: { blog_posts_id: string; user_id: string }[];
+    commentRows: { blog_posts_id: string }[];
+    userId?: string;
+    canInteract: boolean;
+    oshiJuniorId: string | null;
+}) {
+    const likeCounts = countByPostId(likes);
+    const commentCounts = countByPostId(commentRows);
+    const likedPostIds = new Set(
+        canInteract && userId
+            ? likes
+                  .filter((like) => like.user_id === userId)
+                  .map((like) => like.blog_posts_id)
+            : [],
+    );
+
+    return rawPosts.flatMap((post): BlogListItem[] => {
+        if (!post.juniors) return [];
+
+        return [
+            {
+                id: post.id,
+                authorId: post.junior_id,
+                authorName: post.juniors.name,
+                authorInitials: getInitials(post.juniors.name),
+                authorAffiliation: formatAffiliation(post.juniors),
+                isOshi: post.junior_id === oshiJuniorId,
+                date: formatBlogDate(post.published_at),
+                title: post.title,
+                viewCount: post.view_count,
+                likeCount: likeCounts.get(post.id) ?? 0,
+                commentCount: commentCounts.get(post.id) ?? 0,
+                liked: likedPostIds.has(post.id),
+                canInteract,
+            },
+        ];
+    });
+}
+
 export async function getBlogListPage({
     page,
     pageSize,
@@ -133,23 +185,25 @@ export async function getBlogListPage({
     const [profileResult, followsResult] = await Promise.all([
         user
             ? supabase
-                .from("profiles")
-                .select("oshi_junior_id,plan:plans(monthly_price)")
-                .eq("id", user.id)
-                .maybeSingle()
+                  .from("profiles")
+                  .select("oshi_junior_id,plan:plans(monthly_price)")
+                  .eq("id", user.id)
+                  .maybeSingle()
             : Promise.resolve({ data: null, error: null }),
         user && tab === "following"
             ? supabase
-                .from("follow_juniors")
-                .select("junior_id")
-                .eq("user_id", user.id)
+                  .from("follow_juniors")
+                  .select("junior_id")
+                  .eq("user_id", user.id)
             : Promise.resolve({ data: [], error: null }),
     ]);
 
     if (profileResult.error) throw new Error(profileResult.error.message);
     if (followsResult.error) throw new Error(followsResult.error.message);
 
-    const followedJuniorIds = (followsResult.data ?? []).map((row) => row.junior_id);
+    const followedJuniorIds = (followsResult.data ?? []).map(
+        (row) => row.junior_id,
+    );
     if (tab === "following" && followedJuniorIds.length === 0) {
         return { posts: [] as BlogListItem[], totalCount: 0 };
     }
@@ -189,43 +243,104 @@ export async function getBlogListPage({
     if (commentsResult.error) throw new Error(commentsResult.error.message);
 
     const likes = likesResult.data ?? [];
-    const likeCounts = countByPostId(likes);
-    const commentCounts = countByPostId(commentsResult.data ?? []);
     const profileData = profileResult.data as {
         oshi_junior_id: string | null;
         plan: { monthly_price: number } | null;
     } | null;
-    const canInteract = Boolean(user && (profileData?.plan?.monthly_price ?? 0) > 0);
-    const userId = user?.id;
-    const likedPostIds = new Set(
-        canInteract && userId ? likes.filter((like) => like.user_id === userId).map((like) => like.blog_posts_id) : [],
+    const canInteract = Boolean(
+        user && (profileData?.plan?.monthly_price ?? 0) > 0,
     );
+    const userId = user?.id;
     const oshiJuniorId = profileData?.oshi_junior_id ?? null;
 
-    const posts = rawPosts.flatMap((post): BlogListItem[] => {
-        if (!post.juniors) return [];
-
-        return [{
-            id: post.id,
-            authorId: post.junior_id,
-            authorName: post.juniors.name,
-            authorInitials: getInitials(post.juniors.name),
-            authorAffiliation: formatAffiliation(post.juniors),
-            isOshi: post.junior_id === oshiJuniorId,
-            date: formatBlogDate(post.published_at),
-            title: post.title,
-            viewCount: post.view_count,
-            likeCount: likeCounts.get(post.id) ?? 0,
-            commentCount: commentCounts.get(post.id) ?? 0,
-            liked: likedPostIds.has(post.id),
-            canInteract,
-        }];
+    const posts = buildBlogListItems({
+        rawPosts,
+        likes,
+        commentRows: commentsResult.data ?? [],
+        userId,
+        canInteract,
+        oshiJuniorId,
     });
 
     return { posts, totalCount: count ?? 0 };
 }
 
-export async function getBlogDetail(postId: string): Promise<BlogDetailItem | null> {
+export async function getLikedBlogPosts() {
+    const supabase = await createSupabaseServer();
+    const {
+        data: { user },
+        error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { authenticated: false, posts: [] as BlogListItem[] };
+    }
+
+    const [profileResult, likedPostsResult] = await Promise.all([
+        supabase
+            .from("profiles")
+            .select("oshi_junior_id,plan:plans(monthly_price)")
+            .eq("id", user.id)
+            .maybeSingle(),
+        supabase
+            .from("blog_likes")
+            .select(
+                `
+                blog_posts!inner (
+                    ${blogPostOverviewSelection}
+                )
+            `,
+            )
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false }),
+    ]);
+
+    if (profileResult.error) throw new Error(profileResult.error.message);
+    if (likedPostsResult.error) throw new Error(likedPostsResult.error.message);
+
+    const rawPosts = (
+        (likedPostsResult.data ?? []) as unknown as RawLikedBlogPost[]
+    ).flatMap((row): RawBlogPost[] => (row.blog_posts ? [row.blog_posts] : []));
+    const postIds = rawPosts.map((post) => post.id);
+
+    if (postIds.length === 0) {
+        return { authenticated: true, posts: [] as BlogListItem[] };
+    }
+
+    const [likesResult, commentsResult] = await Promise.all([
+        supabase
+            .from("blog_likes")
+            .select("blog_posts_id,user_id")
+            .in("blog_posts_id", postIds),
+        supabase
+            .from("blog_comments")
+            .select("blog_posts_id")
+            .in("blog_posts_id", postIds),
+    ]);
+
+    if (likesResult.error) throw new Error(likesResult.error.message);
+    if (commentsResult.error) throw new Error(commentsResult.error.message);
+
+    const profileData = profileResult.data as {
+        oshi_junior_id: string | null;
+        plan: { monthly_price: number } | null;
+    } | null;
+
+    const posts = buildBlogListItems({
+        rawPosts,
+        likes: likesResult.data ?? [],
+        commentRows: commentsResult.data ?? [],
+        userId: user.id,
+        canInteract: (profileData?.plan?.monthly_price ?? 0) > 0,
+        oshiJuniorId: profileData?.oshi_junior_id ?? null,
+    });
+
+    return { authenticated: true, posts };
+}
+
+export async function getBlogDetail(
+    postId: string,
+): Promise<BlogDetailItem | null> {
     const supabase = await createSupabaseServer();
     const {
         data: { user },
@@ -246,10 +361,10 @@ export async function getBlogDetail(postId: string): Promise<BlogDetailItem | nu
     const [profileResult, likesResult, otherPostsResult] = await Promise.all([
         user
             ? supabase
-                .from("profiles")
-                .select("oshi_junior_id,plan:plans(monthly_price)")
-                .eq("id", user.id)
-                .maybeSingle()
+                  .from("profiles")
+                  .select("oshi_junior_id,plan:plans(monthly_price)")
+                  .eq("id", user.id)
+                  .maybeSingle()
             : Promise.resolve({ data: null, error: null }),
         supabase
             .from("blog_likes")
@@ -271,35 +386,43 @@ export async function getBlogDetail(postId: string): Promise<BlogDetailItem | nu
         oshi_junior_id: string | null;
         plan: { monthly_price: number } | null;
     } | null;
-    const canReadBody = Boolean(user && (profileData?.plan?.monthly_price ?? 0) > 0);
+    const canReadBody = Boolean(
+        user && (profileData?.plan?.monthly_price ?? 0) > 0,
+    );
 
     const [bodyResult, commentsResult] = await Promise.all([
         canReadBody
             ? supabase
-                .from("blog_posts")
-                .select("body")
-                .eq("id", postId)
-                .maybeSingle()
+                  .from("blog_posts")
+                  .select("body")
+                  .eq("id", postId)
+                  .maybeSingle()
             : Promise.resolve({ data: null, error: null }),
         canReadBody
             ? supabase
-                .from("blog_comments")
-                .select("id,body,created_at,user_id,profiles(name)", { count: "exact" })
-                .eq("blog_posts_id", postId)
-                .order("created_at", { ascending: false })
+                  .from("blog_comments")
+                  .select("id,body,created_at,user_id,profiles(name)", {
+                      count: "exact",
+                  })
+                  .eq("blog_posts_id", postId)
+                  .order("created_at", { ascending: false })
             : supabase
-                .from("blog_comments")
-                .select("id", { count: "exact", head: true })
-                .eq("blog_posts_id", postId),
+                  .from("blog_comments")
+                  .select("id", { count: "exact", head: true })
+                  .eq("blog_posts_id", postId),
     ]);
 
     if (bodyResult.error) throw new Error(bodyResult.error.message);
     if (commentsResult.error) throw new Error(commentsResult.error.message);
 
     const liked = Boolean(
-        canReadBody && user && (likesResult.data ?? []).some((like) => like.user_id === user.id),
+        canReadBody &&
+        user &&
+        (likesResult.data ?? []).some((like) => like.user_id === user.id),
     );
-    const comments = ((commentsResult.data ?? []) as unknown as RawBlogComment[]).map(
+    const comments = (
+        (commentsResult.data ?? []) as unknown as RawBlogComment[]
+    ).map(
         (comment): BlogCommentItem => ({
             id: comment.id,
             author: comment.profiles?.name ?? "ユーザー",
@@ -308,18 +431,20 @@ export async function getBlogDetail(postId: string): Promise<BlogDetailItem | nu
             canDelete: comment.user_id === user?.id,
         }),
     );
-    const otherPosts = ((otherPostsResult.data ?? []) as unknown as RawBlogPost[]).flatMap(
-        (other): BlogOtherPost[] => {
-            if (!other.juniors) return [];
-            return [{
+    const otherPosts = (
+        (otherPostsResult.data ?? []) as unknown as RawBlogPost[]
+    ).flatMap((other): BlogOtherPost[] => {
+        if (!other.juniors) return [];
+        return [
+            {
                 id: other.id,
                 title: other.title,
                 date: formatBlogDate(other.published_at),
                 authorName: other.juniors.name,
                 authorInitials: getInitials(other.juniors.name),
-            }];
-        },
-    );
+            },
+        ];
+    });
 
     return {
         id: post.id,
