@@ -28,7 +28,7 @@ export default function Header() {
     ];
 
     const quickLinks = [
-        { name: "楽曲一覧", href: "/", Icon: CdSvg },
+        { name: "楽曲一覧", href: "/music", Icon: CdSvg },
         { name: "いいね一覧", href: "/like", Icon: Heart },
         { name: "マイページ", href: "/my/profile", Icon: PersonSvg },
     ];
