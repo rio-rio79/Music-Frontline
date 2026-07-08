@@ -51,51 +51,6 @@ export default function Top() {
             <h1>
                 トップページに差し替えるかも！！
             </h1>
-
-
-            {/* 検索ボックスとドロップダウンのラッパー */}
-            <div className={styles.searchContainer}>
-                {/* 右上のドロップダウンリスト */}
-                <select 
-                    className={styles.dropdown} 
-                    aria-label="並び替え"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                >
-                    <option value="group">グループ順</option>
-                    <option value="fifty">50音順</option>
-                    <option value="new">新着順</option>
-                    <option value="popular">人気順</option>
-                </select>
-                
-                {/* 検索ボックス */}
-                <div className={styles.searchBox}>
-                    <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="#bbb" strokeWidth="2">
-                        <circle cx="9" cy="9" r="7"/>
-                        <path d="M14.5 14.5 L20 20" strokeLinecap="round"/>
-                    </svg>
-                    <input 
-                        type="text" 
-                        placeholder="検索ボックス" 
-                        aria-label="検索ワード" 
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
-            </div>
-
-            {/* MUSIC LIST */}
-            {loading ? (
-                <div style={{ textAlign: "center", padding: "2rem", color: "#aaa" }}>
-                    読み込み中...
-                </div>
-            ) : error ? (
-                <div style={{ textAlign: "center", padding: "2rem", color: "red" }}>
-                    {error}
-                </div>
-            ) : (
-                <MusicList songs={songs} />
-            )}
         </section>
     );
 }
