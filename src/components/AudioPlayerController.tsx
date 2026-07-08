@@ -53,33 +53,6 @@ export default function AudioPlayerController() {
 
             hasCountedThisSongRef.current = true;
 
-            const today = new Date().toISOString().split("T")[0];
-            const storageKey = "music_play_counts";
-            let countsData: { date: string; counts: Record<string, number> } = {
-                date: today,
-                counts: {},
-            };
-
-            try {
-                const localData = localStorage.getItem(storageKey);
-                if (localData) {
-                    const parsed = JSON.parse(localData);
-                    if (parsed && parsed.date === today) {
-                        countsData = parsed;
-                    } else {
-                        localStorage.removeItem(storageKey);
-                    }
-                }
-            } catch (e) {
-                console.error("Failed to parse play counts:", e);
-            }
-
-            const currentCount = countsData.counts[currentSong.id] || 0;
-            if (currentCount >= 20) {
-                console.log(`Play count limit (20) reached today for song: ${currentSong.title}`);
-                return;
-            }
-
             fetch(`/api/songs/${currentSong.id}/play`, { method: "POST" })
                 .then((res) => {
                     if (res.ok) {
@@ -88,11 +61,8 @@ export default function AudioPlayerController() {
                     throw new Error("API response error");
                 })
                 .then((data) => {
-                    if (data && data.success && !data.skipped) {
-                        countsData.counts[currentSong.id] = currentCount + 1;
-                        localStorage.setItem(storageKey, JSON.stringify(countsData));
-                    } else if (data && data.skipped) {
-                        console.log(`Playback count skipped on server: ${data.reason}`);
+                    if (data?.points?.points_awarded === false && data.points.reason) {
+                        console.log(`Playback points skipped on server: ${data.points.reason}`);
                     }
                 })
                 .catch((err) => {
