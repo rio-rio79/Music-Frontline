@@ -82,70 +82,126 @@ export default async function MusicDetailPage({
     }
   }
 
-  // グループ情報とジュニア情報の解決
-  let songGroups: string[] = [];
-  let songJuniors: string[] = [];
-  let groupsDetail: { id: string; name: string }[] = [];
-  let juniorsDetail: { id: string; name: string }[] = [];
-
-  if (song.song_juniors && song.song_juniors.length > 0) {
-    const groupMap = new Map<string, string>();
-    const juniorMap = new Map<string, string>();
-
-    song.song_juniors.forEach((sj) => {
-      if (sj.group_id && sj.groups?.name) {
-        groupMap.set(sj.group_id, sj.groups.name);
-      }
-      if (sj.junior_id && sj.juniors?.name) {
-        juniorMap.set(sj.junior_id, sj.juniors.name);
-      }
-    });
-
-    groupsDetail = Array.from(groupMap.entries()).map(([id, name]) => ({ id, name }));
-    juniorsDetail = Array.from(juniorMap.entries()).map(([id, name]) => ({ id, name }));
-
-    songGroups = groupsDetail.map((g) => g.name);
-    songJuniors = juniorsDetail.map((j) => j.name);
-  }
-
-  const artistName = songGroups.length > 0 ? songGroups.join(", ") : (songJuniors.length > 0 ? songJuniors.join(", ") : "アーティスト名");
-
-  // audio_path の解決
-  let audioFilePath = song.audio_path || "";
-  if (audioFilePath && !audioFilePath.startsWith("http") && !audioFilePath.startsWith("/")) {
-    const { data } = supabase.storage.from("audio").getPublicUrl(audioFilePath);
-    audioFilePath = data.publicUrl;
-  }
-
-  // image_path の解決
-  let imagePath = song.image_path || "/music_cover_img.png";
-  if (imagePath && !imagePath.startsWith("http") && !imagePath.startsWith("/")) {
-    const { data } = supabase.storage.from("images").getPublicUrl(imagePath);
-    imagePath = data.publicUrl;
-  }
-
   // 総いいね数の取得
   const { count: likesCount } = await supabase
     .from("song_likes")
     .select("*", { count: "exact", head: true })
     .eq("song_id", songId);
 
+  // すべての楽曲データのフェッチ
+  const { data: allSongsRaw, error: allSongsError } = await supabase
+    .from("songs")
+    .select(`
+        id,
+        title,
+        audio_path,
+        image_path,
+        play_count,
+        published_at,
+        lyricist,
+        composer,
+        lyrics,
+        song_juniors (
+            junior_id,
+            juniors (
+                name
+            ),
+            group_id,
+            groups (
+                name
+            )
+        )
+    `);
+
+  if (allSongsError) {
+    throw new Error(allSongsError.message);
+  }
+
+  // 楽曲解決用のヘルパー関数
+  const formatSong = (s: any) => {
+    let songGroups: string[] = [];
+    let songJuniors: string[] = [];
+    let groupsDetail: { id: string; name: string }[] = [];
+    let juniorsDetail: { id: string; name: string }[] = [];
+
+    if (s.song_juniors && s.song_juniors.length > 0) {
+      const groupMap = new Map<string, string>();
+      const juniorMap = new Map<string, string>();
+
+      s.song_juniors.forEach((sj: any) => {
+        if (sj.group_id && sj.groups?.name) {
+          groupMap.set(sj.group_id, sj.groups.name);
+        }
+        if (sj.junior_id && sj.juniors?.name) {
+          juniorMap.set(sj.junior_id, sj.juniors.name);
+        }
+      });
+
+      groupsDetail = Array.from(groupMap.entries()).map(([id, name]) => ({ id, name }));
+      juniorsDetail = Array.from(juniorMap.entries()).map(([id, name]) => ({ id, name }));
+
+      songGroups = groupsDetail.map((g) => g.name);
+      songJuniors = juniorsDetail.map((j) => j.name);
+    }
+
+    const artistName = songGroups.length > 0 ? songGroups.join(", ") : (songJuniors.length > 0 ? songJuniors.join(", ") : "アーティスト名");
+
+    // audio_path の解決
+    let audioFilePath = s.audio_path || "";
+    if (audioFilePath && !audioFilePath.startsWith("http") && !audioFilePath.startsWith("/")) {
+      const { data } = supabase.storage.from("audio").getPublicUrl(audioFilePath);
+      audioFilePath = data.publicUrl;
+    }
+
+    // image_path の解決
+    let imagePath = s.image_path || "/music_cover_img.png";
+    if (imagePath && !imagePath.startsWith("http") && !imagePath.startsWith("/")) {
+      const { data } = supabase.storage.from("images").getPublicUrl(imagePath);
+      imagePath = data.publicUrl;
+    }
+
+    return {
+      id: s.id,
+      title: s.title,
+      audioFilePath,
+      imagePath,
+      artistName,
+      playCount: s.play_count,
+      publishedAt: s.published_at,
+      juniors: songJuniors,
+      groups: songGroups,
+      lyricist: s.lyricist,
+      composer: s.composer,
+      lyrics: s.lyrics,
+      groupsDetail,
+      juniorsDetail,
+    };
+  };
+
+  const mainSongFormatted = formatSong(song);
   const formattedSong = {
-    id: song.id,
-    title: song.title,
-    audioFilePath,
-    imagePath,
-    artistName,
-    playCount: song.play_count,
-    publishedAt: song.published_at,
-    juniors: songJuniors,
-    groups: songGroups,
-    lyricist: song.lyricist,
-    composer: song.composer,
-    lyrics: song.lyrics,
+    ...mainSongFormatted,
     likesCount: likesCount || 0,
     isLiked,
   };
+
+  const formattedAllSongs = (allSongsRaw || []).map((s: any) => {
+    const formatted = formatSong(s);
+    return {
+      id: formatted.id,
+      title: formatted.title,
+      audioFilePath: formatted.audioFilePath,
+      imagePath: formatted.imagePath,
+      artistName: formatted.artistName,
+      playCount: formatted.playCount,
+      publishedAt: formatted.publishedAt,
+      juniors: formatted.juniors,
+      groups: formatted.groups,
+      lyricist: formatted.lyricist,
+      composer: formatted.composer,
+      lyrics: formatted.lyrics,
+    };
+  });
 
   const formattedComments = (comments || []).map((c: any) => ({
     id: c.id,
@@ -160,10 +216,12 @@ export default async function MusicDetailPage({
     <MusicDetailClient
       key={songId}
       song={formattedSong}
+      allSongs={formattedAllSongs}
       initialComments={formattedComments}
       currentUserId={user ? user.id : null}
-      groupsDetail={groupsDetail}
-      juniorsDetail={juniorsDetail}
+      groupsDetail={mainSongFormatted.groupsDetail}
+      juniorsDetail={mainSongFormatted.juniorsDetail}
     />
   );
 }
+
