@@ -241,37 +241,6 @@ export default function MusicDetailPage({
               </div>
             </div>
 
-            {/* 再生位置 */}
-            <div className="playerProgress">
-              <input
-                type="range"
-                className="timeBar"
-                min="0"
-                max={duration || 0}
-                step="0.1"
-                value={Math.min(displayedTime, duration || 0)}
-                onPointerDown={(event) =>
-                  updateSeekPreview(Number(event.currentTarget.value))
-                }
-                onPointerUp={commitSeek}
-                onPointerCancel={cancelSeek}
-                onChange={(event) => handleSeekChange(Number(event.target.value))}
-                aria-label="再生位置"
-                disabled={!duration}
-                style={{
-                  width: "100%",
-                  cursor: "pointer",
-                  background: `linear-gradient(to right, #E8447A 0%, #E8447A ${duration ? (displayedTime / duration) * 100 : 0
-                    }%, #ffe3f1 ${duration ? (displayedTime / duration) * 100 : 0
-                    }%, #ffe3f1 100%)`
-                }}
-              />
-              <div className="timeLabels">
-                <span>{formatTime(displayedTime)}</span>
-                <span>{formatTime(duration)}</span>
-              </div>
-            </div>
-
             {/* コントロール */}
             <div className="controls">
               <div className="ctrlBtn" onClick={previous} style={{ cursor: "pointer" }}>
