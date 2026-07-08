@@ -181,9 +181,6 @@ export default function Ranking() {
                 <div className="target">{item.target}</div>
               </div>
               <div className="score">{item.pt.toLocaleString()}<span>pt</span></div>
-              <div className="chevron">
-                <ChevronRightSvg />
-              </div>
             </div>
           ))}
         </div>
