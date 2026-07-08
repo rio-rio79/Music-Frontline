@@ -28,6 +28,7 @@ type JuniorDetail = {
 
 type MusicDetailClientProps = {
   song: Song;
+  allSongs: Song[];
   initialComments: CommentType[];
   currentUserId: string | null;
   groupsDetail: GroupDetail[];
@@ -38,6 +39,7 @@ type TabType = "info" | "comments";
 
 export default function MusicDetailClient({
   song,
+  allSongs,
   initialComments,
   currentUserId,
   groupsDetail,
@@ -57,6 +59,7 @@ export default function MusicDetailClient({
   const playSong = usePlayerStore((state) => state.playSong);
   const previous = usePlayerStore((state) => state.previous);
   const next = usePlayerStore((state) => state.next);
+  const queue = usePlayerStore((state) => state.queue);
 
   const likedSongIds = useLikeStore((state) => state.likedSongIds);
   const toggleLikeStore = useLikeStore((state) => state.toggleLike);
@@ -155,13 +158,41 @@ export default function MusicDetailClient({
 
   const isCurrentSong = currentSong?.id === song.id;
   const isCurrentPlaying = isCurrentSong && isPlaying;
+  const isOtherSongPlaying = currentSong !== null && !isCurrentSong && isPlaying;
 
   const handlePlay = () => {
     if (isCurrentSong) {
       togglePlay();
       return;
     }
-    playSong(song);
+    // 別の曲を再生する場合、または未再生から再生を開始する場合、キューとして全曲リストを渡す
+    playSong(song, allSongs);
+  };
+
+  const handlePrevClick = () => {
+    if (currentSong && queue.length > 0) {
+      previous();
+      return;
+    }
+    // プレイヤーが未ロードの場合、表示曲を基準に直接URL遷移する
+    const currentIndex = allSongs.findIndex((s) => s.id === song.id);
+    if (currentIndex !== -1 && allSongs.length > 0) {
+      const prevIndex = (currentIndex - 1 + allSongs.length) % allSongs.length;
+      router.replace(`/music/${allSongs[prevIndex].id}`);
+    }
+  };
+
+  const handleNextClick = () => {
+    if (currentSong && queue.length > 0) {
+      next();
+      return;
+    }
+    // プレイヤーが未ロードの場合、表示曲を基準に直接URL遷移する
+    const currentIndex = allSongs.findIndex((s) => s.id === song.id);
+    if (currentIndex !== -1 && allSongs.length > 0) {
+      const nextIndex = (currentIndex + 1) % allSongs.length;
+      router.replace(`/music/${allSongs[nextIndex].id}`);
+    }
   };
 
   return (
@@ -207,7 +238,7 @@ export default function MusicDetailClient({
 
             {/* コントロール */}
             <div className="controls">
-              <div className="ctrlBtn" onClick={previous} style={{ cursor: "pointer" }}>
+              <div className="ctrlBtn" onClick={handlePrevClick} style={{ cursor: "pointer" }}>
                 <SkipBack />
               </div>
 
@@ -221,7 +252,7 @@ export default function MusicDetailClient({
                 {isCurrentPlaying ? <StopMusic color="white" /> : <StartMusic color="white" />}
               </div>
 
-              <div className="ctrlBtn" onClick={next} style={{ cursor: "pointer" }}>
+              <div className="ctrlBtn" onClick={handleNextClick} style={{ cursor: "pointer" }}>
                 <SkipForward />
               </div>
             </div>
