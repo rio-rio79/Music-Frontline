@@ -7,6 +7,8 @@ import styles from "./JuniorDetail.module.css";
 import { type Song, usePlayerStore } from "@/stores/playerStore";
 import { useLikeStore } from "@/stores/likeStore";
 import { Heart } from "@/components/Svgs";
+import BlogPostList from "@/app/blog/BlogPostList";
+import { type BlogListItem } from "@/lib/blog-data";
 
 interface JuniorDetail {
   id: string;
@@ -22,6 +24,7 @@ interface JuniorDetail {
   imageUrl: string | null;
   groupName: string | null;
   songs: Song[];
+  blogPosts: BlogListItem[];
 }
 
 interface JuniorDetailClientProps {
@@ -65,6 +68,14 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
   useEffect(() => {
     fetchLikes();
   }, [fetchLikes]);
+
+  // URLのクエリパラメータに tab=blog があればブログタブをアクティブにする
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("tab") === "blog") {
+      setActiveTab("blog");
+    }
+  }, []);
 
   const handlePlay = (song: Song) => {
     if (currentSong?.id === song.id) {
@@ -198,7 +209,11 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
         <div className={styles.blogSection}>
           <h2 className={styles.sectionTitle}>BLOG</h2>
           <div className={styles.sectionTitleUnderline}></div>
-          <p className={styles.blogPlaceholder}>ブログは準備中です。</p>
+          <BlogPostList
+            posts={junior.blogPosts}
+            emptyMessage={<p className={styles.blogPlaceholder}>ブログ記事がありません。</p>}
+            detailSource={`/junior/${junior.id}`}
+          />
         </div>
       )}
     </div>

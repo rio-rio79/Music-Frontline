@@ -1,6 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
 import JuniorDetailClient from "./JuniorDetailClient";
+import { getBlogListPage } from "@/lib/blog-data";
 
 type JuniorDetailPageProps = {
   params: Promise<{ juniorId: string }>;
@@ -151,6 +152,14 @@ export default async function Page({ params }: JuniorDetailPageProps) {
     })
   );
 
+  // 3. ジュニアのブログ記事の取得
+  const { posts: blogPosts } = await getBlogListPage({
+    page: 1,
+    pageSize: 10,
+    tab: "all",
+    authorId: juniorId,
+  });
+
   const formattedJunior = {
     id: junior.id,
     name: junior.name,
@@ -165,6 +174,7 @@ export default async function Page({ params }: JuniorDetailPageProps) {
     imageUrl: juniorImageUrl,
     groupName: (junior.groups as any)?.name ?? null,
     songs,
+    blogPosts,
   };
 
   return <JuniorDetailClient junior={formattedJunior} />;
