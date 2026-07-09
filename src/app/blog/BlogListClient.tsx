@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type BlogListItem, type BlogTab } from "@/lib/blog-data";
@@ -8,12 +9,19 @@ import { toggleBlogLike } from "./actions";
 import { CommentIcon, HeartIcon } from "./BlogIcons";
 import styles from "./Blog.module.css";
 
+
 type BlogListClientProps = {
     posts: BlogListItem[];
     activeTab: BlogTab;
     currentPage: number;
     totalPages: number;
     authorId?: string;
+    juniors?: {
+        id: string;
+        name: string;
+        image: string;
+        group?: string;
+    }[];
 };
 
 type LikeState = {
@@ -50,6 +58,7 @@ export default function BlogListClient({
     currentPage,
     totalPages,
     authorId,
+    juniors = [],
 }: BlogListClientProps) {
     const router = useRouter();
     const [likeStates, setLikeStates] = useState<Record<string, LikeState>>({});
@@ -107,10 +116,35 @@ export default function BlogListClient({
         router.push(buildBlogHref(1, tab));
     };
 
+        const images = [
+                "/images/sample①.jpg",
+                "/images/sample①.jpg",
+                "/images/sample①.jpg",
+                "/images/sample①.jpg"
+
+                
+        ];
+
+        const [currentIndex, setCurrentIndex] = useState(0);
+
+        useEffect(() => {
+                const timer = setInterval(() => {
+                        setCurrentIndex((prev) => (prev + 1) % images.length);
+                }, 3000); // 3秒ごとに切り替え
+
+                return () => clearInterval(timer);
+        }, [images.length]);
+
+
     return (
         <section className={styles.page}>
-            <h1 className={styles.pageTitle}>ブログ</h1>
-            <div className={styles.titleUnderline} />
+          <div className={styles.pageHeader}>
+    <span className={styles.sectionTag}>BLOG</span>
+    <h1 className={styles.pageTitle}>最新の投稿</h1>
+    <p className={styles.pageDescription}>
+        ジュニアたちの最新ブログをチェックしよう。
+    </p>
+</div>
 
             <div className={styles.tabs} role="tablist" aria-label="ブログ一覧タブ">
                 <button
@@ -135,7 +169,7 @@ export default function BlogListClient({
             {errorMessage && <p className={styles.formError} role="alert">{errorMessage}</p>}
 
             {posts.length > 0 ? (
-                <div>
+                <div className={styles.postGrid}>
                     {posts.map((post) => {
                         const likeState = getLikeState(post);
                         const likePending = Boolean(pendingLikeIds[post.id]);
@@ -242,6 +276,52 @@ export default function BlogListClient({
                     )}
                 </nav>
             )}
+
+            <section className={styles.juniorSection}>
+    <div className={styles.sectionHeader}>
+        <h2>ジュニアから探す</h2>
+       <div className={styles.slider}>
+  <div className={styles.slidetrack}>
+    <img src="/images/sample①.jpg" />
+    <img src="/images/sample②.jpg" />
+    <img src="/images/sample③.jpg" />
+    <img src="/images/sample④.jpg" />
+
+    {/* 同じ画像をもう一度並べる */}
+    <img src="/images/sample①.jpg" />
+    <img src="/images/sample②.jpg" />
+    <img src="/images/sample③.jpg" />
+    <img src="/images/sample④.jpg" />
+  </div>
+</div>
+       
+    </div>
+
+    {/*
+    <div className={styles.juniorSlider}>
+        {juniors.map((junior) => (
+            <Link
+                key={junior.id}
+                href={`/junior/${junior.id}`}
+                className={styles.juniorCard}
+            >
+                <img
+                    src={junior.image}
+                    alt={junior.name}
+                    className={styles.juniorImage}
+                />
+
+                <p className={styles.group}>
+                    {junior.group}
+                </p>
+
+                <h3>{junior.name}</h3>
+            </Link>
+        ))}
+    </div>
+    */}
+    
+</section>
         </section>
     );
 }
