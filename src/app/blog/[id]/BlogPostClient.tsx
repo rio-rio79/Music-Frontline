@@ -177,10 +177,10 @@ export default function BlogPostClient({ post, backLink }: BlogPostClientProps) 
             </div>
             {errorMessage && <p className={styles.formError} role="alert">{errorMessage}</p>}
 
-            <div className={`${styles.authorPostsLink} ${styles.authorPostsLinkDisabled}`} aria-disabled="true">
+            <Link href={`/junior/${post.authorId}?tab=blog`} className={styles.authorPostsLink}>
                 <span>{post.authorName}さんの投稿一覧を見る</span>
                 <span aria-hidden="true">›</span>
-            </div>
+            </Link>
 
             {post.canReadBody && post.otherPosts.length > 0 && (
                 <section className={styles.otherPosts}>
