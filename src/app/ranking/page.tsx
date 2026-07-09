@@ -11,16 +11,16 @@ import {
 
 const DATA = {
   hot: [
-    { rank: 1, name: "ユーザー名A", target: "〇〇くん", pt: 3250, avatar: "/images/avatar_a.png" },
-    { rank: 2, name: "ユーザー名B", target: "〇〇くん", pt: 2840, avatar: "/images/avatar_b.png" },
-    { rank: 3, name: "ユーザー名C", target: "〇〇くん", pt: 2120, avatar: "/images/avatar_c.png" },
-    { rank: 4, name: "ユーザー名D", target: "〇〇くん", pt: 1870, avatar: "/images/avatar_d.png" },
-    { rank: 5, name: "ユーザー名E", target: "〇〇くん", pt: 1540, avatar: "/images/avatar_e.png" },
-    { rank: 6, name: "ユーザー名F", target: "〇〇くん", pt: 1320, avatar: "/images/avatar_f.png" },
-    { rank: 7, name: "ユーザー名G", target: "〇〇くん", pt: 1180, avatar: "/images/avatar_g.png" },
-    { rank: 8, name: "ユーザー名H", target: "〇〇くん", pt: 990, avatar: "/images/avatar_h.png" },
-    { rank: 9, name: "ユーザー名I", target: "〇〇くん", pt: 840, avatar: "/images/avatar_i.png" },
-    { rank: 10, name: "ユーザー名J", target: "〇〇くん", pt: 710, avatar: "/images/avatar_j.png" },
+    { rank: 1, name: "アイドル", pt: 3250, avatar: "/images/avatar_a.png" },
+    { rank: 2, name: "アイドル", pt: 2840, avatar: "/images/avatar_b.png" },
+    { rank: 3, name: "アイドル", pt: 2120, avatar: "/images/avatar_c.png" },
+    { rank: 4, name: "アイドル", pt: 1870, avatar: "/images/avatar_d.png" },
+    { rank: 5, name: "アイドル", pt: 1540, avatar: "/images/avatar_e.png" },
+    { rank: 6, name: "アイドル", pt: 1320, avatar: "/images/avatar_f.png" },
+    { rank: 7, name: "アイドル", pt: 1180, avatar: "/images/avatar_g.png" },
+    { rank: 8, name: "アイドル", pt: 990, avatar: "/images/avatar_h.png" },
+    { rank: 9, name: "アイドル", pt: 840, avatar: "/images/avatar_i.png" },
+    { rank: 10, name: "アイドル", pt: 710, avatar: "/images/avatar_j.png" },
   ],
   song: [
     { rank: 1, name: "アイドル楽曲A", target: "〇〇グループ", pt: 5400, avatar: "/images/song_a.png" },
@@ -178,7 +178,6 @@ export default function Ranking() {
               
               <div className="info">
                 <div className="name">{item.name}</div>
-                <div className="target">{item.target}</div>
               </div>
               <div className="score">{item.pt.toLocaleString()}<span>pt</span></div>
             </div>
