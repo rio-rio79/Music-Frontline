@@ -3,11 +3,19 @@
 import { useActionState, useEffect, useMemo, useState, useTransition } from 'react'
 import type { FormEvent } from 'react'
 import {
+    applyFavoriteColor,
+    DEFAULT_FAVORITE_COLOR,
+    FAVORITE_COLOR_OPTIONS,
+    FAVORITE_COLOR_STORAGE_KEY,
+} from '@/lib/favorite-color'
+import {
     changePlan,
     registerOshi,
+    updateFavoriteColor,
     updateUsername,
     type ChangePlanState,
     type RegisterOshiState,
+    type UpdateFavoriteColorState,
     type UpdateUsernameState,
 } from '../setting/actions'
 import styles from './ProfileCard.module.css'
@@ -30,27 +38,31 @@ type ProfileCardProps = {
     initialName: string
     initialPlan: Plan | null
     initialOshi: Junior | null
+    initialFavoriteColor: string | null
     plans: Plan[]
     juniors: Junior[]
 }
 
-type OpenModal = 'username' | 'plan' | 'oshi' | null
+type ProfileModal = 'username' | 'plan' | 'oshi' | 'color' | null
 
 const initialUsernameState: UpdateUsernameState = { status: 'idle', message: '' }
 const initialPlanState: ChangePlanState = { status: 'idle', message: '' }
 const initialOshiState: RegisterOshiState = { status: 'idle', message: '' }
+const initialFavoriteColorState: UpdateFavoriteColorState = { status: 'idle', message: '' }
 
 export default function ProfileCard({
     initialName,
     initialPlan,
     initialOshi,
+    initialFavoriteColor,
     plans,
     juniors,
 }: ProfileCardProps) {
     const [username, setUsername] = useState(initialName)
     const [currentPlan, setCurrentPlan] = useState(initialPlan)
     const [currentOshi, setCurrentOshi] = useState(initialOshi)
-    const [openModal, setOpenModal] = useState<OpenModal>(null)
+    const [favoriteColor, setFavoriteColor] = useState(initialFavoriteColor ?? DEFAULT_FAVORITE_COLOR)
+    const [openModal, setOpenModal] = useState<ProfileModal>(null)
 
     useEffect(() => {
         if (!openModal) return
@@ -112,6 +124,25 @@ export default function ProfileCard({
                                 {currentOshi ? '変更する' : '登録する'}
                             </button>
                         </div>
+
+                        <div className={styles.settingRow}>
+                            <span className={styles.settingLabel}>推しカラー：</span>
+                            <span className={styles.colorValue}>
+                                <span
+                                    className={styles.colorSwatch}
+                                    style={{ backgroundColor: favoriteColor }}
+                                    aria-hidden="true"
+                                />
+                                {FAVORITE_COLOR_OPTIONS.find((color) => color.value === favoriteColor)?.label ?? favoriteColor}
+                            </span>
+                            <button
+                                type="button"
+                                className={styles.changeButton}
+                                onClick={() => setOpenModal('color')}
+                            >
+                                変更する
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -146,6 +177,17 @@ export default function ProfileCard({
                     onClose={() => setOpenModal(null)}
                     onSaved={(oshi) => {
                         setCurrentOshi(oshi)
+                        setOpenModal(null)
+                    }}
+                />
+            )}
+
+            {openModal === 'color' && (
+                <FavoriteColorModal
+                    currentColor={favoriteColor}
+                    onClose={() => setOpenModal(null)}
+                    onSaved={(color) => {
+                        setFavoriteColor(color)
                         setOpenModal(null)
                     }}
                 />
@@ -390,6 +432,83 @@ function OshiModal({
                     onCancel={onClose}
                     confirmLabel={pending ? '登録中...' : 'この推しに決定'}
                     disabled={!selectedId || pending}
+                />
+            </form>
+        </div>
+    )
+}
+
+function FavoriteColorModal({
+    currentColor,
+    onClose,
+    onSaved,
+}: {
+    currentColor: string
+    onClose: () => void
+    onSaved: (color: string) => void
+}) {
+    const [selectedColor, setSelectedColor] = useState(currentColor)
+    const [errorMessage, setErrorMessage] = useState('')
+    const [pending, startTransition] = useTransition()
+
+    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+
+        setErrorMessage('')
+        const formData = new FormData()
+        formData.set('colorCode', selectedColor)
+
+        startTransition(async () => {
+            const result = await updateFavoriteColor(initialFavoriteColorState, formData)
+
+            if (result.status === 'error') {
+                setErrorMessage(result.message)
+                return
+            }
+
+            localStorage.setItem(FAVORITE_COLOR_STORAGE_KEY, selectedColor)
+            applyFavoriteColor(selectedColor)
+            onSaved(selectedColor)
+        })
+    }
+
+    return (
+        <div className={styles.overlay} onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !pending) onClose()
+        }}>
+            <form onSubmit={handleSubmit} className={`${styles.modal} ${styles.colorModal}`} role="dialog" aria-modal="true" aria-labelledby="color-modal-title">
+                <ModalHeader id="color-modal-title" title="推しカラーを変更" onClose={onClose} disabled={pending} />
+
+                <div className={styles.colorModalBody}>
+                    <div className={styles.colorGrid} role="radiogroup" aria-label="推しカラー">
+                        {FAVORITE_COLOR_OPTIONS.map((color) => {
+                            const selected = color.value === selectedColor
+
+                            return (
+                                <button
+                                    key={color.value}
+                                    type="button"
+                                    className={`${styles.colorOption} ${selected ? styles.colorOptionSelected : ''}`}
+                                    style={{ backgroundColor: color.value }}
+                                    onClick={() => setSelectedColor(color.value)}
+                                    role="radio"
+                                    aria-checked={selected}
+                                    aria-label={color.label}
+                                    disabled={pending}
+                                >
+                                    {selected ? <span aria-hidden="true">✓</span> : null}
+                                </button>
+                            )
+                        })}
+                    </div>
+                    <p className={styles.helpText}>ヘッダーやサイドメニューに反映されるカラーです。</p>
+                    <ActionError message={errorMessage} />
+                </div>
+
+                <ModalFooter
+                    onCancel={onClose}
+                    confirmLabel={pending ? '変更中...' : 'このカラーに変更'}
+                    disabled={!selectedColor || pending}
                 />
             </form>
         </div>

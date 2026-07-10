@@ -1,5 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap");
 
+:root {
+  --favorite-color: #F8BBD0;
+}
+
 body {
   margin: 0;
   background: #ffffff;
@@ -304,56 +308,6 @@ footer {
 
 .sidebar a:hover {
   background: #333;
-}
-
-/* ==========================
-   推しカラー設定
-========================== */
-
-.favorite-color-setting {
-  margin-top: auto;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-}
-
-.favorite-color-setting h3 {
-  font-size: 16px;
-  margin-bottom: 15px;
-}
-
-.favorite-color-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 15px;
-}
-
-.color-option {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-
-  box-shadow:
-    0 0 0 2px rgba(255, 255, 255, 0.9),
-    0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.color-option.selected {
-  border: 3px solid #666;
-}
-
-.favorite-color-save {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-
-  background: color-mix(in srgb, var(--favorite-color) 50%, white 50%);
 }
 
 header,

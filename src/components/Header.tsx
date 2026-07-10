@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import FavoriteColorInitializer from "./FavoriteColorInitializer";
 import HamburgerMenu from "./HamburgerMenu";
 import MiniPlayer from "./MiniPlayer";
 import { Heart, CdSvg, PersonSvg } from "./Svgs";
@@ -10,7 +11,13 @@ import style from "./Header.module.css";
 const ACTIVE_COLOR = "#E8447A";
 const INACTIVE_COLOR = "#555555";
 
-export default function Header() {
+type HeaderProps = {
+    initialFavoriteColor?: string | null;
+};
+
+export default function Header({
+    initialFavoriteColor = null,
+}: HeaderProps) {
     const pathname = usePathname();
 
     const menuItems = [
@@ -35,6 +42,7 @@ export default function Header() {
 
     return (
         <header className={style.header}>
+            <FavoriteColorInitializer initialColor={initialFavoriteColor} />
             <h1>Music Frontline</h1>
 
             <MiniPlayer />

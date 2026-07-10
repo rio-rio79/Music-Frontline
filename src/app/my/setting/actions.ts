@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createSupabaseServer } from '@/lib/supabase-server'
+import { isFavoriteColorOption } from '@/lib/favorite-color'
 
 export type UpdateUsernameState = {
     status: 'idle' | 'success' | 'error'
@@ -14,6 +15,11 @@ export type RegisterOshiState = {
 }
 
 export type ChangePlanState = {
+    status: 'idle' | 'success' | 'error'
+    message: string
+}
+
+export type UpdateFavoriteColorState = {
     status: 'idle' | 'success' | 'error'
     message: string
 }
@@ -145,4 +151,47 @@ export async function changePlan(
     revalidatePath('/my/setting')
 
     return { status: 'success', message: 'プランを変更しました。' }
+}
+
+export async function updateFavoriteColor(
+    _previousState: UpdateFavoriteColorState,
+    formData: FormData
+): Promise<UpdateFavoriteColorState> {
+    const value = formData.get('colorCode')
+    const colorCode = typeof value === 'string' ? value : ''
+
+    if (!colorCode || !isFavoriteColorOption(colorCode)) {
+        return { status: 'error', message: '選択したカラーを確認できませんでした。' }
+    }
+
+    const supabase = await createSupabaseServer()
+    const {
+        data: { user },
+        error: authError,
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+        return { status: 'error', message: 'ログイン情報を確認できませんでした。' }
+    }
+
+    const { error } = await supabase
+        .from('profiles')
+        .update({
+            color_code: colorCode,
+            updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id)
+        .select('id')
+        .single()
+
+    if (error) {
+        console.error('Failed to update favorite color:', error)
+        return { status: 'error', message: '推しカラーを変更できませんでした。' }
+    }
+
+    revalidatePath('/')
+    revalidatePath('/my/profile')
+    revalidatePath('/my/setting')
+
+    return { status: 'success', message: '推しカラーを変更しました。' }
 }

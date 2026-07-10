@@ -309,6 +309,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          color_code: string
           created_at: string
           id: string
           name: string
@@ -317,6 +318,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          color_code?: string
           created_at?: string
           id: string
           name?: string
@@ -325,6 +327,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          color_code?: string
           created_at?: string
           id?: string
           name?: string
@@ -797,6 +800,7 @@ export type Database = {
         Args: { p_comment_id: string; p_song_id: string }
         Returns: Json
       }
+      get_my_support_point_summary: { Args: never; Returns: Json }
       increment_blog_view: { Args: { blog_id: string }; Returns: undefined }
       increment_play_count: { Args: { song_id: string }; Returns: undefined }
       record_blog_view_with_points: {
