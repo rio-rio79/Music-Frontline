@@ -781,8 +781,32 @@ export type Database = {
       }
       award_song_play_points: { Args: { p_song_id: string }; Returns: Json }
       change_membership_plan: { Args: { p_plan_id: string }; Returns: Json }
+      create_blog_comment_with_points: {
+        Args: { p_blog_post_id: string; p_body: string }
+        Returns: Json
+      }
+      create_song_comment_with_points: {
+        Args: { p_body: string; p_song_id: string }
+        Returns: Json
+      }
+      delete_blog_comment_with_points: {
+        Args: { p_blog_post_id: string; p_comment_id: string }
+        Returns: Json
+      }
+      delete_song_comment_with_points: {
+        Args: { p_comment_id: string; p_song_id: string }
+        Returns: Json
+      }
       increment_blog_view: { Args: { blog_id: string }; Returns: undefined }
       increment_play_count: { Args: { song_id: string }; Returns: undefined }
+      record_blog_view_with_points: {
+        Args: { p_blog_post_id: string }
+        Returns: Json
+      }
+      record_song_play_with_points: {
+        Args: { p_song_id: string }
+        Returns: Json
+      }
       send_fan_letter: {
         Args: { p_amount: number; p_junior_id: string; p_message: string }
         Returns: Json
@@ -797,7 +821,15 @@ export type Database = {
       sync_oshi_points: { Args: never; Returns: Json }
       sync_song_comment_points: { Args: { p_song_id: string }; Returns: Json }
       sync_song_like_points: { Args: { p_song_id: string }; Returns: Json }
+      toggle_blog_like_with_points: {
+        Args: { p_blog_post_id: string }
+        Returns: Json
+      }
       toggle_follow_junior: { Args: { p_junior_id: string }; Returns: Json }
+      toggle_song_like_with_points: {
+        Args: { p_song_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

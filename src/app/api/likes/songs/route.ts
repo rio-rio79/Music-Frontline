@@ -1,6 +1,10 @@
 import { createSupabaseServer } from '@/lib/supabase-server'
 
-export async function GET(request: Request) {
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : 'Server error'
+}
+
+export async function GET() {
     try {
         const supabase = await createSupabaseServer()
         const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -52,12 +56,12 @@ export async function GET(request: Request) {
             
             if (song.song_juniors && song.song_juniors.length > 0) {
                 const groups = song.song_juniors
-                    .map((sj: any) => sj.groups?.name)
+                    .map((sj) => sj.groups?.name)
                     .filter(Boolean) as string[]
                 songGroups = Array.from(new Set(groups))
 
                 const juniors = song.song_juniors
-                    .map((sj: any) => sj.juniors?.name)
+                    .map((sj) => sj.juniors?.name)
                     .filter(Boolean) as string[]
                 songJuniors = Array.from(new Set(juniors))
             }
@@ -90,8 +94,8 @@ export async function GET(request: Request) {
         }).filter(Boolean)
 
         return Response.json({ songs: formattedSongs })
-    } catch (e: any) {
-        return Response.json({ error: e.message || 'Server error' }, { status: 500 })
+    } catch (error: unknown) {
+        return Response.json({ error: getErrorMessage(error) }, { status: 500 })
     }
 }
 
@@ -111,44 +115,17 @@ export async function POST(request: Request) {
             return Response.json({ error: '楽曲IDが必要です。' }, { status: 400 })
         }
 
-        // 既にいいねしているか確認
-        const { data: existing, error: checkError } = await supabase
-            .from('song_likes')
-            .select('id')
-            .eq('user_id', user.id)
-            .eq('song_id', songId)
-            .maybeSingle()
+        const { data, error } = await supabase.rpc('toggle_song_like_with_points', {
+            p_song_id: songId
+        })
 
-        if (checkError) {
-            return Response.json({ error: checkError.message }, { status: 500 })
+        if (error) {
+            return Response.json({ error: error.message }, { status: 500 })
         }
 
-        if (existing) {
-            // 解除
-            const { error: deleteError } = await supabase
-                .from('song_likes')
-                .delete()
-                .eq('id', existing.id)
-
-            if (deleteError) {
-                return Response.json({ error: deleteError.message }, { status: 500 })
-            }
-            return Response.json({ liked: false })
-        } else {
-            // いいね登録
-            const { error: insertError } = await supabase
-                .from('song_likes')
-                .insert({
-                    user_id: user.id,
-                    song_id: songId
-                })
-
-            if (insertError) {
-                return Response.json({ error: insertError.message }, { status: 500 })
-            }
-            return Response.json({ liked: true })
-        }
-    } catch (e: any) {
-        return Response.json({ error: e.message || 'Server error' }, { status: 500 })
+        const result = data as { liked: boolean }
+        return Response.json({ liked: result.liked })
+    } catch (error: unknown) {
+        return Response.json({ error: getErrorMessage(error) }, { status: 500 })
     }
 }

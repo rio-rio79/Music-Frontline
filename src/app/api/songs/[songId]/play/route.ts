@@ -4,6 +4,10 @@ type RouteContext = {
     params: Promise<{ songId: string }>
 }
 
+type RecordSongPlayResult = {
+    points?: unknown
+}
+
 export async function POST(_request: Request, context: RouteContext) {
     try {
         const { songId } = await context.params
@@ -14,40 +18,23 @@ export async function POST(_request: Request, context: RouteContext) {
 
         const supabase = await createSupabaseServer()
 
-        // 成立した再生は、ログイン状態にかかわらず楽曲全体の再生回数へ反映する。
-        const { error: playCountError } = await supabase.rpc('increment_play_count', {
-            song_id: songId,
-        })
-
-        if (playCountError) {
-            console.error('increment_play_count error:', playCountError)
-            return Response.json({ error: playCountError.message }, { status: 500 })
-        }
-
-        // ログインユーザーだけランキングポイントを付与する。日次上限はDB側の日本時間period_keyで判定する。
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) {
-            return Response.json({
-                success: true,
-                playCountIncremented: true,
-                pointsAwarded: false,
-                reason: 'guest_user',
-            })
-        }
-
-        const { data: pointsResult, error: pointsError } = await supabase.rpc('award_song_play_points', {
+        // 成立した再生は、DB側で再生回数加算とログインユーザーのポイント付与を一括実行する。
+        const { data: result, error } = await supabase.rpc('record_song_play_with_points', {
             p_song_id: songId,
         })
 
-        if (pointsError) {
-            console.error('award_song_play_points error:', pointsError)
-            return Response.json({ error: pointsError.message }, { status: 500 })
+        if (error) {
+            console.error('record_song_play_with_points error:', error)
+            return Response.json({ error: error.message }, { status: 500 })
         }
+
+        const recordResult = result as RecordSongPlayResult | null
 
         return Response.json({
             success: true,
             playCountIncremented: true,
-            points: pointsResult,
+            result,
+            points: recordResult?.points ?? null,
         })
     } catch (e: unknown) {
         const message = e instanceof Error ? e.message : 'Server error'

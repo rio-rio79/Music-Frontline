@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { usePlayerStore } from "../stores/playerStore";
 
 export default function AudioPlayerController() {
@@ -18,19 +18,42 @@ export default function AudioPlayerController() {
     const setDuration = usePlayerStore((state) => state.setDuration);
     const clearSeekRequest = usePlayerStore((state) => state.clearSeekRequest);
 
+    const reportPlayback = useCallback((songId: string) => {
+        if (hasCountedThisSongRef.current) {
+            return;
+        }
+
+        hasCountedThisSongRef.current = true;
+
+        fetch(`/api/songs/${songId}/play`, { method: "POST" })
+            .then((res) => {
+                if (res.ok) {
+                    return res.json();
+                }
+                throw new Error("API response error");
+            })
+            .then((data) => {
+                if (data?.points?.points_awarded === false && data.points.reason) {
+                    console.log(`Playback points skipped on server: ${data.points.reason}`);
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to increment play count:", err);
+            });
+    }, []);
+
     useEffect(() => {
         if (!audioRef.current || !currentSong) {
             return;
         }
 
+        activePlayDurationRef.current = 0;
+        hasCountedThisSongRef.current = false;
         audioRef.current.src = currentSong.audioFilePath;
         audioRef.current.play().catch(() => { });
     }, [currentSong]);
 
     useEffect(() => {
-        activePlayDurationRef.current = 0;
-        hasCountedThisSongRef.current = false;
-
         if (!isPlaying || !currentSong) {
             return;
         }
@@ -47,31 +70,15 @@ export default function AudioPlayerController() {
 
             activePlayDurationRef.current += 1;
 
-            if (activePlayDurationRef.current < 30 || hasCountedThisSongRef.current) {
+            if (activePlayDurationRef.current < 30) {
                 return;
             }
 
-            hasCountedThisSongRef.current = true;
-
-            fetch(`/api/songs/${currentSong.id}/play`, { method: "POST" })
-                .then((res) => {
-                    if (res.ok) {
-                        return res.json();
-                    }
-                    throw new Error("API response error");
-                })
-                .then((data) => {
-                    if (data?.points?.points_awarded === false && data.points.reason) {
-                        console.log(`Playback points skipped on server: ${data.points.reason}`);
-                    }
-                })
-                .catch((err) => {
-                    console.error("Failed to increment play count:", err);
-                });
+            reportPlayback(currentSong.id);
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [isPlaying, currentSong]);
+    }, [isPlaying, currentSong, reportPlayback]);
 
     useEffect(() => {
         if (!audioRef.current || !currentSong) {
@@ -104,12 +111,26 @@ export default function AudioPlayerController() {
         clearSeekRequest();
     }, [clearSeekRequest, seekRequestTime, setCurrentTime]);
 
+    const handleEnded = () => {
+        const audio = audioRef.current;
+
+        if (currentSong && audio && Number.isFinite(audio.duration) && audio.duration < 30) {
+            const requiredPlayDuration = Math.max(1, audio.duration - 1);
+
+            if (activePlayDurationRef.current >= requiredPlayDuration) {
+                reportPlayback(currentSong.id);
+            }
+        }
+
+        next();
+    };
+
     return (
         <audio
             ref={audioRef}
             onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
             onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
-            onEnded={next}
+            onEnded={handleEnded}
         />
     );
 }
