@@ -803,6 +803,10 @@ export type Database = {
         Args: { p_blog_post_id: string }
         Returns: Json
       }
+      record_song_play_with_points: {
+        Args: { p_song_id: string }
+        Returns: Json
+      }
       send_fan_letter: {
         Args: { p_amount: number; p_junior_id: string; p_message: string }
         Returns: Json
