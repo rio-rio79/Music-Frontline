@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./JuniorDetail.module.css";
+import Image from "next/image";
 import { type Song, usePlayerStore } from "@/stores/playerStore";
 import { useLikeStore } from "@/stores/likeStore";
 import { Heart } from "@/components/Svgs";
@@ -116,9 +117,9 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
         <>
           {/* Profile card */}
           <div className={styles.profileCard}>
-            <div className={styles.avatar}>
+            <div className={styles.avatar} style={{ position: "relative" }}>
               {junior.imageUrl ? (
-                <img src={junior.imageUrl} alt={junior.name} className={styles.avatarImg} />
+                <Image src={junior.imageUrl} alt={junior.name} className={styles.avatarImg} fill style={{ objectFit: "cover" }} />
               ) : (
                 <svg viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.5c-3.3 0-9.8 1.6-9.8 4.9v2.4h19.6v-2.4c0-3.3-6.5-4.9-9.8-4.9z" />
@@ -161,7 +162,7 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
                 return (
                   <div className={styles.track} key={song.id}>
                     {song.imagePath ? (
-                      <img src={song.imagePath} alt={song.title} className={styles.trackArt} />
+                      <Image src={song.imagePath} alt={song.title} width={64} height={64} className={styles.trackArt} style={{ objectFit: "cover" }} />
                     ) : (
                       <div className={`${styles.trackArt} ${artClass}`} />
                     )}

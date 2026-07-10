@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./GroupDetail.module.css";
+import Image from "next/image";
 import { type Song, usePlayerStore } from "@/stores/playerStore";
 import { useLikeStore } from "@/stores/likeStore";
 import { Heart } from "@/components/Svgs";
@@ -97,9 +98,9 @@ export default function GroupDetailClient({ group }: GroupDetailClientProps) {
       <h1 className={`${styles.sectionTitle} ${styles.groupTitle}`}>{group.name}</h1>
       <div className={styles.sectionTitleUnderline}></div>
 
-      <div className={styles.groupPhoto} style={group.imageUrl ? undefined : groupGradientStyle}>
+      <div className={styles.groupPhoto} style={group.imageUrl ? { position: "relative" } : groupGradientStyle}>
         {group.imageUrl ? (
-          <img src={group.imageUrl} alt={group.name} className={styles.groupPhotoImg} />
+          <Image src={group.imageUrl} alt={group.name} fill className={styles.groupPhotoImg} style={{ objectFit: 'cover' }} />
         ) : (
           <div className={styles.groupPhotoPlaceholder}>
             {personIconSvg}
@@ -125,9 +126,9 @@ export default function GroupDetailClient({ group }: GroupDetailClientProps) {
 
             return (
               <Link href={`/junior/${m.id}`} key={m.id} className={styles.memberCard}>
-                <div className={styles.mAvatar} style={m.imageUrl ? undefined : gradientStyle}>
+                <div className={styles.mAvatar} style={m.imageUrl ? { position: "relative" } : gradientStyle}>
                   {m.imageUrl ? (
-                    <img src={m.imageUrl} alt={m.name} className={styles.avatarImg} />
+                    <Image src={m.imageUrl} alt={m.name} fill className={styles.avatarImg} style={{ objectFit: "cover" }} />
                   ) : (
                     personIconSvg
                   )}
@@ -161,7 +162,7 @@ export default function GroupDetailClient({ group }: GroupDetailClientProps) {
             return (
               <div className={styles.track} key={song.id}>
                 {song.imagePath ? (
-                  <img src={song.imagePath} alt={song.title} className={styles.trackArt} />
+                  <Image src={song.imagePath} alt={song.title} width={64} height={64} className={styles.trackArt} style={{ objectFit: "cover" }} />
                 ) : (
                   <div className={`${styles.trackArt} ${artClass}`} />
                 )}

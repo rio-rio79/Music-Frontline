@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { type Song, usePlayerStore } from "../../../stores/playerStore";
 import { useLikeStore } from "../../../stores/likeStore";
 import { GraySmallHeart, ThmbSvg, GraySmallPlayMusic, SkipBack, SkipForward, StartMusic, StopMusic } from "@/components/Svgs";
@@ -209,7 +210,7 @@ export default function MusicDetailClient({
             <div className="topRow">
               <div className="musicImg">
                 {song.imagePath ? (
-                  <img src={song.imagePath} alt={song.title} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "10px" }} />
+                  <Image src={song.imagePath} alt={song.title} width={130} height={130} style={{ objectFit: "cover", borderRadius: "10px" }} />
                 ) : (
                   <ThmbSvg />
                 )}

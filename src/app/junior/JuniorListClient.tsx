@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import styles from "./JuniorList.module.css";
+import Image from "next/image";
 import { Heart } from "@/components/Svgs";
 import { useLikeStore } from "@/stores/likeStore";
 
@@ -205,7 +206,13 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
                 <Link href={`/junior/${junior.id}`} key={junior.id} className={styles.card}>
                   <div className={styles.cardPhoto} style={junior.imageUrl ? undefined : gradientStyle}>
                     {junior.imageUrl ? (
-                      <img src={junior.imageUrl} alt={junior.name} />
+                      <Image
+                        src={junior.imageUrl}
+                        alt={junior.name}
+                        fill
+                        sizes="(max-width: 480px) 50vw, 25vw"
+                        style={{ objectFit: "cover" }}
+                      />
                     ) : (
                       personIconSvg
                     )}
@@ -242,7 +249,13 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
                 <Link href={`/group/${group.id}`} key={group.id} className={styles.card}>
                   <div className={styles.cardPhoto} style={group.imageUrl ? undefined : gradientStyle}>
                     {group.imageUrl ? (
-                      <img src={group.imageUrl} alt={group.name} />
+                      <Image
+                        src={group.imageUrl}
+                        alt={group.name}
+                        fill
+                        sizes="(max-width: 480px) 50vw, 25vw"
+                        style={{ objectFit: "cover" }}
+                      />
                     ) : (
                       personIconSvg
                     )}

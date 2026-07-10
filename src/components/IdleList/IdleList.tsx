@@ -2,6 +2,7 @@
 
 import { Heart, YajirushiSvg } from "../Svgs";
 import { type JuniorLikeItem, useLikeStore } from "@/stores/likeStore";
+import Image from "next/image";
 
 type IdleListProps = {
   idles: JuniorLikeItem[];
@@ -18,7 +19,7 @@ export default function IdleList({ idles, onToggleLike }: IdleListProps) {
           <a href={`/junior/${idle.id}`} className="idle-list__link">
             <div className="idle-list__thumb">
               {idle.imageUrl && (
-                <img src={idle.imageUrl} alt={idle.name} />
+                <Image src={idle.imageUrl} alt={idle.name} width={88} height={88} style={{ objectFit: 'cover' }} />
               )}
             </div>
 
