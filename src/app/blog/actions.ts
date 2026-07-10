@@ -20,11 +20,16 @@ type IncrementBlogViewResult =
     | { status: "success"; viewCount: number }
     | { status: "error"; message: string };
 
-type InsertedBlogComment = {
-    id: string;
+type BlogCommentRpcResult = {
+    comment_id: string;
     body: string;
     created_at: string;
-    profiles: { name: string } | null;
+    author_name: string;
+    comment_count: number;
+};
+
+type BlogViewRpcResult = {
+    view_count: number;
 };
 
 const COMMENT_MAX_LENGTH = 300;
@@ -68,32 +73,6 @@ async function getPaidPlanSupabase() {
     };
 }
 
-async function getBlogLikeCount(
-    supabase: Awaited<ReturnType<typeof createSupabaseServer>>,
-    postId: string,
-) {
-    const { count, error } = await supabase
-        .from("blog_likes")
-        .select("id", { count: "exact", head: true })
-        .eq("blog_posts_id", postId);
-
-    if (error) throw error;
-    return count ?? 0;
-}
-
-async function getBlogCommentCount(
-    supabase: Awaited<ReturnType<typeof createSupabaseServer>>,
-    postId: string,
-) {
-    const { count, error } = await supabase
-        .from("blog_comments")
-        .select("id", { count: "exact", head: true })
-        .eq("blog_posts_id", postId);
-
-    if (error) throw error;
-    return count ?? 0;
-}
-
 export async function incrementBlogView(postId: string): Promise<IncrementBlogViewResult> {
     if (!postId) {
         return { status: "error", message: "ブログ投稿を確認できませんでした。" };
@@ -104,8 +83,8 @@ export async function incrementBlogView(postId: string): Promise<IncrementBlogVi
         return { status: "error", message: "ブログの本文閲覧は有料プランに加入する必要があります" };
     }
 
-    const { error } = await supabase.rpc("increment_blog_view", {
-        blog_id: postId,
+    const { data, error } = await supabase.rpc("record_blog_view_with_points", {
+        p_blog_post_id: postId,
     });
 
     if (error) {
@@ -113,21 +92,12 @@ export async function incrementBlogView(postId: string): Promise<IncrementBlogVi
         return { status: "error", message: "閲覧数を更新できませんでした。" };
     }
 
-    const { data, error: fetchError } = await supabase
-        .from("blog_posts")
-        .select("view_count")
-        .eq("id", postId)
-        .maybeSingle();
-
-    if (fetchError || !data) {
-        console.error("Failed to fetch blog view count:", fetchError);
-        return { status: "error", message: "閲覧数を確認できませんでした。" };
-    }
+    const result = data as BlogViewRpcResult;
 
     revalidatePath("/blog");
     revalidatePath(`/blog/${postId}`);
 
-    return { status: "success", viewCount: data.view_count };
+    return { status: "success", viewCount: result.view_count };
 }
 
 export async function toggleBlogLike(postId: string): Promise<BlogActionResult> {
@@ -143,52 +113,23 @@ export async function toggleBlogLike(postId: string): Promise<BlogActionResult> 
         return { status: "error", message: "ブログの本文閲覧は有料プランに加入する必要があります" };
     }
 
-    const { data: currentLike, error: currentLikeError } = await supabase
-        .from("blog_likes")
-        .select("id")
-        .eq("blog_posts_id", postId)
-        .eq("user_id", user.id)
-        .maybeSingle();
+    const { data, error } = await supabase.rpc("toggle_blog_like_with_points", {
+        p_blog_post_id: postId,
+    });
 
-    if (currentLikeError) {
-        console.error("Failed to fetch blog like:", currentLikeError);
-        return { status: "error", message: "いいね状態を確認できませんでした。" };
+    if (error) {
+        console.error("Failed to toggle blog like:", error);
+        return { status: "error", message: "いいねを更新できませんでした。" };
     }
 
-    if (currentLike) {
-        const { error } = await supabase
-            .from("blog_likes")
-            .delete()
-            .eq("id", currentLike.id)
-            .eq("user_id", user.id);
-
-        if (error) {
-            console.error("Failed to delete blog like:", error);
-            return { status: "error", message: "いいねを解除できませんでした。" };
-        }
-    } else {
-        const { error } = await supabase
-            .from("blog_likes")
-            .insert({
-                blog_posts_id: postId,
-                user_id: user.id,
-            });
-
-        if (error) {
-            console.error("Failed to insert blog like:", error);
-            return { status: "error", message: "いいねできませんでした。" };
-        }
-    }
-
-    try {
-        const likeCount = await getBlogLikeCount(supabase, postId);
-        revalidatePath("/blog");
-        revalidatePath(`/blog/${postId}`);
-        return { status: "success", liked: !currentLike, likeCount };
-    } catch (error) {
-        console.error("Failed to count blog likes:", error);
-        return { status: "error", message: "いいね数を確認できませんでした。" };
-    }
+    const result = data as { liked: boolean; like_count: number };
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${postId}`);
+    return {
+        status: "success",
+        liked: result.liked,
+        likeCount: result.like_count,
+    };
 }
 
 export async function createBlogComment(
@@ -220,42 +161,31 @@ export async function createBlogComment(
         return { status: "error", message: "ブログの本文閲覧は有料プランに加入する必要があります" };
     }
 
-    const { data, error } = await supabase
-        .from("blog_comments")
-        .insert({
-            blog_posts_id: postId,
-            user_id: user.id,
-            body: comment,
-        })
-        .select("id,body,created_at,profiles(name)")
-        .single();
+    const { data, error } = await supabase.rpc("create_blog_comment_with_points", {
+        p_blog_post_id: postId,
+        p_body: comment,
+    });
 
     if (error) {
         console.error("Failed to create blog comment:", error);
         return { status: "error", message: "コメントを送信できませんでした。" };
     }
 
-    try {
-        const savedComment = data as unknown as InsertedBlogComment;
-        const commentCount = await getBlogCommentCount(supabase, postId);
-        revalidatePath("/blog");
-        revalidatePath(`/blog/${postId}`);
+    const savedComment = data as unknown as BlogCommentRpcResult;
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${postId}`);
 
-        return {
-            status: "success",
-            comment: {
-                id: savedComment.id,
-                author: savedComment.profiles?.name ?? "あなた",
-                text: savedComment.body,
-                date: formatBlogDate(savedComment.created_at),
-                canDelete: true,
-            },
-            commentCount,
-        };
-    } catch (error) {
-        console.error("Failed to count blog comments:", error);
-        return { status: "error", message: "コメント数を確認できませんでした。" };
-    }
+    return {
+        status: "success",
+        comment: {
+            id: savedComment.comment_id,
+            author: savedComment.author_name,
+            text: savedComment.body,
+            date: formatBlogDate(savedComment.created_at),
+            canDelete: true,
+        },
+        commentCount: savedComment.comment_count,
+    };
 }
 
 export async function deleteBlogComment(
@@ -271,25 +201,22 @@ export async function deleteBlogComment(
         return { status: "error", message: "コメントを削除するにはログインしてください。" };
     }
 
-    const { error } = await supabase
-        .from("blog_comments")
-        .delete()
-        .eq("id", commentId)
-        .eq("blog_posts_id", postId)
-        .eq("user_id", user.id);
+    const { data, error } = await supabase.rpc("delete_blog_comment_with_points", {
+        p_blog_post_id: postId,
+        p_comment_id: commentId,
+    });
 
     if (error) {
         console.error("Failed to delete blog comment:", error);
         return { status: "error", message: "コメントを削除できませんでした。" };
     }
 
-    try {
-        const commentCount = await getBlogCommentCount(supabase, postId);
-        revalidatePath("/blog");
-        revalidatePath(`/blog/${postId}`);
-        return { status: "success", commentId, commentCount };
-    } catch (error) {
-        console.error("Failed to count blog comments:", error);
-        return { status: "error", message: "コメント数を確認できませんでした。" };
-    }
+    const result = data as { comment_id: string; comment_count: number };
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${postId}`);
+    return {
+        status: "success",
+        commentId: result.comment_id,
+        commentCount: result.comment_count,
+    };
 }
