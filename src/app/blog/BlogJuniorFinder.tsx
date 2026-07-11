@@ -22,6 +22,7 @@ function chunkJuniors(juniors: BlogJuniorLink[]) {
 
 export default function BlogJuniorFinder({ juniors }: BlogJuniorFinderProps) {
     const [activeSlide, setActiveSlide] = useState(0);
+    const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
     const juniorSlides = useMemo(() => chunkJuniors(juniors), [juniors]);
 
     useEffect(() => {
@@ -92,13 +93,16 @@ export default function BlogJuniorFinder({ juniors }: BlogJuniorFinderProps) {
                                         tabIndex={slideIndex === visibleSlide ? undefined : -1}
                                     >
                                         <span className={styles.juniorFinderPhoto}>
-                                            {junior.imageUrl ? (
+                                            {junior.imageUrl && !failedImageIds.has(junior.id) ? (
                                                 <Image
                                                     src={junior.imageUrl}
                                                     alt={junior.name}
                                                     width={160}
                                                     height={160}
                                                     className={styles.juniorFinderImage}
+                                                    onError={() => {
+                                                        setFailedImageIds((current) => new Set(current).add(junior.id));
+                                                    }}
                                                 />
                                             ) : (
                                                 <span className={styles.juniorFinderInitials}>{junior.initials}</span>
