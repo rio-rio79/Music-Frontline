@@ -21,7 +21,7 @@ export default async function BlogDetailPage({
 
     const from = Array.isArray(query.from) ? query.from[0] : query.from;
     const backLink = from === "liked-blogs"
-        ? { href: "/my/likes?tab=blog", label: "いいね一覧に戻る" }
+        ? { href: "/my/list?section=likes&like=blog", label: "マイリストに戻る" }
         : { href: "/blog", label: "ブログ一覧に戻る" };
 
     return <BlogPostClient post={post} backLink={backLink} />;

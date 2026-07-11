@@ -1,8 +1,8 @@
 "use client";
 
-import { Heart, YajirushiSvg } from "../Svgs";
-import { type JuniorLikeItem, useLikeStore } from "@/stores/likeStore";
 import Image from "next/image";
+import { type JuniorLikeItem } from "@/stores/likeStore";
+import { TwoPersonIcon, YajirushiSvg } from "../Svgs";
 
 type IdleListProps = {
   idles: JuniorLikeItem[];
@@ -10,8 +10,6 @@ type IdleListProps = {
 };
 
 export default function IdleList({ idles, onToggleLike }: IdleListProps) {
-  const likedJuniorIds = useLikeStore((state) => state.likedJuniorIds);
-
   return (
     <ul className="idle-list">
       {idles.map((idle) => (
@@ -34,7 +32,7 @@ export default function IdleList({ idles, onToggleLike }: IdleListProps) {
 
             <button
               type="button"
-              className="idle-list__heart-btn"
+              className="idle-list__follow-btn"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -42,9 +40,9 @@ export default function IdleList({ idles, onToggleLike }: IdleListProps) {
                   onToggleLike(idle.id);
                 }
               }}
-              aria-label="お気に入り解除"
+              aria-label="フォロー解除"
             >
-              <Heart filled={likedJuniorIds.includes(idle.id)} />
+              <TwoPersonIcon />
             </button>
             <YajirushiSvg/>
           </a>
@@ -117,10 +115,11 @@ export default function IdleList({ idles, onToggleLike }: IdleListProps) {
           color: #999;
         }
 
-        .idle-list__heart-btn {
+        .idle-list__follow-btn {
           background: none;
           border: none;
           padding: 4px;
+          color: #E8447A;
           cursor: pointer;
           display: flex;
           align-items: center;
@@ -128,7 +127,7 @@ export default function IdleList({ idles, onToggleLike }: IdleListProps) {
           transition: transform 0.2s;
         }
 
-        .idle-list__heart-btn:hover {
+        .idle-list__follow-btn:hover {
           transform: scale(1.1);
         }
 

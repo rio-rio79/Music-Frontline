@@ -24,6 +24,14 @@ type LikeStore = {
     clearLikes: () => void;
 };
 
+type SongLikesResponse = {
+    songs?: Song[];
+};
+
+type JuniorLikesResponse = {
+    juniors?: JuniorLikeItem[];
+};
+
 export const useLikeStore = create<LikeStore>((set, get) => ({
     likedSongs: [],
     likedSongIds: [],
@@ -41,9 +49,9 @@ export const useLikeStore = create<LikeStore>((set, get) => ({
                 return;
             }
             if (res.ok) {
-                const data = await res.json();
+                const data = await res.json() as SongLikesResponse;
                 const songs = data.songs || [];
-                const ids = songs.map((song: any) => song.id);
+                const ids = songs.map((song) => song.id);
                 set({ likedSongs: songs, likedSongIds: ids, isLoggedIn: true });
             }
         } catch (error) {
@@ -73,13 +81,14 @@ export const useLikeStore = create<LikeStore>((set, get) => ({
                 const currentIds = get().likedSongIds;
 
                 if (data.liked) {
-                    set({ likedSongIds: [...currentIds, songId] });
+                    set({ likedSongIds: currentIds.includes(songId) ? currentIds : [...currentIds, songId] });
                     // いいねが追加された際は、楽曲情報を取得するために
                     // サーバーから最新のいいね一覧を再フェッチして同期します
                     await get().fetchLikes();
                 } else {
                     set({
                         likedSongIds: currentIds.filter(id => id !== songId),
+                        likedSongs: get().likedSongs.filter(song => song.id !== songId),
                     });
                 }
                 return data.liked;
@@ -103,9 +112,9 @@ export const useLikeStore = create<LikeStore>((set, get) => ({
                 return;
             }
             if (res.ok) {
-                const data = await res.json();
+                const data = await res.json() as JuniorLikesResponse;
                 const juniors = data.juniors || [];
-                const ids = juniors.map((junior: any) => junior.id);
+                const ids = juniors.map((junior) => junior.id);
                 set({ likedJuniors: juniors, likedJuniorIds: ids, isLoggedIn: true });
             }
         } catch (error) {
@@ -135,11 +144,12 @@ export const useLikeStore = create<LikeStore>((set, get) => ({
                 const currentIds = get().likedJuniorIds;
 
                 if (data.liked) {
-                    set({ likedJuniorIds: [...currentIds, juniorId] });
+                    set({ likedJuniorIds: currentIds.includes(juniorId) ? currentIds : [...currentIds, juniorId] });
                     await get().fetchJuniorLikes();
                 } else {
                     set({
                         likedJuniorIds: currentIds.filter(id => id !== juniorId),
+                        likedJuniors: get().likedJuniors.filter(junior => junior.id !== juniorId),
                     });
                 }
                 return data.liked;
@@ -158,4 +168,3 @@ export const useLikeStore = create<LikeStore>((set, get) => ({
         set({ likedSongs: [], likedSongIds: [], likedJuniors: [], likedJuniorIds: [], isLoggedIn: true });
     }
 }));
-
