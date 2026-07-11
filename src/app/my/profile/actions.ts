@@ -70,7 +70,6 @@ export async function updateUsername(
     }
 
     revalidatePath('/my/profile')
-    revalidatePath('/my/setting')
 
     return { status: 'success', message: 'ユーザーネームを変更しました。' }
 }
@@ -112,7 +111,6 @@ export async function registerOshi(
     }
 
     revalidatePath('/my/profile')
-    revalidatePath('/my/setting')
 
     return { status: 'success', message: '推しを登録しました。' }
 }
@@ -148,7 +146,6 @@ export async function changePlan(
     }
 
     revalidatePath('/my/profile')
-    revalidatePath('/my/setting')
 
     return { status: 'success', message: 'プランを変更しました。' }
 }
@@ -191,7 +188,6 @@ export async function updateFavoriteColor(
 
     revalidatePath('/')
     revalidatePath('/my/profile')
-    revalidatePath('/my/setting')
 
     return { status: 'success', message: '推しカラーを変更しました。' }
 }

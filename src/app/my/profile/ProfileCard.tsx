@@ -17,7 +17,7 @@ import {
     type RegisterOshiState,
     type UpdateFavoriteColorState,
     type UpdateUsernameState,
-} from '../setting/actions'
+} from './actions'
 import styles from './ProfileCard.module.css'
 
 type Plan = {

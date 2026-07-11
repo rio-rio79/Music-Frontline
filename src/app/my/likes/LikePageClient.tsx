@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import MusicList from "../../components/MusicList/MusicList";
-import { useLikeStore } from "../../stores/likeStore";
-import BlogPostList from "../blog/BlogPostList";
+import MusicList from "../../../components/MusicList/MusicList";
+import { useLikeStore } from "../../../stores/likeStore";
+import BlogPostList from "../../blog/BlogPostList";
 import { type BlogListItem } from "@/lib/blog-data";
 import IdleList from "@/components/IdleList/IdleList";
 

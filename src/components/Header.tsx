@@ -13,7 +13,7 @@ type HeaderProps = {
 type NavItem = {
     name: string;
     href: string;
-    key: "home" | "junior" | "music" | "blog" | "ranking" | "fanletter" | "mypage";
+    key: "home" | "junior" | "music" | "blog" | "ranking" | "likes" | "fanletter" | "mypage";
 };
 
 const navItems: NavItem[] = [
@@ -22,6 +22,7 @@ const navItems: NavItem[] = [
     { name: "Music", href: "/music", key: "music" },
     { name: "Blog", href: "/blog", key: "blog" },
     { name: "Ranking", href: "/ranking", key: "ranking" },
+    { name: "Likes", href: "/my/likes", key: "likes" },
     { name: "FanLetter", href: "/support/tip", key: "fanletter" },
     { name: "MyPage", href: "/my/profile", key: "mypage" },
 ];
@@ -129,6 +130,14 @@ function NavIcon({ type }: { type: NavItem["key"] }) {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <rect x="3.5" y="5.5" width="17" height="13" rx="1.8" stroke="currentColor" strokeWidth="1.6" />
                 <path d="M4 6.5 12 13l8-6.5" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+            </svg>
+        );
+    }
+
+    if (type === "likes") {
+        return (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 20.5S4 15.6 4 9.3a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 8 2.8c0 6.3-8 11.2-8 11.2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
             </svg>
         );
     }
