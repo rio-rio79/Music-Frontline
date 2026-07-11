@@ -79,54 +79,67 @@ export default function ProfileCard({
         <>
             <section className={styles.card}>
                 <div className={styles.banner}>profile</div>
-                <div className={styles.body}>
+                <div className={styles.headerRow}>
                     <div className={styles.avatar}>{username.charAt(0).toUpperCase()}</div>
 
-                    <div className={styles.info}>
-                        <div className={styles.nameRow}>
-                            <span className={styles.name}>{username}</span>
-                            <button
-                                type="button"
-                                className={styles.editNameButton}
-                                onClick={() => setOpenModal('username')}
-                                aria-label="ユーザーネームを編集"
-                            >
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
-                                    <path d="M4 19l1.2-4L16 4.2c.5-.5 1.3-.5 1.8 0l2 2c.5.5.5 1.3 0 1.8L9 18.8 4 19z" />
-                                </svg>
-                            </button>
-                        </div>
+                    <div className={styles.nameRow}>
+                        <span className={styles.name}>{username}</span>
+                        <button
+                            type="button"
+                            className={styles.editNameButton}
+                            onClick={() => setOpenModal('username')}
+                            aria-label="ユーザーネームを編集"
+                        >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+                                <path d="M4 19l1.2-4L16 4.2c.5-.5 1.3-.5 1.8 0l2 2c.5.5.5 1.3 0 1.8L9 18.8 4 19z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
 
-                        <div className={styles.settingRow}>
-                            <span className={styles.settingLabel}>プラン：</span>
+                <div className={styles.settingList}>
+                    <div className={styles.settingItem}>
+                        <div className={styles.settingCaption}>プラン</div>
+                        <div className={styles.settingContent}>
                             <span className={styles.settingValue}>{currentPlan?.name ?? '未設定'}</span>
                             <button
                                 type="button"
                                 className={styles.changeButton}
                                 onClick={() => setOpenModal('plan')}
                             >
-                                変更する
+                                変更
                             </button>
                         </div>
+                    </div>
 
-                        <div className={styles.settingRow}>
-                            <span className={styles.settingLabel}>推し：</span>
-                            <span className={currentOshi ? styles.settingValue : styles.unsetValue}>
-                                {currentOshi
-                                    ? `${currentOshi.name} ・ ${currentOshi.affiliation}`
-                                    : '未登録'}
+                    <div className={styles.settingDivider} />
+
+                    <div className={styles.settingItem}>
+                        <div className={styles.settingCaption}>推し</div>
+                        <div className={styles.settingContent}>
+                            <span className={styles.oshiValue}>
+                                <span className={currentOshi ? styles.oshiName : styles.unsetValue}>
+                                    {currentOshi ? currentOshi.name : '未登録'}
+                                </span>
+                                {currentOshi && (
+                                    <span className={styles.oshiTag}>{currentOshi.affiliation}</span>
+                                )}
                             </span>
                             <button
                                 type="button"
                                 className={styles.changeButton}
                                 onClick={() => setOpenModal('oshi')}
                             >
-                                {currentOshi ? '変更する' : '登録する'}
+                                {currentOshi ? '変更' : '登録'}
                             </button>
                         </div>
+                    </div>
 
-                        <div className={styles.settingRow}>
-                            <span className={styles.settingLabel}>推しカラー：</span>
+                    <div className={styles.settingDivider} />
+
+                    <div className={styles.settingItem}>
+                        <div className={styles.settingCaption}>推しカラー</div>
+                        <div className={styles.settingContent}>
                             <span className={styles.colorValue}>
                                 <span
                                     className={styles.colorSwatch}
@@ -140,7 +153,7 @@ export default function ProfileCard({
                                 className={styles.changeButton}
                                 onClick={() => setOpenModal('color')}
                             >
-                                変更する
+                                変更
                             </button>
                         </div>
                     </div>

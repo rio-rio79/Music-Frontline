@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
+import type { ReactNode } from 'react'
 import { createSupabaseServer } from '@/lib/supabase-server'
-import { TwoPersonIcon, Pen, MusicalNote } from '../../../components/Svgs'
 import type { BreakdownItem } from '../../../components/GiftPanel/GiftPanel'
 import LogoutButton from './LogoutButton'
 import ProfileCard from './ProfileCard'
@@ -110,7 +110,15 @@ export default async function MyProfilePage() {
         redirect('/login')
     }
 
-    const [profileResult, plansResult, juniorsResult, supportPointResult] = await Promise.all([
+    const [
+        profileResult,
+        plansResult,
+        juniorsResult,
+        supportPointResult,
+        followCountResult,
+        blogLikeCountResult,
+        songLikeCountResult,
+    ] = await Promise.all([
         supabase
             .from('profiles')
             .select(`
@@ -130,6 +138,18 @@ export default async function MyProfilePage() {
             .select('id, name, image_path, region, group:groups(name)')
             .order('name'),
         supabase.rpc('get_my_support_point_summary'),
+        supabase
+            .from('follow_juniors')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', user.id),
+        supabase
+            .from('blog_likes')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', user.id),
+        supabase
+            .from('song_likes')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', user.id),
     ])
 
     const profile = profileResult.data
@@ -158,6 +178,15 @@ export default async function MyProfilePage() {
     if (supportPointResult.error) {
         console.error('Failed to fetch support point summary:', supportPointResult.error)
     }
+    if (followCountResult.error) {
+        console.error('Failed to fetch follow count:', followCountResult.error)
+    }
+    if (blogLikeCountResult.error) {
+        console.error('Failed to fetch blog like count:', blogLikeCountResult.error)
+    }
+    if (songLikeCountResult.error) {
+        console.error('Failed to fetch song like count:', songLikeCountResult.error)
+    }
 
     return (
         <main className="page-wrap">
@@ -181,22 +210,28 @@ export default async function MyProfilePage() {
                 initialFavoriteColor={profile?.color_code ?? null}
             />
 
-            <h2 className="section-title">Favorite</h2>
-            <div className="stat-grid">
-                <div className="stat-card">
-                    <TwoPersonIcon/>
-                    <div className="stat-label">フォロー中</div>
-                    <div className="stat-value" id="statFollow">2</div>
-                </div>
-                <div className="stat-card">
-                    <Pen/>
-                    <div className="stat-label">ブログ数</div>
-                    <div className="stat-value" id="statBlog">15</div>
-                </div>
-                <div className="stat-card">
-                    <MusicalNote/>
-                    <div className="stat-label">曲数</div>
-                    <div className="stat-value" id="statSong">10</div>
+            <h2 className="section-title">マイアクティビティ</h2>
+            <div className="activity-panel">
+                <div className="activity-row">
+                    <ActivityMetric
+                        icon={<PeopleIcon />}
+                        label="フォロー"
+                        value={followCountResult.count ?? 0}
+                        unit="人"
+                    />
+                    <div className="activity-divider" aria-hidden="true" />
+                    <ActivityMetric
+                        icon={<PenIcon />}
+                        label="いいねしたブログ"
+                        value={blogLikeCountResult.count ?? 0}
+                        unit="件"
+                    />
+                    <ActivityMetric
+                        icon={<NoteIcon />}
+                        label="いいねした楽曲"
+                        value={songLikeCountResult.count ?? 0}
+                        unit="曲"
+                    />
                 </div>
             </div>
 
@@ -209,6 +244,60 @@ export default async function MyProfilePage() {
             <a className="withdraw-link">退会する</a>
             <LogoutButton />
         </main>
+    )
+}
+
+function ActivityMetric({
+    icon,
+    label,
+    value,
+    unit,
+}: {
+    icon: ReactNode
+    label: string
+    value: number
+    unit: string
+}) {
+    return (
+        <div className="activity-metric">
+            <span className="activity-label">
+                {icon}
+                {label}
+            </span>
+            <div className="activity-value">
+                <span className="activity-number">{value.toLocaleString('ja-JP')}</span>
+                <span className="activity-unit">{unit}</span>
+            </div>
+        </div>
+    )
+}
+
+function PeopleIcon() {
+    return (
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ff4f8b" strokeWidth="1.7" aria-hidden="true">
+            <circle cx="9" cy="7" r="3" />
+            <path d="M3 19c0-3 2.7-5 6-5s6 2 6 5" />
+            <circle cx="17" cy="8" r="2.4" />
+            <path d="M15 13.3c2.4.2 4 1.9 4 4.2" />
+        </svg>
+    )
+}
+
+function PenIcon() {
+    return (
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ff4f8b" strokeWidth="1.7" aria-hidden="true">
+            <path d="M4 19l1.2-4L16 4.2c.5-.5 1.3-.5 1.8 0l2 2c.5.5.5 1.3 0 1.8L9 18.8 4 19z" />
+        </svg>
+    )
+}
+
+function NoteIcon() {
+    return (
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ff4f8b" strokeWidth="1.7" aria-hidden="true">
+            <path d="M9 18V5l11-2v13" />
+            <circle cx="6" cy="18" r="2.4" />
+            <circle cx="17" cy="16" r="2.4" />
+        </svg>
     )
 }
 
@@ -277,27 +366,60 @@ const pageStyles = `
     margin: 8px auto 0;
   }
 
-  .stat-grid {
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap: 16px;
+  .activity-panel {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 28px 20px;
     margin-bottom: 40px;
   }
-  .stat-card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 20px 10px 18px;
-    text-align: center;
+
+  .activity-row {
+    display: flex;
+    align-items: center;
   }
-  .stat-label {
+
+  .activity-metric {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    min-width: 0;
+  }
+
+  .activity-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
     font-size: 13px;
+    font-weight: 700;
     color: var(--ink-soft);
-    margin-bottom: 10px;
+    white-space: nowrap;
   }
-  .stat-value {
-    font-size: 26px;
+
+  .activity-value {
     font-weight: 800;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .activity-number {
+    font-size: 28px;
+  }
+
+  .activity-unit {
+    margin-left: 2px;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  .activity-divider {
+    width: 1px;
+    align-self: stretch;
+    background: var(--line);
+    margin: 2px 8px;
   }
 
   .support-point-summary {
@@ -571,6 +693,34 @@ const pageStyles = `
   }
 
   @media (max-width: 520px) {
+    .activity-panel {
+      padding: 24px 10px;
+    }
+
+    .activity-row {
+      align-items: stretch;
+    }
+
+    .activity-metric {
+      padding: 4px 6px;
+    }
+
+    .activity-label {
+      flex-direction: column;
+      gap: 5px;
+      font-size: 11px;
+      text-align: center;
+      white-space: normal;
+    }
+
+    .activity-number {
+      font-size: 24px;
+    }
+
+    .activity-unit {
+      font-size: 12px;
+    }
+
     .gift-panel {
       grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       padding: 28px 12px;
