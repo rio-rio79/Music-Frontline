@@ -9,6 +9,13 @@
   width: 600px;
 }
 
+.pageTitle {
+  margin: 0 0 18px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
 /* 検索ボックスのラッパー（基準位置） */
 .searchContainer {
   position: relative;

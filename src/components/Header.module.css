@@ -1,29 +1,110 @@
-.header {
+.sideNav {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 20;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  width: 220px;
+  box-sizing: border-box;
+  flex-direction: column;
+  padding: 28px 0;
+  background: linear-gradient(180deg, #fff2f7, #ffffff);
+  font-family: "Noto Sans JP", sans-serif;
 }
 
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-left: auto;
+.logo {
+  display: block;
+  padding: 0 24px 28px;
+  color: #5d153f;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-decoration: none;
 }
 
-.headerLikeLink {
+.logo span {
+  display: block;
+}
+
+.logo i {
+  display: block;
+  width: 46px;
+  height: 4px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: #ff6ea0;
+}
+
+.navList {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  font-size: 12px;
-  color: #e8447a;
+  gap: 4px;
+  margin: 0;
+  padding: 0 12px;
+  list-style: none;
 }
 
-.headerRight {
+.navLink {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-left: auto;
-  padding-right: 60px; /* ハンバーガーメニューの幅分だけ避ける */
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 24px;
+  background: transparent;
+  color: #b3789a;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.navLink:hover {
+  opacity: 0.85;
+}
+
+.navLinkActive {
+  background: #e8447a;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.playerHeader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  min-height: 77px;
+  box-sizing: border-box;
+  align-items: center;
+  margin-left: 220px;
+  padding: 10px 24px;
+  border-bottom: 1px solid #f5e8ee;
+  background: #faeaf1;
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+@media (width <= 760px) {
+  .sideNav {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 16px 0 10px;
+  }
+
+  .logo {
+    padding: 0 18px 14px;
+  }
+
+  .navList {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0 12px 4px;
+  }
+
+  .navLink {
+    white-space: nowrap;
+  }
+
+  .playerHeader {
+    margin-left: 0;
+    padding: 10px 14px;
+  }
 }

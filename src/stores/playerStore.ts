@@ -50,6 +50,8 @@ type PlayerStore = {
     clearSeekRequest: () => void;
     // キューを明示的に更新する。
     setQueue: (queue: Song[]) => void;
+    // いいね状態の変更を、現在曲とキュー内の曲に反映する。
+    updateSongLikeStatus: (songId: string, isLiked: boolean) => void;
 };
 
 // Zustand のストア。Client Component から usePlayerStore を呼び出して使う。
@@ -173,4 +175,15 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         set({
             queue,
         }),
+
+    updateSongLikeStatus: (songId, isLiked) =>
+        set((state) => ({
+            currentSong:
+                state.currentSong?.id === songId
+                    ? { ...state.currentSong, isLiked }
+                    : state.currentSong,
+            queue: state.queue.map((song) =>
+                song.id === songId ? { ...song, isLiked } : song,
+            ),
+        })),
 }));

@@ -18,6 +18,9 @@ export default function AudioPlayerController() {
     const setDuration = usePlayerStore((state) => state.setDuration);
     const clearSeekRequest = usePlayerStore((state) => state.clearSeekRequest);
 
+    const currentSongId = currentSong?.id ?? null;
+    const currentSongAudioFilePath = currentSong?.audioFilePath ?? null;
+
     const reportPlayback = useCallback((songId: string) => {
         if (hasCountedThisSongRef.current) {
             return;
@@ -43,18 +46,18 @@ export default function AudioPlayerController() {
     }, []);
 
     useEffect(() => {
-        if (!audioRef.current || !currentSong) {
+        if (!audioRef.current || !currentSongId || !currentSongAudioFilePath) {
             return;
         }
 
         activePlayDurationRef.current = 0;
         hasCountedThisSongRef.current = false;
-        audioRef.current.src = currentSong.audioFilePath;
+        audioRef.current.src = currentSongAudioFilePath;
         audioRef.current.play().catch(() => { });
-    }, [currentSong]);
+    }, [currentSongAudioFilePath, currentSongId]);
 
     useEffect(() => {
-        if (!isPlaying || !currentSong) {
+        if (!isPlaying || !currentSongId) {
             return;
         }
 
@@ -74,14 +77,14 @@ export default function AudioPlayerController() {
                 return;
             }
 
-            reportPlayback(currentSong.id);
+            reportPlayback(currentSongId);
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [isPlaying, currentSong, reportPlayback]);
+    }, [isPlaying, currentSongId, reportPlayback]);
 
     useEffect(() => {
-        if (!audioRef.current || !currentSong) {
+        if (!audioRef.current || !currentSongId) {
             return;
         }
 
@@ -91,7 +94,7 @@ export default function AudioPlayerController() {
         }
 
         audioRef.current.pause();
-    }, [currentSong, isPlaying]);
+    }, [currentSongId, isPlaying]);
 
     useEffect(() => {
         if (!audioRef.current) {
@@ -99,7 +102,7 @@ export default function AudioPlayerController() {
         }
 
         audioRef.current.volume = volume;
-    }, [currentSong, volume]);
+    }, [volume]);
 
     useEffect(() => {
         if (!audioRef.current || seekRequestTime === null) {
@@ -114,11 +117,11 @@ export default function AudioPlayerController() {
     const handleEnded = () => {
         const audio = audioRef.current;
 
-        if (currentSong && audio && Number.isFinite(audio.duration) && audio.duration < 30) {
+        if (currentSongId && audio && Number.isFinite(audio.duration) && audio.duration < 30) {
             const requiredPlayDuration = Math.max(1, audio.duration - 1);
 
             if (activePlayDurationRef.current >= requiredPlayDuration) {
-                reportPlayback(currentSong.id);
+                reportPlayback(currentSongId);
             }
         }
 

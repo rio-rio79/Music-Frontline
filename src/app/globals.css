@@ -1,389 +1,589 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap");
 
 :root {
-  --favorite-color: #F8BBD0;
+    --favorite-color: #f8bbd0;
 }
 
 body {
-  margin: 0;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+    margin: 0;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 /* ページ本文を画面中央に置く外枠 */
 .content-layout {
-  flex: 1;
-  box-sizing: border-box;
-  width: 100%;
-  display: flex;
-  align-items: stretch;
+    flex: 1;
+    box-sizing: border-box;
+    width: calc(100% - 220px);
+    margin-left: 220px;
+    display: flex;
+    align-items: stretch;
 }
 
 /* メインコンテンツはプレイヤーを含めず、常に画面中央へ配置する */
 .page-content {
-  background: rgba(255, 255, 255, 0);
-  width: min(calc(100% - 40px), 720px);
-  box-sizing: border-box;
-  margin: 0 auto;
-  padding: 40px 20px;
+    background: rgba(255, 255, 255, 0);
+    width: min(calc(100% - 40px), 720px);
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 40px 20px;
 
-  h1 {
-    margin: 0;
-  }
+    h1 {
+        margin: 0;
+    }
 }
 
 /* 楽曲名・詳細リンク・再生操作を横並びにする一覧。 */
 .music-list {
-  display: grid;
-  gap: 12px;
-  padding: 0;
-  list-style: none;
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    list-style: none;
 }
 
 .music-list-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 16px;
-  border: 1px solid rgb(248 67 142 / 25%);
-  border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+    border: 1px solid rgb(248 67 142 / 25%);
+    border-radius: 12px;
 }
 
 .music-link {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 .music-link h2 {
-  margin: 0;
-  font-size: 1rem;
+    margin: 0;
+    font-size: 1rem;
 }
 
 /* 一覧・詳細ページでも、再生プレイヤーと同じアイコン操作を使う。 */
 .music-play-button,
 .detail-play-button {
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: 50%;
-  color: #1a1622;
-  background: #fff;
-  box-shadow: 0 5px 12px -5px rgb(46 21 71 / 45%);
-  cursor: pointer;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 50%;
+    color: #1a1622;
+    background: #fff;
+    box-shadow: 0 5px 12px -5px rgb(46 21 71 / 45%);
+    cursor: pointer;
 }
 
 .music-play-button {
-  width: 38px;
-  height: 38px;
-  font-size: 13px;
+    width: 38px;
+    height: 38px;
+    font-size: 13px;
 }
 
 .detail-play-button {
-  width: 56px;
-  height: 56px;
-  margin-top: 20px;
-  font-size: 16px;
+    width: 56px;
+    height: 56px;
+    margin-top: 20px;
+    font-size: 16px;
 }
 
-/* ヘッダー */
-header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(360px, 900px) minmax(0, 1fr);
-  align-items: center;
-  gap: 24px;
-  box-sizing: border-box;
-  width: 100%;
-  height: 92px;
-  padding: 12px 20px;
-  background: rgb(248, 67, 142);
-
-  h1 {
-    grid-column: 1;
-    margin: 0;
-    color: rgb(37, 37, 37);
-    font-size: clamp(1.1rem, 2vw, 1.5rem);
-    text-decoration: none;
-    white-space: nowrap;
-  }
-}
-
-.header-menu {
-  grid-column: 3;
-  justify-self: end;
-}
-
-/* ヘッダー中央に表示する横長プレイヤー。曲が未選択の間はコンポーネント自体を表示しない。 */
 .mini-player {
-  display: flex;
-  grid-column: 2;
-  align-items: center;
-  justify-content: space-between;
-  gap: 32px;
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  height: 68px;
-  padding: 6px 16px;
-  border: 1px solid rgb(255 255 255 / 60%);
-  border-radius: 5px;
-  background: rgb(255 255 255 / 96%);
-  box-shadow: 0 2px 8px rgb(93 21 63 / 18%);
-  color: #28212d;
+    --mini-player-gap: 180px;
+    --mini-info-width: 458px;
+
+    display: grid;
+    grid-template-columns:
+        max-content minmax(0, var(--mini-info-width))
+        max-content;
+    align-items: center;
+    justify-content: center;
+    gap: var(--mini-player-gap);
+    box-sizing: border-box;
+    width: min(
+        100%,
+        calc(
+            282px + var(--mini-info-width) + var(--mini-player-gap) +
+                var(--mini-player-gap)
+        )
+    );
+    margin: 0 auto;
 }
 
 .mini-controls {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .mini-controls button {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 36px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #28212d;
-  cursor: pointer;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #8a7180;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
+}
+
+.mini-controls button:hover {
+    background: #f6dbe8;
+    color: #e8447a;
+}
+
+.mini-controls button:disabled {
+    background: transparent;
+    color: #a6a6a6;
+    cursor: default;
 }
 
 .mini-controls .mini-primary-control {
-  font-size: 15px;
+    width: 44px;
+    height: 44px;
+    background: #e8447a;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(232, 68, 122, 0.35);
 }
 
-.mini-song-info {
-  display: flex;
-  flex: 0 1 360px;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
+.mini-controls .mini-primary-control:hover {
+    background: #d6386a;
+    color: #fff;
 }
 
-.mini-cover {
-  flex: 0 0 auto;
-  width: 54px;
-  height: 54px;
-  border-radius: 5px;
-  object-fit: cover;
+.mini-controls .mini-primary-control:disabled {
+    background: #eeeeee;
+    color: #9a9a9a;
+    box-shadow: none;
+}
+
+.mini-play-icon {
+    margin-left: 2px;
+}
+
+.mini-info-box {
+    position: relative;
+    display: flex;
+    justify-self: center;
+    align-items: stretch;
+    gap: 14px;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: 56px;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #fff8fb;
+}
+
+.mini-artwork {
+    display: flex;
+    width: 56px;
+    height: 56px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px 0 0 3px;
+    background: linear-gradient(135deg, #ff9fc4, #ff5e9b);
+}
+
+.mini-player-idle .mini-artwork {
+    background: #fff8fb;
+    border-right: 1px solid #f0d8e8;
+}
+
+.mini-player-idle .mini-artwork svg path {
+    stroke: #c6c6c6;
+}
+
+.mini-player-idle .mini-artwork svg circle {
+    fill: #c6c6c6;
 }
 
 .mini-meta {
-  flex: 1;
-  min-width: 0;
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 7px 26px 6px 10px;
+    text-align: center;
 }
 
 .mini-meta strong,
 .mini-meta small {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .mini-meta strong {
-  font-size: 13px;
+    max-width: 100%;
+    color: #28212d;
+    font-size: 11px;
+    font-weight: 700;
 }
 
 .mini-meta small {
-  margin-top: 1px;
-  color: #81778d;
-  font-size: 10px;
+    margin-top: 1px;
+    color: #a98aa0;
+    font-size: 10px;
+}
+
+.mini-idle-mark {
+    color: #9a9a9a;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.mini-heart-button {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.mini-heart-button:hover {
+    opacity: 0.75;
+}
+
+.mini-heart-button:disabled {
+    cursor: default;
+    opacity: 0.35;
 }
 
 .mini-seek {
-  display: block;
-  width: 100%;
-  height: 4px;
-  margin: 4px 0 0;
-  accent-color: #7b4dbc;
-  cursor: pointer;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 56px;
+    height: 3px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.mini-seek:focus {
+    outline: none;
 }
 
 .mini-seek:disabled {
-  cursor: wait;
+    cursor: default;
+}
+
+.mini-seek::-webkit-slider-thumb {
+    width: 0;
+    height: 0;
+    border-radius: 0;
+    appearance: none;
+    background: #e8447a;
+    box-shadow: none;
+    transition:
+        width 0.12s ease,
+        height 0.12s ease;
+}
+
+.mini-seek:hover::-webkit-slider-thumb {
+    width: 3px;
+    height: 12px;
+}
+
+.mini-seek:disabled::-webkit-slider-thumb {
+    width: 0;
+    height: 0;
+}
+
+.mini-seek::-moz-range-thumb {
+    width: 0;
+    height: 0;
+    border: 0;
+    border-radius: 0;
+    background: #e8447a;
+    transition:
+        width 0.12s ease,
+        height 0.12s ease;
+}
+
+.mini-seek:hover::-moz-range-thumb {
+    width: 3px;
+    height: 12px;
+}
+
+.mini-seek:disabled::-moz-range-thumb {
+    width: 0;
+    height: 0;
+}
+
+.mini-seek::-moz-focus-outer {
+    border: 0;
+}
+
+.mini-seek::-moz-range-track {
+    height: 3px;
+    border-radius: 0;
+    background: #f0d8e8;
+}
+
+.mini-seek::-moz-range-progress {
+    height: 3px;
+    border-radius: 0;
+    background: #e8447a;
+}
+
+.mini-time-label {
+    position: absolute;
+    bottom: 5px;
+    background: #fff8fb;
+    color: #a98aa0;
+    font-size: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.mini-info-box:hover .mini-time-label {
+    opacity: 1;
+}
+
+.mini-time-current {
+    left: 60px;
+    padding-right: 3px;
+}
+
+.mini-time-remaining {
+    right: 4px;
+    padding-left: 3px;
 }
 
 .mini-volume {
-  display: flex;
-  flex: 0 0 180px;
-  align-items: center;
-  gap: 6px;
-  min-width: 70px;
+    display: flex;
+    justify-self: end;
+    align-items: center;
+    gap: 10px;
+    width: 150px;
 }
 
-.mini-volume span {
-  color: #6f6878;
-  font-size: 10px;
-  font-weight: 800;
+.mini-volume-button {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        opacity 0.15s ease;
 }
 
-.mini-volume input {
-  width: 100%;
-  min-width: 0;
-  accent-color: #7b4dbc;
-  cursor: pointer;
+.mini-volume-button:hover {
+    background: #f6dbe8;
+}
+
+.mini-volume-range {
+    width: 100%;
+    height: 5px;
+    border-radius: 999px;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.mini-volume-range:focus {
+    outline: none;
+}
+
+.mini-volume-range:disabled {
+    cursor: default;
+    opacity: 0.55;
+}
+
+.mini-volume-range::-webkit-slider-thumb {
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    appearance: none;
+    background: #e8447a;
+    box-shadow: none;
+    transition:
+        width 0.12s ease,
+        height 0.12s ease;
+}
+
+.mini-volume-range:hover::-webkit-slider-thumb {
+    width: 12px;
+    height: 12px;
+}
+
+.mini-volume-range:disabled::-webkit-slider-thumb {
+    width: 0;
+    height: 0;
+}
+
+.mini-volume-range::-moz-range-thumb {
+    width: 0;
+    height: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #e8447a;
+    transition:
+        width 0.12s ease,
+        height 0.12s ease;
+}
+
+.mini-volume-range:hover::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+}
+
+.mini-volume-range:disabled::-moz-range-thumb {
+    width: 0;
+    height: 0;
+}
+
+.mini-volume-range::-moz-range-track {
+    height: 5px;
+    border-radius: 999px;
+    background: #f0d8e8;
+}
+
+.mini-volume-range::-moz-range-progress {
+    height: 5px;
+    border-radius: 999px;
+    background: #e8447a;
 }
 
 /* フッター */
 footer {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 15px;
-  background: rgb(252, 195, 219);
-  text-align: center;
-  color: white;
+    box-sizing: border-box;
+    width: calc(100% - 220px);
+    margin-left: 220px;
+    padding: 15px;
+    background: #fff2f7;
+    text-align: center;
+    color: #b3789a;
 
-  p {
-    margin: 0;
-  }
+    p {
+        margin: 0;
+    }
 }
 
 /* ハンバーガーボタン */
 .hamburger {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
 
-  z-index: 1001;
+    z-index: 1001;
 
-  font-size: 32px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: #131313;
+    font-size: 32px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #131313;
 }
 
 /* 背景 */
 .overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 998;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 998;
 }
 
 /* サイドメニュー */
 .sidebar {
-  position: fixed;
-  top: 0;
-  right: -300px;
+    position: fixed;
+    top: 0;
+    right: -300px;
 
-  width: 300px;
-  height: 100vh;
+    width: 300px;
+    height: 100vh;
 
-  transition: right 0.3s ease;
+    transition: right 0.3s ease;
 
-  z-index: 999;
+    z-index: 999;
 
-  padding-top: 80px;
+    padding-top: 80px;
 }
 
 .sidebar.open {
-  right: 0;
+    right: 0;
 }
 
 .sidebar ul {
-  list-style: none;
+    list-style: none;
 }
 
 .sidebar li {
-  border-bottom: 1px solid #444;
+    border-bottom: 1px solid #444;
 }
 
 .sidebar a {
-  display: block;
-  padding: 20px;
-  color: rgb(12, 12, 12);
-  text-decoration: none;
+    display: block;
+    padding: 20px;
+    color: rgb(12, 12, 12);
+    text-decoration: none;
 }
 
 .sidebar a:hover {
-  background: #333;
-}
-
-header,
-footer {
-  background: color-mix(
-    in srgb,
-    var(--favorite-color) 8%,
-    rgb(252, 252, 252) 92%
-  );
-}
-
-header {
-  border-bottom: 2px solid rgba(240, 240, 240, 0.5);
+    background: #333;
 }
 
 .sidebar {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--favorite-color) 30%, white 70%),
-    white
-  );
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--favorite-color) 30%, white 70%),
+        white
+    );
 }
 
 /* body {
   background: #fffafc;
 } */
 
-@media (width <=1496px) {
-  @media (width <=760px) {
-    @media (width <=760px) {
-      header {
-        grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-rows: 20px 54px;
-        grid-template-areas:
-          "brand menu"
-          "mini mini";
-        gap: 10px;
-        height: 104px;
-        padding: 10px 14px;
-      }
-
-      header h1 {
-        grid-area: brand;
-        font-size: 1rem;
-      }
-
-      .header-menu {
-        grid-area: menu;
-      }
-
-      .mini-player {
-        grid-area: mini;
-        justify-content: normal;
-        gap: 10px;
-        height: 54px;
-        padding: 4px 10px;
-      }
-
-      .mini-volume {
-        flex-basis: 86px;
-      }
-
-      .mini-song-info {
-        flex: 1 1 auto;
-        gap: 10px;
-      }
-
-      .mini-controls button {
-        width: 28px;
-        height: 32px;
-      }
-
-      .mini-cover {
-        width: 46px;
-        height: 46px;
-      }
+@media (width <= 760px) {
+    .content-layout,
+    footer {
+        width: 100%;
+        margin-left: 0;
     }
-  }
+
+    .mini-player {
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 12px;
+        width: 100%;
+    }
+
+    .mini-info-box {
+        min-width: 0;
+        max-width: none;
+    }
+
+    .mini-volume {
+        display: none;
+    }
 }

@@ -31,8 +31,8 @@ export default function Music() {
                 const data = await res.json();
                 setSongs(data.songs || []);
                 setError(null);
-            } catch (err: any) {
-                setError(err.message || "エラーが発生しました。");
+            } catch (err: unknown) {
+                setError(err instanceof Error ? err.message : "エラーが発生しました。");
             } finally {
                 setLoading(false);
             }
@@ -48,6 +48,8 @@ export default function Music() {
 
     return (
         <section className={styles.container}>
+            <h1 className={styles.pageTitle}>楽曲一覧</h1>
+
             {/* 検索ボックスとドロップダウンのラッパー */}
             <div className={styles.searchContainer}>
                 {/* 右上のドロップダウンリスト */}
