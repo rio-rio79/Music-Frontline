@@ -245,6 +245,17 @@ body {
     font-weight: 800;
 }
 
+.mini-player-idle .mini-meta {
+    justify-content: center;
+    padding: 0 26px 0 10px;
+}
+
+.mini-idle-note {
+    color: #a98aa0;
+    font-size: 13px;
+    font-weight: 800;
+}
+
 .mini-heart-button {
     position: absolute;
     top: 2px;

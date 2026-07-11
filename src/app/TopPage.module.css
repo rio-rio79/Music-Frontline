@@ -1,0 +1,692 @@
+.topPage {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  margin: 0 auto;
+  padding: 40px 20px 56px;
+  box-sizing: border-box;
+  color: #1a1a2e;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(248 67 142 / 18%);
+  border-radius: 22px;
+  background: linear-gradient(150deg, #ffe3ee 0%, #fff2f7 55%, #ffffff 100%);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 42px 36px 38px;
+}
+
+.heroBadge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 13px;
+  border: 1px solid rgb(248 67 142 / 28%);
+  border-radius: 999px;
+  background: #fff;
+  color: #e8447a;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.hero h1 {
+  margin: 0 0 10px;
+  color: #5d153f;
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.hero p {
+  margin: 0;
+  color: #8a3a5e;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.primaryButton,
+.secondaryButton,
+.oshiButton,
+.planButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.primaryButton,
+.oshiButton,
+.planButton {
+  background: #e8447a;
+  color: #fff;
+  box-shadow: 0 8px 18px -8px rgb(232 68 122 / 70%);
+}
+
+.secondaryButton {
+  border: 1px solid rgb(248 67 142 / 30%);
+  background: #fff;
+  color: #e8447a;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.sectionTitleRow h2 {
+  margin: 0;
+  color: #5d153f;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.sectionTitleRow span {
+  color: #c58fac;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.featuredTabs {
+  align-self: flex-start;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: #fff2f7;
+}
+
+.featuredTabs button {
+  min-height: 38px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #b3789a;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.featuredTabs button.activeTab {
+  background: #e8447a;
+  color: #fff;
+  box-shadow: 0 8px 18px -8px rgb(232 68 122 / 70%);
+}
+
+.featuredList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.featuredCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 82px;
+  padding: 14px 16px;
+  border: 1px solid rgb(248 67 142 / 20%);
+  border-radius: 16px;
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.featuredCard:hover {
+  border-color: #e8447a;
+  box-shadow: 0 10px 24px -14px rgb(232 68 122 / 55%);
+  transform: translateY(-1px);
+}
+
+.newBadge,
+.rankBadge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.newBadge {
+  min-width: 42px;
+  height: 25px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #fde3ee;
+  color: #e8447a;
+  font-size: 11px;
+}
+
+.rankBadge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fde3ee;
+  color: #8a3a5e;
+  font-size: 13px;
+}
+
+.rank1 {
+  background: #e8447a;
+  color: #fff;
+}
+
+.rank2 {
+  background: #f8bbd0;
+  color: #5d153f;
+}
+
+.rank3 {
+  background: #fde3ee;
+  color: #8a3a5e;
+}
+
+.featuredThumb {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: repeating-linear-gradient(45deg, #ffe3ee, #ffe3ee 7px, #fff2f7 7px, #fff2f7 14px);
+}
+
+.featuredImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.featuredThumb span {
+  color: #c58fac;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.featuredText {
+  flex: 1;
+  min-width: 0;
+}
+
+.featuredText strong,
+.featuredText small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.featuredText strong {
+  margin-bottom: 3px;
+  color: #28212d;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.featuredText small {
+  color: #a98aa0;
+  font-size: 12px;
+}
+
+.featuredMeta {
+  flex: 0 0 auto;
+  color: #e8447a;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.emptyFeatured {
+  margin: 0;
+  padding: 28px 16px;
+  border: 1px dashed rgb(248 67 142 / 25%);
+  border-radius: 16px;
+  background: #fff8fb;
+  color: #8a6c7c;
+  font-size: 13px;
+  text-align: center;
+}
+
+.moreLink {
+  align-self: flex-end;
+  color: #e8447a;
+  font-size: 12.5px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.pointCard {
+  padding: 30px 26px 26px;
+  border: 1px solid rgb(248 67 142 / 20%);
+  border-radius: 20px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.pointDiagram {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+
+.actionColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.actionConnector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.actionConnector i {
+  flex: 0 0 16px;
+  border-top: 2px dashed #f3a8c4;
+}
+
+.actionChip {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 9px 13px;
+  border: 1px solid rgb(248 67 142 / 22%);
+  border-radius: 999px;
+  background: #fff8fb;
+  color: #5d153f;
+  font-size: 12.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.actionChip svg {
+  flex: 0 0 auto;
+  color: #e8447a;
+}
+
+.pointCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  width: 158px;
+  height: 158px;
+  margin: 0 10px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #e8447a, #ff6ea0);
+  box-shadow: 0 0 0 10px #fff2f7, 0 14px 28px -12px rgb(232 68 122 / 60%);
+  color: #fff;
+  text-align: center;
+}
+
+.pointCircle svg {
+  width: 26px;
+  height: 26px;
+  fill: #fff;
+}
+
+.pointCircle strong {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.pointCircle span {
+  font-size: 10.5px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.downFlow {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 14px;
+  color: #e8447a;
+}
+
+.downFlow i {
+  height: 24px;
+  border-left: 2px dashed #f3a8c4;
+}
+
+.rankingBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e8447a, #ff6ea0);
+  color: #fff;
+  text-align: center;
+}
+
+.rankingBar strong {
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.rankingBar span {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.oshiCard {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 26px;
+  border: 1.5px dashed rgb(248 67 142 / 40%);
+  border-radius: 18px;
+  background: #fff8fb;
+  box-sizing: border-box;
+}
+
+.oshiIcon {
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fde3ee;
+  color: #e8447a;
+}
+
+.oshiIcon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.oshiIcon i {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  font-style: normal;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.oshiCard div {
+  flex: 1;
+  min-width: 0;
+}
+
+.oshiCard h2,
+.planCard h2 {
+  margin: 0;
+  color: #5d153f;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.oshiCard h2 {
+  margin-bottom: 3px;
+  font-size: 14.5px;
+}
+
+.oshiCard p {
+  margin: 0;
+  color: #8a6c7c;
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+.oshiButton {
+  flex: 0 0 auto;
+  min-height: 42px;
+  padding: 0 20px;
+  font-size: 13px;
+}
+
+.planCard {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 26px 28px;
+  border: 1px solid rgb(248 67 142 / 25%);
+  border-radius: 20px;
+  background: #fff8fb;
+  box-sizing: border-box;
+}
+
+.planIcon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: linear-gradient(140deg, #e8447a, #ff6ea0);
+  color: #fff;
+}
+
+.planContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.planContent p {
+  margin: 0 0 2px;
+  color: #c58fac;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.planContent h2 {
+  font-size: 16px;
+}
+
+.planContent ul {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.planContent li {
+  position: relative;
+  padding-left: 22px;
+  color: #8a6c7c;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.planContent li::before {
+  content: "";
+  position: absolute;
+  top: 0.42em;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fde3ee;
+}
+
+.planContent li::after {
+  content: "";
+  position: absolute;
+  top: calc(0.42em + 3px);
+  left: 4px;
+  width: 6px;
+  height: 3px;
+  border-bottom: 2px solid #e8447a;
+  border-left: 2px solid #e8447a;
+  transform: rotate(-45deg);
+}
+
+.planButton {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 22px;
+  font-size: 13.5px;
+}
+
+@media (max-width: 700px) {
+  .topPage {
+    padding: 32px 16px 52px;
+  }
+
+  .heroContent {
+    padding: 34px 24px 32px;
+  }
+
+  .hero h1 {
+    font-size: 32px;
+  }
+
+  .pointDiagram {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 18px;
+  }
+
+  .actionColumn {
+    width: min(100%, 280px);
+  }
+
+  .actionConnector i {
+    display: none;
+  }
+
+  .pointCircle {
+    width: 148px;
+    height: 148px;
+    order: -1;
+  }
+
+  .oshiCard,
+  .planCard {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .oshiButton,
+  .planButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .topPage {
+    gap: 40px;
+    padding-inline: 14px;
+  }
+
+  .heroContent {
+    padding: 30px 20px 28px;
+  }
+
+  .hero h1 {
+    font-size: 28px;
+  }
+
+  .heroActions,
+  .featuredTabs {
+    width: 100%;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .featuredTabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .featuredTabs button {
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .featuredCard {
+    display: grid;
+    grid-template-columns: auto 48px minmax(0, 1fr);
+    gap: 10px;
+    min-height: 0;
+  }
+
+  .featuredThumb {
+    width: 48px;
+    height: 48px;
+  }
+
+  .featuredMeta {
+    grid-column: 3 / 4;
+    justify-self: start;
+    margin-top: -4px;
+  }
+
+  .pointCard {
+    padding: 26px 18px 22px;
+  }
+
+  .rankingBar {
+    align-items: center;
+    flex-direction: column;
+    gap: 6px;
+  }
+}

@@ -22,9 +22,9 @@ const navItems: NavItem[] = [
     { name: "Music", href: "/music", key: "music" },
     { name: "Blog", href: "/blog", key: "blog" },
     { name: "Ranking", href: "/ranking", key: "ranking" },
-    { name: "MyList", href: "/my/list", key: "mylist" },
     { name: "FanLetter", href: "/support/tip", key: "fanletter" },
     { name: "MyPage", href: "/my/profile", key: "mypage" },
+    { name: "MyList", href: "/my/list", key: "mylist" },
 ];
 
 export default function Header({

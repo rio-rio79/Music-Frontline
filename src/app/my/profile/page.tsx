@@ -90,6 +90,12 @@ function normalizeSupportPointSummaries(
     })
 }
 
+type MyProfilePageProps = {
+    searchParams: Promise<{
+        modal?: string
+    }>
+}
+
 function resolveDefaultSupportPointTab(oshiName: string | null): SupportPointTabKey {
     return oshiName ? 'oshi' : 'all'
 }
@@ -100,7 +106,8 @@ function getRegionLabel(region: string | null) {
     return '無所属'
 }
 
-export default async function MyProfilePage() {
+export default async function MyProfilePage({ searchParams }: MyProfilePageProps) {
+    const query = await searchParams
     const supabase = await createSupabaseServer()
     const {
         data: { user },
@@ -205,6 +212,7 @@ export default async function MyProfilePage() {
                         : null,
                     affiliation: profile.oshi.group?.name ?? getRegionLabel(profile.oshi.region),
                 } : null}
+                initialOpenModal={query.modal === 'plan' ? 'plan' : null}
                 plans={plans}
                 juniors={juniors}
                 initialFavoriteColor={profile?.color_code ?? null}

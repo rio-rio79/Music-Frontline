@@ -39,6 +39,7 @@ type ProfileCardProps = {
     initialPlan: Plan | null
     initialOshi: Junior | null
     initialFavoriteColor: string | null
+    initialOpenModal?: ProfileModal
     plans: Plan[]
     juniors: Junior[]
 }
@@ -55,6 +56,7 @@ export default function ProfileCard({
     initialPlan,
     initialOshi,
     initialFavoriteColor,
+    initialOpenModal = null,
     plans,
     juniors,
 }: ProfileCardProps) {
@@ -62,7 +64,7 @@ export default function ProfileCard({
     const [currentPlan, setCurrentPlan] = useState(initialPlan)
     const [currentOshi, setCurrentOshi] = useState(initialOshi)
     const [favoriteColor, setFavoriteColor] = useState(initialFavoriteColor ?? DEFAULT_FAVORITE_COLOR)
-    const [openModal, setOpenModal] = useState<ProfileModal>(null)
+    const [openModal, setOpenModal] = useState<ProfileModal>(initialOpenModal)
 
     useEffect(() => {
         if (!openModal) return

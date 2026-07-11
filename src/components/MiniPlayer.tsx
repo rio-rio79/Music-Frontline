@@ -156,7 +156,10 @@ export default function MiniPlayer() {
                             <small>{currentSong.artistName || "MUSIC FRONTLINE"}</small>
                         </>
                     ) : (
-                        <strong className="mini-idle-mark">Music Frontline</strong>
+                        <>
+                            <strong className="mini-idle-note">♪</strong>
+                            <small>再生中の楽曲はありません</small>
+                        </>
                     )}
                 </div>
 
