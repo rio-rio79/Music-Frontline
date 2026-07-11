@@ -8,7 +8,6 @@
   flex-direction: column;
   padding: 28px 0;
   background: linear-gradient(180deg, #fff2f7, #ffffff);
-  font-family: "Noto Sans JP", sans-serif;
 }
 
 .logo {
@@ -78,7 +77,6 @@
   padding: 10px 24px;
   border-bottom: 1px solid #f5e8ee;
   background: #faeaf1;
-  font-family: "Noto Sans JP", sans-serif;
 }
 
 @media (width <= 760px) {

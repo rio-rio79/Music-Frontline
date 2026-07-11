@@ -1,36 +1,4 @@
 .page {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 32px 32px 80px;
-}
-
-/* Tabs */
-.tabs {
-  display: flex;
-  background: #f2f2f2;
-  border-radius: 12px;
-  padding: 6px;
-  gap: 6px;
-  margin-bottom: 28px;
-}
-
-.tab {
-  flex: 1;
-  text-align: center;
-  padding: 14px 0;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  color: var(--sub, #8a8a8a);
-  transition: background .2s ease, color .2s ease;
-  border: none;
-  background: transparent;
-}
-
-.tabActive {
-  background: var(--pink-soft, #FFE3EF);
-  color: var(--pink, #FF4B91);
 }
 
 /* Profile card */
@@ -40,7 +8,7 @@
   padding: 28px;
   display: flex;
   gap: 24px;
-  margin-bottom: 44px;
+  margin-bottom: 28px;
   background: #fff;
 }
 
@@ -106,24 +74,8 @@
   color: var(--ink, #1a1a1a);
 }
 
-/* Music section */
-.sectionTitle {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: .04em;
-  margin: 0 0 4px;
-}
-
-.sectionTitleUnderline {
-  width: 36px;
-  height: 3px;
-  background: var(--pink, #FF4B91);
-  border-radius: 2px;
-  margin-bottom: 22px;
-}
-
 .trackList {
-  border-top: 1px solid var(--line, #ececec);
+  margin-top: 6px;
 }
 
 .track {
@@ -249,7 +201,7 @@
 
 /* Blog section */
 .blogSection {
-  margin: 40px 0;
+  margin-top: 6px;
 }
 
 .noMusic, .blogPlaceholder {
@@ -260,10 +212,6 @@
 }
 
 @media (max-width: 560px) {
-  .page {
-    padding: 20px;
-  }
-
   .profileCard {
     flex-direction: column;
     align-items: center;

@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type BlogJuniorLink, type BlogListItem, type BlogTab } from "@/lib/blog-data";
 import { toggleBlogLike } from "./actions";
+import PageHeading from "@/components/PageHeading";
+import PageShell from "@/components/PageShell";
+import BlogAvatar from "./BlogAvatar";
 import BlogJuniorFinder from "./BlogJuniorFinder";
 import { CommentIcon, HeartIcon } from "./BlogIcons";
 import styles from "./Blog.module.css";
@@ -112,14 +115,10 @@ export default function BlogListClient({
     };
 
     return (
-        <section className={styles.page}>
-          <div className={styles.pageHeader}>
-    <span className={styles.sectionTag}>BLOG</span>
-    <h1 className={styles.pageTitle}>最新の投稿</h1>
-    <p className={styles.pageDescription}>
-        ジュニアたちの最新ブログをチェックしよう。
-    </p>
-</div>
+        <PageShell className={styles.page}>
+            <div className={styles.pageHeader}>
+                <PageHeading title="Blog" />
+            </div>
 
             <div className={styles.tabs} role="tablist" aria-label="ブログ一覧タブ">
                 <button
@@ -129,7 +128,7 @@ export default function BlogListClient({
                     className={`${styles.tab} ${activeTab === "all" ? styles.tabActive : ""}`}
                     onClick={() => selectTab("all")}
                 >
-                    全ての投稿
+                    最新の投稿
                 </button>
                 <button
                     type="button"
@@ -161,7 +160,14 @@ export default function BlogListClient({
                                     if (event.key === "Enter") router.push(`/blog/${post.id}`);
                                 }}
                             >
-                                <span className={styles.avatar}>{post.authorInitials}</span>
+                                <BlogAvatar
+                                    src={post.authorImageUrl}
+                                    alt={`${post.authorName}の画像`}
+                                    initials={post.authorInitials}
+                                    className={styles.avatar}
+                                    imageClassName={styles.avatarImage}
+                                    size={44}
+                                />
                                 <div className={styles.postContent}>
                                     <div className={styles.postMeta}>
                                         <span className={styles.authorName}>{post.authorName}</span>
@@ -253,6 +259,6 @@ export default function BlogListClient({
             )}
 
             <BlogJuniorFinder juniors={juniors} />
-        </section>
+        </PageShell>
     );
 }

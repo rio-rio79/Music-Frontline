@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import PageShell from "@/components/PageShell";
 import styles from "./GroupDetail.module.css";
 import Image from "next/image";
 import { type Song, usePlayerStore } from "@/stores/playerStore";
@@ -93,7 +94,7 @@ export default function GroupDetailClient({ group }: GroupDetailClientProps) {
   };
 
   return (
-    <div className={styles.page}>
+    <PageShell className={styles.page}>
       {/* Group photo and Title */}
       <h1 className={`${styles.sectionTitle} ${styles.groupTitle}`}>{group.name}</h1>
       <div className={styles.sectionTitleUnderline}></div>
@@ -203,6 +204,6 @@ export default function GroupDetailClient({ group }: GroupDetailClientProps) {
           <p className={styles.noMusic}>楽曲情報が登録されていません。</p>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

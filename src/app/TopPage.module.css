@@ -1,12 +1,7 @@
 .topPage {
-  width: 100%;
-  max-width: 680px;
   display: flex;
   flex-direction: column;
   gap: 48px;
-  margin: 0 auto;
-  padding: 40px 20px 56px;
-  box-sizing: border-box;
   color: #1a1a2e;
 }
 
@@ -584,10 +579,6 @@
 }
 
 @media (max-width: 700px) {
-  .topPage {
-    padding: 32px 16px 52px;
-  }
-
   .heroContent {
     padding: 34px 24px 32px;
   }
@@ -631,7 +622,6 @@
 @media (max-width: 520px) {
   .topPage {
     gap: 40px;
-    padding-inline: 14px;
   }
 
   .heroContent {

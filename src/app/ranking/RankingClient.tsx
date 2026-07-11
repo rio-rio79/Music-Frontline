@@ -2,6 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import PageHeading from "@/components/PageHeading";
+import PageShell from "@/components/PageShell";
+import PageTabs from "@/components/PageTabs";
 import { ChevronDownSvg, ChevronRightSvg, CrownSvg } from "@/components/Svgs";
 
 type RankingCategory = "group_affiliated" | "independent";
@@ -68,7 +71,7 @@ export default function RankingClient({ rankings }: RankingClientProps) {
   };
 
   return (
-    <section className="ranking-page">
+    <PageShell className="ranking-page">
       <style>{`
         .ranking-page {
           --pink: #e8447a;
@@ -78,9 +81,6 @@ export default function RankingClient({ rankings }: RankingClientProps) {
           --line: #ece6ee;
           --surface: #ffffff;
           --surface-soft: #faf8fb;
-          max-width: 760px;
-          margin: 0 auto;
-          padding: 40px 20px 72px;
           color: var(--ink);
           box-sizing: border-box;
         }
@@ -89,50 +89,11 @@ export default function RankingClient({ rankings }: RankingClientProps) {
           box-sizing: border-box;
         }
 
-        .ranking-heading {
-          margin-bottom: 28px;
-        }
-
-        .ranking-heading h1 {
-          margin: 0 0 10px;
-          font-size: 32px;
-          font-weight: 800;
-          letter-spacing: 0;
-        }
-
         .ranking-heading p {
-          margin: 0;
+          margin: -14px 0 0;
           color: var(--muted);
           font-size: 14px;
           line-height: 1.7;
-        }
-
-        .ranking-tabs {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 6px;
-          padding: 5px;
-          margin-bottom: 22px;
-          border-radius: 14px;
-          background: #f3f0f4;
-        }
-
-        .ranking-tab {
-          min-height: 44px;
-          border: 0;
-          border-radius: 10px;
-          background: transparent;
-          color: var(--muted);
-          font: inherit;
-          font-size: 14px;
-          font-weight: 800;
-          cursor: pointer;
-        }
-
-        .ranking-tab.active {
-          background: var(--surface);
-          color: var(--pink);
-          box-shadow: 0 4px 14px rgb(60 40 65 / 8%);
         }
 
         .ranking-meta {
@@ -259,14 +220,6 @@ export default function RankingClient({ rankings }: RankingClientProps) {
         }
 
         @media (max-width: 560px) {
-          .ranking-page {
-            padding: 30px 16px 56px;
-          }
-
-          .ranking-heading h1 {
-            font-size: 28px;
-          }
-
           .ranking-row {
             grid-template-columns: 34px 46px minmax(0, 1fr) 18px;
           }
@@ -291,24 +244,16 @@ export default function RankingClient({ rankings }: RankingClientProps) {
       `}</style>
 
       <div className="ranking-heading">
-        <h1>Ranking</h1>
+        <PageHeading title="Ranking" />
         <p>応援行動から集計したジュニア個人の総合ランキングです。</p>
       </div>
 
-      <div className="ranking-tabs" role="tablist" aria-label="ランキングカテゴリ">
-        {TABS.map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            className={`ranking-tab ${currentTab === tab.key ? "active" : ""}`}
-            role="tab"
-            aria-selected={currentTab === tab.key}
-            onClick={() => setCurrentTab(tab.key)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <PageTabs
+        items={TABS}
+        activeKey={currentTab}
+        ariaLabel="ランキングカテゴリ"
+        onChange={setCurrentTab}
+      />
 
       <div className="ranking-meta">
         <span>{currentTabInfo.label} / {currentList.length}人</span>
@@ -345,6 +290,6 @@ export default function RankingClient({ rankings }: RankingClientProps) {
           </button>
         </div>
       )}
-    </section>
+    </PageShell>
   );
 }

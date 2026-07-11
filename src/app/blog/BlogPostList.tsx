@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { type BlogListItem } from "@/lib/blog-data";
 import { toggleBlogLike } from "./actions";
+import BlogAvatar from "./BlogAvatar";
 import { CommentIcon, HeartIcon } from "./BlogIcons";
 import styles from "./Blog.module.css";
 
@@ -111,7 +112,14 @@ export default function BlogPostList({
                                 if (event.key === "Enter") router.push(postHref);
                             }}
                         >
-                            <span className={styles.avatar}>{post.authorInitials}</span>
+                            <BlogAvatar
+                                src={post.authorImageUrl}
+                                alt={`${post.authorName}の画像`}
+                                initials={post.authorInitials}
+                                className={styles.avatar}
+                                imageClassName={styles.avatarImage}
+                                size={44}
+                            />
                             <div className={styles.postContent}>
                                 <div className={styles.postMeta}>
                                     <span className={styles.authorName}>{post.authorName}</span>

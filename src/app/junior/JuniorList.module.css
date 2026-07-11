@@ -7,49 +7,8 @@
   --border: #ececef;
   --bg: #ffffff;
 
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 24px 24px 40px;
-  font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--text-main);
   background: var(--bg);
-}
-
-/* Tabs */
-.tabs {
-  display: flex;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 28px;
-}
-
-.tab {
-  flex: 1;
-  text-align: center;
-  padding: 14px 0 12px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-sub);
-  cursor: pointer;
-  position: relative;
-  background: #fafafa;
-  border: none;
-  outline: none;
-  font-family: inherit;
-}
-
-.tab.active {
-  color: var(--pink);
-  background: #fff;
-}
-
-.tab.active::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 2px;
-  background: var(--pink);
 }
 
 /* 検索ボックスのラッパー（基準位置） */
@@ -206,7 +165,4 @@
     gap: 14px 10px;
   }
 
-  .page {
-    padding: 16px 14px 32px;
-  }
 }

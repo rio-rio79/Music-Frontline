@@ -7,22 +7,28 @@ import { useLikeStore } from "../../../stores/likeStore";
 import BlogPostList from "../../blog/BlogPostList";
 import { type BlogListItem } from "@/lib/blog-data";
 import IdleList from "@/components/IdleList/IdleList";
+import PageHeading from "@/components/PageHeading";
+import PageShell from "@/components/PageShell";
+import PageTabs from "@/components/PageTabs";
 
 type SectionKey = "follows" | "likes";
 type LikeTabKey = "music" | "blog";
 
 const MUSIC_PAGE_SIZE = 20;
 
-const LIKE_TABS: { key: LikeTabKey; label: string; sectionLabel: string }[] = [
+const SECTION_TABS = [
+    { key: "follows", label: "Follows" },
+    { key: "likes", label: "Likes" },
+] as const;
+
+const LIKE_TABS: { key: LikeTabKey; label: string }[] = [
     {
         key: "music",
         label: "Music",
-        sectionLabel: "MUSIC",
     },
     {
         key: "blog",
         label: "Blog",
-        sectionLabel: "BLOG",
     },
 ];
 
@@ -133,7 +139,6 @@ export default function MyListClient({
         window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
     };
 
-    const currentLikeTab = LIKE_TABS.find((t) => t.key === activeLikeTab)!;
     const musicTotalPages = Math.max(1, Math.ceil(likedSongs.length / MUSIC_PAGE_SIZE));
     const currentMusicPage = Math.min(musicPage, musicTotalPages);
     const visibleLikedSongs = likedSongs.slice(
@@ -196,7 +201,7 @@ export default function MyListClient({
     };
 
     return (
-        <section className="like-page">
+        <PageShell className="like-page">
             <style>{`
                 .like-page {
                     --pink: #FF69B4;
@@ -205,10 +210,6 @@ export default function MyListClient({
                     --sub: #999;
                     --border: #eee;
 
-                    max-width: 700px;
-                    margin: 0 auto;
-                    padding: 32px 20px 80px;
-                    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
                     color: var(--text);
                     box-sizing: border-box;
                 }
@@ -217,72 +218,30 @@ export default function MyListClient({
                     box-sizing: border-box;
                 }
 
-                .like-page .like-title {
-                    font-size: 22px;
-                    font-weight: 700;
-                    color: var(--pink);
-                    border-bottom: 2px solid var(--pink);
-                    display: inline-block;
-                    padding-bottom: 8px;
-                    margin: 0 0 24px;
-                }
-
-                .like-page .like-tabs,
                 .like-page .like-sub-tabs {
                     display: flex;
-                    background: #f5f5f5;
-                    border-radius: 10px;
-                    overflow: hidden;
-                    margin-bottom: 24px;
-                }
-
-                .like-page .like-sub-tabs {
-                    width: min(360px, 100%);
-                    margin: 0 auto 32px;
-                    background: #fff;
-                    border: 1px solid var(--border);
-                }
-
-                .like-page .like-tab,
-                .like-page .like-sub-tab {
-                    flex: 1;
-                    text-align: center;
-                    padding: 14px 0;
-                    font-size: 15px;
-                    font-weight: 700;
-                    color: #888;
-                    cursor: pointer;
-                    background: transparent;
-                    border: none;
-                    transition: background .2s, color .2s;
-                }
-
-                .like-page .like-sub-tab {
-                    padding: 10px 0;
-                    font-size: 13px;
-                }
-
-                .like-page .like-tab.active,
-                .like-page .like-sub-tab.active {
-                    background: var(--pink-light);
-                    color: var(--pink);
-                }
-
-                .like-page .like-section-label {
-                    display: flex;
-                    align-items: center;
                     justify-content: center;
-                    gap: 14px;
-                    font-size: 20px;
-                    font-weight: 800;
-                    letter-spacing: 2px;
-                    margin-bottom: 24px;
+                    gap: 8px;
+                    margin: 14px 0 32px;
                 }
 
-                .like-page .like-section-label .dots {
-                    color: var(--pink);
-                    font-size: 14px;
-                    letter-spacing: 4px;
+                .like-page .like-sub-tab {
+                    min-width: 92px;
+                    padding: 8px 18px;
+                    border: 1px solid #f0e3e8;
+                    border-radius: 999px;
+                    background: #fff;
+                    color: #6b6570;
+                    font: inherit;
+                    font-size: 13px;
+                    font-weight: 800;
+                    cursor: pointer;
+                }
+
+                .like-page .like-sub-tab.active {
+                    border-color: #ff6ea0;
+                    background: #ffe1ec;
+                    color: #ff4f8b;
                 }
 
                 .like-page .like-empty-note {
@@ -343,31 +302,23 @@ export default function MyListClient({
                 }
             `}</style>
 
-            <h1 className="like-title">My List</h1>
+            <PageHeading title="My List" />
 
-            <div className="like-tabs">
-                <button
-                    type="button"
-                    className={`like-tab ${activeSection === "follows" ? "active" : ""}`}
-                    onClick={() => handleSectionSelect("follows")}
-                >
-                    Follows
-                </button>
-                <button
-                    type="button"
-                    className={`like-tab ${activeSection === "likes" ? "active" : ""}`}
-                    onClick={() => handleSectionSelect("likes")}
-                >
-                    Likes
-                </button>
-            </div>
+            <PageTabs
+                items={SECTION_TABS}
+                activeKey={activeSection}
+                ariaLabel="マイリスト表示種別"
+                onChange={handleSectionSelect}
+            />
 
             {activeSection === "likes" && (
-                <div className="like-sub-tabs">
+                <div className="like-sub-tabs" role="tablist" aria-label="いいね表示種別">
                     {LIKE_TABS.map((tab) => (
                         <button
                             key={tab.key}
                             type="button"
+                            role="tab"
+                            aria-selected={activeLikeTab === tab.key}
                             className={`like-sub-tab ${activeLikeTab === tab.key ? "active" : ""}`}
                             onClick={() => handleLikeTabSelect(tab.key)}
                         >
@@ -376,12 +327,6 @@ export default function MyListClient({
                     ))}
                 </div>
             )}
-
-            <div className="like-section-label">
-                <span className="dots">・ ・ ・</span>
-                {activeSection === "follows" ? "FOLLOWS" : currentLikeTab.sectionLabel}
-                <span className="dots">・ ・ ・</span>
-            </div>
 
             {renderContent()}
 
@@ -417,6 +362,6 @@ export default function MyListClient({
                     </button>
                 </div>
             )}
-        </section>
+        </PageShell>
     );
 }

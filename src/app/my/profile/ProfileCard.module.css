@@ -223,8 +223,6 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  font-family:
-    "Hiragino Sans", "Yu Gothic", "Helvetica Neue", Arial, sans-serif;
 }
 
 .usernameModal {

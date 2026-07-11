@@ -4,6 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import styles from "./JuniorList.module.css";
 import Image from "next/image";
+import PageHeading from "@/components/PageHeading";
+import PageShell from "@/components/PageShell";
+import PageTabs from "@/components/PageTabs";
 import { Heart } from "@/components/Svgs";
 import { useLikeStore } from "@/stores/likeStore";
 
@@ -26,18 +29,16 @@ const getGradientIndex = (id: string, length: number) => {
   return Math.abs(hash) % length;
 };
 
-// SVG アイコン定義
-const heartIconSvg = (
-  <svg className={styles.heartIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-  </svg>
-);
-
 const personIconSvg = (
   <svg viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.6 0-9.8 2.4-9.8 6.9v1.6h19.6v-1.6c0-4.5-6.2-6.9-9.8-6.9z" />
   </svg>
 );
+
+const JUNIOR_LIST_TABS = [
+  { key: "personal", label: "個人" },
+  { key: "group", label: "グループ" },
+] as const;
 
 export interface JuniorItem {
   id: string;
@@ -110,8 +111,8 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
         } else {
           setGroups(data.groups || []);
         }
-      } catch (err: any) {
-        setError(err.message || "エラーが発生しました。");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "エラーが発生しました。");
       } finally {
         setLoading(false);
       }
@@ -138,22 +139,15 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
   };
 
   return (
-    <div className={styles.page}>
-      {/* Tabs */}
-      <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeTab === "personal" ? styles.active : ""}`}
-          onClick={() => handleTabChange("personal")}
-        >
-          個人
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === "group" ? styles.active : ""}`}
-          onClick={() => handleTabChange("group")}
-        >
-          グループ
-        </button>
-      </div>
+    <PageShell className={styles.page}>
+      <PageHeading title="Junior" />
+
+      <PageTabs
+        items={JUNIOR_LIST_TABS}
+        activeKey={activeTab}
+        ariaLabel="ジュニア表示種別"
+        onChange={handleTabChange}
+      />
 
       {/* 検索とソート */}
       <div className={styles.searchContainer}>
@@ -272,6 +266,6 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
           )}
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

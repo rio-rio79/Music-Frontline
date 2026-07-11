@@ -1,26 +1,14 @@
 /* モバイルファーストのコンテナ設定 (HTMLのbodyにあったマックス幅を継承) */
 .container {
-  font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
   color: #1a1a2e;
   min-height: 100vh;
-  max-width: 600px;
-  margin: 0 auto;
-  padding-bottom: 24px; /* 下部に少し余白を追加 */
-  width: 600px;
-}
-
-.pageTitle {
-  margin: 0 0 18px;
-  font-size: 18px;
-  font-weight: 800;
-  color: #1a1a2e;
 }
 
 /* 検索ボックスのラッパー（基準位置） */
 .searchContainer {
   position: relative;
   padding-top: 25px; /* 上部にドロップダウンが配置されるための余白を確保 */
-  margin: 10px 0;
+  margin: 0 0 28px;
 }
 
 /* 検索ボックス */

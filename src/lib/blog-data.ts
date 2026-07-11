@@ -7,6 +7,7 @@ export type BlogListItem = {
     authorId: string;
     authorName: string;
     authorInitials: string;
+    authorImageUrl: string | null;
     authorAffiliation: string;
     isOshi: boolean;
     date: string;
@@ -32,6 +33,7 @@ export type BlogOtherPost = {
     date: string;
     authorName: string;
     authorInitials: string;
+    authorImageUrl: string | null;
 };
 
 export type BlogJuniorLink = {
@@ -56,6 +58,7 @@ type RelatedGroup = {
 type RelatedJunior = {
     id: string;
     name: string;
+    image_path: string | null;
     region: string | null;
     groups: RelatedGroup | null;
 };
@@ -96,6 +99,7 @@ const blogPostOverviewSelection = `
     juniors!inner (
         id,
         name,
+        image_path,
         region,
         groups (
             name
@@ -147,6 +151,7 @@ function buildBlogListItems({
     userId,
     canInteract,
     oshiJuniorId,
+    supabase,
 }: {
     rawPosts: RawBlogPost[];
     likes: { blog_posts_id: string; user_id: string }[];
@@ -154,6 +159,7 @@ function buildBlogListItems({
     userId?: string;
     canInteract: boolean;
     oshiJuniorId: string | null;
+    supabase: Awaited<ReturnType<typeof createSupabaseServer>>;
 }) {
     const likeCounts = countByPostId(likes);
     const commentCounts = countByPostId(commentRows);
@@ -174,6 +180,7 @@ function buildBlogListItems({
                 authorId: post.junior_id,
                 authorName: post.juniors.name,
                 authorInitials: getInitials(post.juniors.name),
+                authorImageUrl: resolveImageUrl(post.juniors.image_path, supabase),
                 authorAffiliation: formatAffiliation(post.juniors),
                 isOshi: post.junior_id === oshiJuniorId,
                 date: formatBlogDate(post.published_at),
@@ -282,6 +289,7 @@ export async function getBlogListPage({
         userId,
         canInteract,
         oshiJuniorId,
+        supabase,
     });
 
     return { posts, totalCount: count ?? 0 };
@@ -400,6 +408,7 @@ export async function getLikedBlogPosts() {
         userId: user.id,
         canInteract: (profileData?.plan?.monthly_price ?? 0) > 0,
         oshiJuniorId: profileData?.oshi_junior_id ?? null,
+        supabase,
     });
 
     return { authenticated: true, posts };
@@ -509,6 +518,7 @@ export async function getBlogDetail(
                 date: formatBlogDate(other.published_at),
                 authorName: other.juniors.name,
                 authorInitials: getInitials(other.juniors.name),
+                authorImageUrl: resolveImageUrl(other.juniors.image_path, supabase),
             },
         ];
     });
@@ -518,6 +528,7 @@ export async function getBlogDetail(
         authorId: post.junior_id,
         authorName: post.juniors.name,
         authorInitials: getInitials(post.juniors.name),
+        authorImageUrl: resolveImageUrl(post.juniors.image_path, supabase),
         authorAffiliation: formatAffiliation(post.juniors),
         isOshi: post.junior_id === profileData?.oshi_junior_id,
         date: formatBlogDate(post.published_at),

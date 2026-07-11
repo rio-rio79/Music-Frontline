@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import PageShell from "@/components/PageShell";
+import PageTabs from "@/components/PageTabs";
 import styles from "./JuniorDetail.module.css";
 import Image from "next/image";
 import { type Song, usePlayerStore } from "@/stores/playerStore";
@@ -32,6 +34,11 @@ interface JuniorDetailClientProps {
   junior: JuniorDetail;
 }
 
+const JUNIOR_DETAIL_TABS = [
+  { key: "music", label: "Music" },
+  { key: "blog", label: "Blog" },
+] as const;
+
 const formatDate = (dateStr: string | null) => {
   if (!dateStr) return "不明";
   const d = new Date(dateStr);
@@ -54,7 +61,10 @@ const calculateAge = (birthDateStr: string | null) => {
 
 export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"profile" | "blog">("profile");
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<"music" | "blog">(
+    searchParams.get("tab") === "blog" ? "blog" : "music",
+  );
 
   const currentSong = usePlayerStore((state) => state.currentSong);
   const isPlaying = usePlayerStore((state) => state.isPlaying);
@@ -69,14 +79,6 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
   useEffect(() => {
     fetchLikes();
   }, [fetchLikes]);
-
-  // URLのクエリパラメータに tab=blog があればブログタブをアクティブにする
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("tab") === "blog") {
-      setActiveTab("blog");
-    }
-  }, []);
 
   const handlePlay = (song: Song) => {
     if (currentSong?.id === song.id) {
@@ -96,59 +98,46 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
   };
 
   return (
-    <div className={styles.page}>
-      {/* Tabs */}
-      <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeTab === "profile" ? styles.tabActive : ""}`}
-          onClick={() => setActiveTab("profile")}
-        >
-          プロフィール
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === "blog" ? styles.tabActive : ""}`}
-          onClick={() => setActiveTab("blog")}
-        >
-          ブログ
-        </button>
+    <PageShell className={styles.page}>
+      <div className={styles.profileCard}>
+        <div className={styles.avatar} style={{ position: "relative" }}>
+          {junior.imageUrl ? (
+            <Image src={junior.imageUrl} alt={junior.name} className={styles.avatarImg} fill style={{ objectFit: "cover" }} />
+          ) : (
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.5c-3.3 0-9.8 1.6-9.8 4.9v2.4h19.6v-2.4c0-3.3-6.5-4.9-9.8-4.9z" />
+            </svg>
+          )}
+        </div>
+        <div className={styles.profileInfo}>
+          <h1>{junior.name}</h1>
+          <p className={styles.romaji}>{junior.nameEn || ""}</p>
+          <dl className={styles.infoTable}>
+            <dt>入社日</dt>
+            <dd>{formatDate(junior.joinDate)}</dd>
+            <dt>誕生日</dt>
+            <dd>{formatDate(junior.birthDate)}</dd>
+            <dt>年齢</dt>
+            <dd>{calculateAge(junior.birthDate)}</dd>
+            <dt>身長</dt>
+            <dd>{junior.height ? `${junior.height}cm` : "不明"}</dd>
+            <dt>出身地</dt>
+            <dd>{junior.birthplace || "不明"}</dd>
+            <dt>所属</dt>
+            <dd>{junior.groupName || "無所属"}</dd>
+          </dl>
+        </div>
       </div>
 
-      {activeTab === "profile" && (
-        <>
-          {/* Profile card */}
-          <div className={styles.profileCard}>
-            <div className={styles.avatar} style={{ position: "relative" }}>
-              {junior.imageUrl ? (
-                <Image src={junior.imageUrl} alt={junior.name} className={styles.avatarImg} fill style={{ objectFit: "cover" }} />
-              ) : (
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.5c-3.3 0-9.8 1.6-9.8 4.9v2.4h19.6v-2.4c0-3.3-6.5-4.9-9.8-4.9z" />
-                </svg>
-              )}
-            </div>
-            <div className={styles.profileInfo}>
-              <h1>{junior.name}</h1>
-              <p className={styles.romaji}>{junior.nameEn || ""}</p>
-              <dl className={styles.infoTable}>
-                <dt>入社日</dt>
-                <dd>{formatDate(junior.joinDate)}</dd>
-                <dt>誕生日</dt>
-                <dd>{formatDate(junior.birthDate)}</dd>
-                <dt>年齢</dt>
-                <dd>{calculateAge(junior.birthDate)}</dd>
-                <dt>身長</dt>
-                <dd>{junior.height ? `${junior.height}cm` : "不明"}</dd>
-                <dt>出身地</dt>
-                <dd>{junior.birthplace || "不明"}</dd>
-                <dt>所属</dt>
-                <dd>{junior.groupName || "無所属"}</dd>
-              </dl>
-            </div>
-          </div>
+      <PageTabs
+        items={JUNIOR_DETAIL_TABS}
+        activeKey={activeTab}
+        ariaLabel="ジュニア詳細メニュー"
+        onChange={setActiveTab}
+      />
 
-          <h2 className={styles.sectionTitle}>MUSIC</h2>
-          <div className={styles.sectionTitleUnderline}></div>
-
+      {activeTab === "music" && (
+        <div role="tabpanel">
           <div className={styles.trackList}>
             {junior.songs && junior.songs.length > 0 ? (
               junior.songs.map((song, index) => {
@@ -203,13 +192,11 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
               <p className={styles.noMusic}>楽曲情報が登録されていません。</p>
             )}
           </div>
-        </>
+        </div>
       )}
 
       {activeTab === "blog" && (
-        <div className={styles.blogSection}>
-          <h2 className={styles.sectionTitle}>BLOG</h2>
-          <div className={styles.sectionTitleUnderline}></div>
+        <div className={styles.blogSection} role="tabpanel">
           <BlogPostList
             posts={junior.blogPosts}
             emptyMessage={<p className={styles.blogPlaceholder}>ブログ記事がありません。</p>}
@@ -217,6 +204,6 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
           />
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

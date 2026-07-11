@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
+import PageHeading from '@/components/PageHeading'
+import PageShell from '@/components/PageShell'
 import { createSupabaseServer } from '@/lib/supabase-server'
 import type { BreakdownItem } from '../../../components/GiftPanel/GiftPanel'
 import LogoutButton from './LogoutButton'
@@ -196,10 +198,10 @@ export default async function MyProfilePage({ searchParams }: MyProfilePageProps
     }
 
     return (
-        <main className="page-wrap">
+        <PageShell className="page-wrap">
             <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
 
-            <h1 className="page-title" style={{ marginBottom: '34px' }}>My Page</h1>
+            <PageHeading title="My Page" />
 
             <ProfileCard
                 initialName={displayName}
@@ -251,7 +253,7 @@ export default async function MyProfilePage({ searchParams }: MyProfilePageProps
 
             <a className="withdraw-link">退会する</a>
             <LogoutButton />
-        </main>
+        </PageShell>
     )
 }
 
@@ -328,32 +330,7 @@ const pageStyles = `
   }
 
   .page-wrap {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 44px 24px 80px;
-    font-family: "Hiragino Sans","Yu Gothic","Helvetica Neue",Arial,sans-serif;
     color: var(--ink);
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .page-title {
-    text-align: center;
-    font-size: 30px;
-    font-weight: 800;
-    margin-top: 0px !important;
-    margin-bottom: 34px !important;
-    position: relative;
-    letter-spacing: .5px;
-    color: var(--ink);
-  }
-  .page-title::after {
-    content: "";
-    display: block;
-    width: 46px;
-    height: 4px;
-    border-radius: 3px;
-    background: var(--pink-main);
-    margin: 10px auto 0;
   }
 
   .section-title {

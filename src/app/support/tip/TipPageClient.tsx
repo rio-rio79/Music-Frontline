@@ -2,6 +2,9 @@
 
 import Image from "next/image";
 import { useMemo, useState, useTransition } from "react";
+import PageHeading from "@/components/PageHeading";
+import PageShell from "@/components/PageShell";
+import PageTabs, { type PageTabItem } from "@/components/PageTabs";
 import { sendFanLetter } from "./actions";
 import styles from "./page.module.css";
 
@@ -222,30 +225,24 @@ export default function TipPageClient({ juniors, initialOshiId, initialHistory }
     });
   };
 
-  return (
-    <section className={styles.page}>
-      <h1 className={styles.pageTitle}>ファンレター</h1>
+  const tabItems = useMemo<PageTabItem<Tab>[]>(
+    () => [
+      { key: "compose", label: "メッセージ作成" },
+      { key: "history", label: `送信履歴（${historyEntries.length}）` },
+    ],
+    [historyEntries.length],
+  );
 
-      <div className={styles.tabs} role="tablist" aria-label="ファンレターメニュー">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === "compose"}
-          className={`${styles.tab} ${activeTab === "compose" ? styles.active : ""}`}
-          onClick={() => setActiveTab("compose")}
-        >
-          メッセージ作成
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === "history"}
-          className={`${styles.tab} ${activeTab === "history" ? styles.active : ""}`}
-          onClick={() => setActiveTab("history")}
-        >
-          送信履歴 <span className={styles.count}>{historyEntries.length}</span>
-        </button>
-      </div>
+  return (
+    <PageShell className={styles.page}>
+      <PageHeading title="FanLetter" />
+
+      <PageTabs
+        items={tabItems}
+        activeKey={activeTab}
+        ariaLabel="ファンレターメニュー"
+        onChange={setActiveTab}
+      />
 
       {activeTab === "compose" ? (
         <div role="tabpanel">
@@ -501,6 +498,6 @@ export default function TipPageClient({ juniors, initialOshiId, initialHistory }
       )}
 
       <div className={`${styles.toast} ${toast ? styles.toastVisible : ""}`} role="status">{toast}</div>
-    </section>
+    </PageShell>
   );
 }

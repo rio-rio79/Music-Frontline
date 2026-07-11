@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import MusicList from "../../components/MusicList/MusicList";
+import PageHeading from "@/components/PageHeading";
+import PageShell from "@/components/PageShell";
 import { type Song } from "../../stores/playerStore";
 import styles from "./MyComponent.module.css"; // スタイルのインポート
 
@@ -47,8 +49,8 @@ export default function Music() {
     }, [searchQuery, sortBy]);
 
     return (
-        <section className={styles.container}>
-            <h1 className={styles.pageTitle}>楽曲一覧</h1>
+        <PageShell className={styles.container}>
+            <PageHeading title="Music" />
 
             {/* 検索ボックスとドロップダウンのラッパー */}
             <div className={styles.searchContainer}>
@@ -93,6 +95,6 @@ export default function Music() {
             ) : (
                 <MusicList songs={songs} />
             )}
-        </section>
+        </PageShell>
     );
 }

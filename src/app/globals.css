@@ -7,6 +7,8 @@
 body {
     margin: 0;
     background: #ffffff;
+    font-family: "Noto Sans JP", sans-serif;
+    -webkit-font-smoothing: antialiased;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -25,10 +27,11 @@ body {
 /* メインコンテンツはプレイヤーを含めず、常に画面中央へ配置する */
 .page-content {
     background: rgba(255, 255, 255, 0);
-    width: min(calc(100% - 40px), 720px);
+    width: 100%;
+    min-width: 0;
     box-sizing: border-box;
-    margin: 0 auto;
-    padding: 40px 20px;
+    margin: 0;
+    padding: 0;
 
     h1 {
         margin: 0;

@@ -8,43 +8,10 @@
   --border: #eee;
   --gold: #e8b64f;
   box-sizing: border-box;
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 32px 20px 80px;
   color: var(--text);
-  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
 }
 
 .page *, .page *::before, .page *::after { box-sizing: border-box; }
-
-.pageTitle {
-  display: inline-block;
-  margin: 0 0 24px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--pink);
-  color: var(--pink);
-  font-size: 22px;
-}
-
-.tabs { display: flex; overflow: hidden; margin-bottom: 28px; border-radius: 10px; background: #f5f5f5; }
-.tab {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 14px 0;
-  border: 0;
-  background: transparent;
-  color: #888;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.tab.active { background: var(--pink-light); color: var(--pink); }
-.count { padding: 1px 7px; border-radius: 10px; background: #e6e6e6; color: #888; font-size: 11px; }
-.active .count { background: var(--pink); color: #fff; }
 
 .hero {
   display: flex;
@@ -263,7 +230,6 @@
 }
 
 @media (max-width: 520px) {
-  .page { padding-inline: 14px; }
   .hero { align-items: flex-start; }
   .heroSelector { gap: 12px; }
   .heroThumb { width: 58px; height: 58px; flex-basis: 58px; }

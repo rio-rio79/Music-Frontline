@@ -1,6 +1,5 @@
 /* モバイルファーストのコンテナ設定 (HTMLのbodyにあったマックス幅を継承) */
 .container {
-  font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
   color: #1a1a2e;
   min-height: 100vh;
   max-width: 600px;

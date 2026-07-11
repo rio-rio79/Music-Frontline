@@ -2,8 +2,10 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import PageShell from "@/components/PageShell";
 import { type BlogDetailItem, type BlogJuniorLink } from "@/lib/blog-data";
 import { createBlogComment, deleteBlogComment, incrementBlogView, toggleBlogLike } from "../actions";
+import BlogAvatar from "../BlogAvatar";
 import BlogJuniorFinder from "../BlogJuniorFinder";
 import { CommentIcon, HeartIcon } from "../BlogIcons";
 import styles from "../Blog.module.css";
@@ -122,11 +124,18 @@ export default function BlogPostClient({ post, backLink, juniors }: BlogPostClie
     };
 
     return (
-        <article className={styles.page}>
+        <PageShell className={styles.page}>
             <Link href={backLink.href} className={styles.backLink}>‹ {backLink.label}</Link>
 
             <div className={styles.detailHeader}>
-                <span className={`${styles.avatar} ${styles.detailAvatar}`}>{post.authorInitials}</span>
+                <BlogAvatar
+                    src={post.authorImageUrl}
+                    alt={`${post.authorName}の画像`}
+                    initials={post.authorInitials}
+                    className={`${styles.avatar} ${styles.detailAvatar}`}
+                    imageClassName={styles.avatarImage}
+                    size={42}
+                />
                 <span className={`${styles.authorName} ${styles.detailAuthorName}`}>{post.authorName}</span>
                 {post.isOshi && <span className={styles.oshiBadge}>推し</span>}
                 <span className={`${styles.affiliation} ${styles.detailAffiliation}`}>{post.authorAffiliation}</span>
@@ -189,7 +198,14 @@ export default function BlogPostClient({ post, backLink, juniors }: BlogPostClie
                     <div className={styles.sectionLabel}>他のジュニアの投稿</div>
                     {post.otherPosts.map((otherPost) => (
                         <Link key={otherPost.id} href={`/blog/${otherPost.id}`} className={styles.otherPostLink}>
-                            <span className={styles.smallAvatar}>{otherPost.authorInitials}</span>
+                            <BlogAvatar
+                                src={otherPost.authorImageUrl}
+                                alt={`${otherPost.authorName}の画像`}
+                                initials={otherPost.authorInitials}
+                                className={styles.smallAvatar}
+                                imageClassName={styles.avatarImage}
+                                size={30}
+                            />
                             <span className={styles.otherPostText}>
                                 <span className={styles.otherPostTitle}>{otherPost.title}</span>
                                 <span className={styles.otherPostMeta}>{otherPost.authorName} ・ {otherPost.date}</span>
@@ -261,6 +277,6 @@ export default function BlogPostClient({ post, backLink, juniors }: BlogPostClie
                     )}
                 </section>
             )}
-        </article>
+        </PageShell>
     );
 }

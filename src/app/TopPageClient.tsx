@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import PageShell from "@/components/PageShell";
 import styles from "./TopPage.module.css";
 
 export type FeaturedTabKey = "music" | "blog" | "ranking";
@@ -225,7 +226,7 @@ export default function TopPageClient({
   };
 
   return (
-    <div className={styles.topPage}>
+    <PageShell className={styles.topPage}>
       <section className={styles.hero} aria-labelledby="top-hero-title">
         <div className={styles.heroContent}>
           <span className={styles.heroBadge}>♪ ジュニア応援ミュージックアプリ</span>
@@ -361,6 +362,6 @@ export default function TopPageClient({
           </Link>
         </section>
       )}
-    </div>
+    </PageShell>
   );
 }

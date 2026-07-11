@@ -1,0 +1,35 @@
+.tabs {
+  display: flex;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #f0e3e8;
+}
+
+.tab {
+  position: relative;
+  flex: 1;
+  padding: 16px 0;
+  border: 0;
+  background: transparent;
+  color: #9a8f95;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tabActive {
+  color: #2b2730;
+  font-weight: 800;
+}
+
+.tabActive::after {
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  width: 64px;
+  height: 3px;
+  border-radius: 3px;
+  background: #ff4f8b;
+  content: "";
+  transform: translateX(-50%);
+}

@@ -4,6 +4,8 @@ import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import PageShell from "@/components/PageShell";
+import PageTabs from "@/components/PageTabs";
 import { type Song, usePlayerStore } from "../../../stores/playerStore";
 import { useLikeStore } from "../../../stores/likeStore";
 import { GraySmallHeart, ThmbSvg, GraySmallPlayMusic, StartMusic, StopMusic } from "@/components/Svgs";
@@ -36,6 +38,11 @@ type MusicDetailClientProps = {
 };
 
 type TabType = "info" | "comments";
+
+const MUSIC_DETAIL_TABS = [
+  { key: "info", label: "楽曲情報" },
+  { key: "comments", label: "コメント" },
+] as const;
 
 export default function MusicDetailClient({
   song,
@@ -168,7 +175,7 @@ export default function MusicDetailClient({
     <>
       <style dangerouslySetInnerHTML={{ __html: cssStyles }} />
 
-      <div className="bodyWrapper">
+      <PageShell className="bodyWrapper">
         <div className="content">
 
           {/* Main Player Card */}
@@ -217,21 +224,13 @@ export default function MusicDetailClient({
               </button>
             </div>
 
-            {/* タブ */}
-            <div className="tabs">
-              <div
-                className={`tab ${activeTab === "info" ? "active" : ""}`}
-                onClick={() => setActiveTab("info")}
-              >
-                楽曲情報
-              </div>
-              <div
-                className={`tab ${activeTab === "comments" ? "active" : ""}`}
-                onClick={() => setActiveTab("comments")}
-              >
-                コメント
-              </div>
-            </div>
+            <PageTabs
+              items={MUSIC_DETAIL_TABS}
+              activeKey={activeTab}
+              ariaLabel="楽曲詳細メニュー"
+              onChange={setActiveTab}
+              className="songTabs"
+            />
           </div>
 
           {/* 楽曲情報タブ */}
@@ -339,7 +338,7 @@ export default function MusicDetailClient({
           )}
 
         </div>
-      </div>
+      </PageShell>
 
       {/* 歌詞モーダル */}
       {showLyricsModal && song && (
@@ -366,15 +365,12 @@ const cssStyles = `
 }
 
 .bodyWrapper {
-  font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
   color: #1a1a2e;
   min-height: 100vh;
-  max-width: 480px;
-  margin: 0 auto;
 }
 
 .content {
-  padding: 0 14px 24px;
+  padding: 0 0 24px;
 }
 
 .mainCard {
@@ -475,37 +471,8 @@ const cssStyles = `
   background: #d93b70;
 }
 
-.tabs {
-  display: flex;
-  border-bottom: 1.5px solid #e8d0dc;
-  margin: 20px 0 0;
-}
-
-.tab {
-  flex: 1;
-  text-align: center;
-  padding: 12px 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: #aaa;
-  cursor: pointer;
-  position: relative;
-}
-
-.tab.active {
-  color: #e8447a;
-  font-weight: 700;
-}
-
-.tab.active::after {
-  content: "";
-  position: absolute;
-  bottom: -1.5px;
-  left: 0;
-  right: 0;
-  height: 2.5px;
-  background: #e8447a;
-  border-radius: 2px 2px 0 0;
+.songTabs {
+  margin-top: 20px;
 }
 
 .infoCard {
