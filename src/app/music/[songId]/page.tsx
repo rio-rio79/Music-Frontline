@@ -6,6 +6,34 @@ type MusicDetailPageProps = {
   params: Promise<{ songId: string }>;
 };
 
+type SongJuniorRow = {
+  junior_id: string | null;
+  juniors: { name: string | null } | null;
+  group_id: string | null;
+  groups: { name: string | null } | null;
+};
+
+type SongRow = {
+  id: string;
+  title: string;
+  audio_path: string | null;
+  image_path: string | null;
+  play_count: number | null;
+  published_at: string | null;
+  lyricist: string | null;
+  composer: string | null;
+  lyrics: string | null;
+  song_juniors: SongJuniorRow[] | null;
+};
+
+type CommentRow = {
+  id: string;
+  body: string;
+  created_at: string;
+  user_id: string;
+  profiles: { name: string | null } | null;
+};
+
 export default async function MusicDetailPage({
   params,
 }: MusicDetailPageProps) {
@@ -118,7 +146,7 @@ export default async function MusicDetailPage({
   }
 
   // 楽曲解決用のヘルパー関数
-  const formatSong = (s: any) => {
+  const formatSong = (s: SongRow) => {
     let songGroups: string[] = [];
     let songJuniors: string[] = [];
     let groupsDetail: { id: string; name: string }[] = [];
@@ -128,7 +156,7 @@ export default async function MusicDetailPage({
       const groupMap = new Map<string, string>();
       const juniorMap = new Map<string, string>();
 
-      s.song_juniors.forEach((sj: any) => {
+      s.song_juniors.forEach((sj) => {
         if (sj.group_id && sj.groups?.name) {
           groupMap.set(sj.group_id, sj.groups.name);
         }
@@ -166,8 +194,8 @@ export default async function MusicDetailPage({
       audioFilePath,
       imagePath,
       artistName,
-      playCount: s.play_count,
-      publishedAt: s.published_at,
+      playCount: s.play_count ?? undefined,
+      publishedAt: s.published_at ?? undefined,
       juniors: songJuniors,
       groups: songGroups,
       lyricist: s.lyricist,
@@ -178,14 +206,14 @@ export default async function MusicDetailPage({
     };
   };
 
-  const mainSongFormatted = formatSong(song);
+  const mainSongFormatted = formatSong(song as SongRow);
   const formattedSong = {
     ...mainSongFormatted,
     likesCount: likesCount || 0,
     isLiked,
   };
 
-  const formattedAllSongs = (allSongsRaw || []).map((s: any) => {
+  const formattedAllSongs = ((allSongsRaw || []) as SongRow[]).map((s) => {
     const formatted = formatSong(s);
     return {
       id: formatted.id,
@@ -203,7 +231,7 @@ export default async function MusicDetailPage({
     };
   });
 
-  const formattedComments = (comments || []).map((c: any) => ({
+  const formattedComments = ((comments || []) as CommentRow[]).map((c) => ({
     id: c.id,
     body: c.body,
     createdAt: c.created_at,
@@ -218,10 +246,8 @@ export default async function MusicDetailPage({
       song={formattedSong}
       allSongs={formattedAllSongs}
       initialComments={formattedComments}
-      currentUserId={user ? user.id : null}
       groupsDetail={mainSongFormatted.groupsDetail}
       juniorsDetail={mainSongFormatted.juniorsDetail}
     />
   );
 }
-

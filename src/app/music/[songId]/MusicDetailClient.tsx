@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { type Song, usePlayerStore } from "../../../stores/playerStore";
 import { useLikeStore } from "../../../stores/likeStore";
-import { GraySmallHeart, ThmbSvg, GraySmallPlayMusic, SkipBack, SkipForward, StartMusic, StopMusic } from "@/components/Svgs";
+import { GraySmallHeart, ThmbSvg, GraySmallPlayMusic, StartMusic, StopMusic } from "@/components/Svgs";
 
 type CommentType = {
   id: string;
@@ -31,7 +31,6 @@ type MusicDetailClientProps = {
   song: Song;
   allSongs: Song[];
   initialComments: CommentType[];
-  currentUserId: string | null;
   groupsDetail: GroupDetail[];
   juniorsDetail: JuniorDetail[];
 };
@@ -42,7 +41,6 @@ export default function MusicDetailClient({
   song,
   allSongs,
   initialComments,
-  currentUserId,
   groupsDetail,
   juniorsDetail,
 }: MusicDetailClientProps) {
@@ -58,9 +56,6 @@ export default function MusicDetailClient({
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const togglePlay = usePlayerStore((state) => state.togglePlay);
   const playSong = usePlayerStore((state) => state.playSong);
-  const previous = usePlayerStore((state) => state.previous);
-  const next = usePlayerStore((state) => state.next);
-  const queue = usePlayerStore((state) => state.queue);
 
   const likedSongIds = useLikeStore((state) => state.likedSongIds);
   const toggleLikeStore = useLikeStore((state) => state.toggleLike);
@@ -116,8 +111,8 @@ export default function MusicDetailClient({
       const data = await res.json();
       setComments((prev) => [data.comment, ...prev]);
       setNewComment("");
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "コメントの送信に失敗しました。");
     } finally {
       setSubmittingComment(false);
     }
@@ -138,8 +133,8 @@ export default function MusicDetailClient({
         throw new Error(errorData.error || "コメントの削除に失敗しました。");
       }
       setComments((prev) => prev.filter((c) => c.id !== commentId));
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "コメントの削除に失敗しました。");
     }
   };
 
@@ -159,7 +154,6 @@ export default function MusicDetailClient({
 
   const isCurrentSong = currentSong?.id === song.id;
   const isCurrentPlaying = isCurrentSong && isPlaying;
-  const isOtherSongPlaying = currentSong !== null && !isCurrentSong && isPlaying;
 
   const handlePlay = () => {
     if (isCurrentSong) {
@@ -168,32 +162,6 @@ export default function MusicDetailClient({
     }
     // 別の曲を再生する場合、または未再生から再生を開始する場合、キューとして全曲リストを渡す
     playSong(song, allSongs);
-  };
-
-  const handlePrevClick = () => {
-    if (currentSong && queue.length > 0) {
-      previous();
-      return;
-    }
-    // プレイヤーが未ロードの場合、表示曲を基準に直接URL遷移する
-    const currentIndex = allSongs.findIndex((s) => s.id === song.id);
-    if (currentIndex !== -1 && allSongs.length > 0) {
-      const prevIndex = (currentIndex - 1 + allSongs.length) % allSongs.length;
-      router.replace(`/music/${allSongs[prevIndex].id}`);
-    }
-  };
-
-  const handleNextClick = () => {
-    if (currentSong && queue.length > 0) {
-      next();
-      return;
-    }
-    // プレイヤーが未ロードの場合、表示曲を基準に直接URL遷移する
-    const currentIndex = allSongs.findIndex((s) => s.id === song.id);
-    if (currentIndex !== -1 && allSongs.length > 0) {
-      const nextIndex = (currentIndex + 1) % allSongs.length;
-      router.replace(`/music/${allSongs[nextIndex].id}`);
-    }
   };
 
   return (
@@ -239,23 +207,14 @@ export default function MusicDetailClient({
 
             {/* コントロール */}
             <div className="controls">
-              <div className="ctrlBtn" onClick={handlePrevClick} style={{ cursor: "pointer" }}>
-                <SkipBack />
-              </div>
-
-              <div
+              <button
+                type="button"
                 className="playBtn"
                 onClick={handlePlay}
-                style={{ cursor: "pointer" }}
-                role="button"
                 aria-label={`${song.title}を${isCurrentPlaying ? "一時停止" : "再生"}`}
               >
                 {isCurrentPlaying ? <StopMusic color="white" /> : <StartMusic color="white" />}
-              </div>
-
-              <div className="ctrlBtn" onClick={handleNextClick} style={{ cursor: "pointer" }}>
-                <SkipForward />
-              </div>
+              </button>
             </div>
 
             {/* タブ */}
@@ -496,25 +455,24 @@ const cssStyles = `
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 40px;
   padding: 18px 0 6px;
-}
-
-.ctrlBtn {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
 }
 
 .playBtn {
   width: 54px;
   height: 54px;
+  padding: 0;
+  border: none;
   background: #e8447a;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+
+.playBtn:hover {
+  background: #d93b70;
 }
 
 .tabs {
