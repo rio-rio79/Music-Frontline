@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getBlogDetail } from "@/lib/blog-data";
+import { getBlogDetail, getBlogJuniorLinks } from "@/lib/blog-data";
 import BlogPostClient from "./BlogPostClient";
 
 type BlogDetailPageProps = {
@@ -15,7 +15,10 @@ export default async function BlogDetailPage({
 }: BlogDetailPageProps) {
     const { id } = await params;
     const query = await searchParams;
-    const post = await getBlogDetail(id);
+    const [post, blogJuniors] = await Promise.all([
+        getBlogDetail(id),
+        getBlogJuniorLinks(),
+    ]);
 
     if (!post) notFound();
 
@@ -24,5 +27,5 @@ export default async function BlogDetailPage({
         ? { href: "/my/list?section=likes&like=blog", label: "マイリストに戻る" }
         : { href: "/blog", label: "ブログ一覧に戻る" };
 
-    return <BlogPostClient post={post} backLink={backLink} />;
+    return <BlogPostClient post={post} backLink={backLink} juniors={blogJuniors} />;
 }

@@ -2,8 +2,9 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { type BlogDetailItem } from "@/lib/blog-data";
+import { type BlogDetailItem, type BlogJuniorLink } from "@/lib/blog-data";
 import { createBlogComment, deleteBlogComment, incrementBlogView, toggleBlogLike } from "../actions";
+import BlogJuniorFinder from "../BlogJuniorFinder";
 import { CommentIcon, HeartIcon } from "../BlogIcons";
 import styles from "../Blog.module.css";
 
@@ -13,6 +14,7 @@ type BlogPostClientProps = {
         href: string;
         label: string;
     };
+    juniors: BlogJuniorLink[];
 };
 
 function LockIcon({ size = 22 }: { size?: number }) {
@@ -24,7 +26,7 @@ function LockIcon({ size = 22 }: { size?: number }) {
     );
 }
 
-export default function BlogPostClient({ post, backLink }: BlogPostClientProps) {
+export default function BlogPostClient({ post, backLink, juniors }: BlogPostClientProps) {
     const [liked, setLiked] = useState(post.liked);
     const [likeCount, setLikeCount] = useState(post.likeCount);
     const [commentDraft, setCommentDraft] = useState("");
@@ -197,6 +199,8 @@ export default function BlogPostClient({ post, backLink }: BlogPostClientProps) 
                     ))}
                 </section>
             )}
+
+            <BlogJuniorFinder juniors={juniors} />
 
             {!post.canInteract && (
                 <div className={styles.lockedCommentsNote}>

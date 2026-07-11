@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getBlogListPage, type BlogTab } from "@/lib/blog-data";
+import { getBlogJuniorLinks, getBlogListPage, type BlogTab } from "@/lib/blog-data";
 import BlogListClient from "./BlogListClient";
 
 const PAGE_SIZE = 30;
@@ -19,12 +19,15 @@ export default async function BlogTop({ searchParams }: BlogTopProps) {
     const tab: BlogTab = query.tab === "following" ? "following" : "all";
     const authorId = query.author?.trim() || undefined;
 
-    const { posts, totalCount } = await getBlogListPage({
-        page,
-        pageSize: PAGE_SIZE,
-        tab,
-        authorId,
-    });
+    const [{ posts, totalCount }, blogJuniors] = await Promise.all([
+        getBlogListPage({
+            page,
+            pageSize: PAGE_SIZE,
+            tab,
+            authorId,
+        }),
+        getBlogJuniorLinks(),
+    ]);
     const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
     if (page > totalPages) {
@@ -42,6 +45,7 @@ export default async function BlogTop({ searchParams }: BlogTopProps) {
             currentPage={page}
             totalPages={totalPages}
             authorId={authorId}
+            juniors={blogJuniors}
         />
     );
 }

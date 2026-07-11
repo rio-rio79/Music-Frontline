@@ -34,6 +34,14 @@ export type BlogOtherPost = {
     authorInitials: string;
 };
 
+export type BlogJuniorLink = {
+    id: string;
+    name: string;
+    initials: string;
+    affiliation: string;
+    imageUrl: string | null;
+};
+
 export type BlogDetailItem = BlogListItem & {
     body: string;
     canReadBody: boolean;
@@ -64,6 +72,11 @@ type RawBlogPost = {
 
 type RawLikedBlogPost = {
     blog_posts: RawBlogPost | null;
+};
+
+type RawBlogJuniorPost = {
+    junior_id: string;
+    juniors: (RelatedJunior & { image_path: string | null }) | null;
 };
 
 type RawBlogComment = {
@@ -108,6 +121,15 @@ function formatAffiliation(junior: RelatedJunior) {
 
 function getInitials(name: string) {
     return name.slice(0, 2);
+}
+
+function resolveImageUrl(
+    imagePath: string | null,
+    supabase: Awaited<ReturnType<typeof createSupabaseServer>>,
+) {
+    if (!imagePath) return null;
+    if (imagePath.startsWith("http") || imagePath.startsWith("/")) return imagePath;
+    return supabase.storage.from("images").getPublicUrl(imagePath).data.publicUrl;
 }
 
 function countByPostId(rows: { blog_posts_id: string }[]) {
@@ -263,6 +285,51 @@ export async function getBlogListPage({
     });
 
     return { posts, totalCount: count ?? 0 };
+}
+
+export async function getBlogJuniorLinks(limit = 24) {
+    const supabase = await createSupabaseServer();
+    const rowLimit = Math.max(limit * 4, limit);
+
+    const { data, error } = await supabase
+        .from("blog_posts")
+        .select(`
+            junior_id,
+            juniors!inner (
+                id,
+                name,
+                image_path,
+                region,
+                groups (
+                    name
+                )
+            )
+        `)
+        .order("published_at", { ascending: false })
+        .limit(rowLimit);
+
+    if (error) throw new Error(error.message);
+
+    const seen = new Set<string>();
+    const juniors: BlogJuniorLink[] = [];
+
+    for (const row of (data ?? []) as unknown as RawBlogJuniorPost[]) {
+        const junior = row.juniors;
+        if (!junior || seen.has(junior.id)) continue;
+
+        seen.add(junior.id);
+        juniors.push({
+            id: junior.id,
+            name: junior.name,
+            initials: getInitials(junior.name),
+            affiliation: formatAffiliation(junior),
+            imageUrl: resolveImageUrl(junior.image_path, supabase),
+        });
+
+        if (juniors.length >= limit) break;
+    }
+
+    return juniors;
 }
 
 export async function getLikedBlogPosts() {

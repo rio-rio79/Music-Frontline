@@ -652,54 +652,206 @@
     line-height: 1.7;
 }
 
-.juniorImage {
-    width: 100%;
-    max-width: 200px;
-    height: auto;
-    margin-top: 10px;
-    border-radius: 10px;
+.juniorFinder {
+    margin-top: 42px;
+    padding-top: 26px;
+    border-top: 1px solid #f0e3e8;
 }
 
-.sectionHeader h2 {
+.juniorFinderHeader {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.juniorFinderLabel {
+    display: block;
+    margin-bottom: 3px;
+    color: #ff4f8b;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.6px;
+}
+
+.juniorFinderTitle {
     margin: 0;
     color: #2b2730;
     font-size: 20px;
     font-weight: 800;
-    margin-top: 50px;
-
 }
 
-.slider {
-    width: auto;
+.juniorFinderAllLink {
+    flex: 0 0 auto;
+    color: #ff4f8b;
+    font-size: 12.5px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.juniorFinderAllLink:hover {
+    text-decoration: underline;
+}
+
+.juniorFinderSlider {
+    position: relative;
+}
+
+.juniorFinderViewport {
     overflow: hidden;
+    border-radius: 8px;
+    padding-top: 3px;
+    margin-top: -3px;
 }
 
-.slidetrack {
+.juniorFinderTrack {
     display: flex;
-    width: max-content;
-    animation: scroll 60s linear infinite;
+    transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
 }
 
-.slidetrack img {
-    display: inline-block;
-    margin-right: 10px;
-    margin-left: 10px;
-    width: 300px;
-    height: 450px;
+.juniorFinderSlideGroup {
+    display: grid;
+    flex: 0 0 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    min-width: 100%;
+}
+
+.juniorFinderCard {
+    display: flex;
+    flex-direction: column;
+    min-height: 238px;
+    padding: 10px;
+    border: 1px solid #f0e3e8;
+    border-radius: 8px;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.12s, background 0.12s, transform 0.12s;
+}
+
+.juniorFinderCard:hover {
+    border-color: #ffb1cb;
+    background: #fff8fa;
+    transform: translateY(-1px);
+}
+
+.juniorFinderCard:focus-visible,
+.juniorFinderNavButton:focus-visible,
+.juniorFinderDot:focus-visible {
+    outline: 2px solid #ff6ea0;
+    outline-offset: 2px;
+}
+
+.juniorFinderPhoto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ffe5ef, #f6eef2);
+}
+
+.juniorFinderImage {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    margin-top: 20px;
-
-    flex-shrink: 0;
 }
 
-@keyframes scroll {
-    from {
-        transform: translateX(0);
-    }
+.juniorFinderInitials {
+    color: #ff4f8b;
+    font-size: 26px;
+    font-weight: 800;
+}
 
-    to {
-        transform: translateX(-50%);
-    }
+.juniorFinderText {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    margin-top: 10px;
+}
+
+.juniorFinderName {
+    overflow: hidden;
+    color: #2b2730;
+    font-size: 14px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.juniorFinderAffiliation {
+    overflow: hidden;
+    margin-top: 2px;
+    color: #9a8f95;
+    font-size: 11.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.juniorFinderAction {
+    margin-top: auto;
+    padding-top: 12px;
+    color: #ff4f8b;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.juniorFinderNavButton {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid #f0e3e8;
+    border-radius: 50%;
+    background: #fff;
+    color: #ff4f8b;
+    font: inherit;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 6px 16px rgb(43 39 48 / 8%);
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.juniorFinderNavButtonPrev {
+    left: -12px;
+}
+
+.juniorFinderNavButtonNext {
+    right: -12px;
+}
+
+.juniorFinderDots {
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 14px;
+}
+
+.juniorFinderDot {
+    width: 7px;
+    height: 7px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: #ead5df;
+    cursor: pointer;
+}
+
+.juniorFinderDotActive {
+    width: 22px;
+    background: #ff4f8b;
 }
 
 @media (width <=600px) {
@@ -734,5 +886,41 @@
         min-width: 32px;
         height: 32px;
         padding-inline: 8px;
+    }
+
+    .juniorFinder {
+        margin-top: 34px;
+        padding-inline: 4px;
+    }
+
+    .juniorFinderSlideGroup {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .juniorFinderCard {
+        min-height: 212px;
+    }
+
+    .juniorFinderName {
+        font-size: 13px;
+    }
+
+    .juniorFinderAction {
+        font-size: 12px;
+    }
+
+    .juniorFinderNavButton {
+        width: 30px;
+        height: 30px;
+        font-size: 19px;
+    }
+
+    .juniorFinderNavButtonPrev {
+        left: -4px;
+    }
+
+    .juniorFinderNavButtonNext {
+        right: -4px;
     }
 }
