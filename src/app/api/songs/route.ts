@@ -1,4 +1,9 @@
 import { createSupabaseServer } from '@/lib/supabase-server'
+import { resolveMusicCoverUrl } from '@/lib/music-assets'
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : 'Server error'
+}
 
 export async function GET(request: Request) {
     try {
@@ -7,6 +12,8 @@ export async function GET(request: Request) {
         const sort = searchParams.get('sort') || 'group'
 
         const supabase = await createSupabaseServer()
+        const getMusicCoverUrl = (path: string) =>
+            supabase.storage.from('images').getPublicUrl(path).data.publicUrl
 
         // 楽曲データと関連するジュニア、グループの情報を取得
         const { data: songs, error } = await supabase
@@ -64,11 +71,7 @@ export async function GET(request: Request) {
             }
 
             // image_path の解決
-            let imagePath = song.image_path || '/music_cover_img.png'
-            if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('/')) {
-                const { data } = supabase.storage.from('images').getPublicUrl(imagePath)
-                imagePath = data.publicUrl
-            }
+            const imagePath = resolveMusicCoverUrl(song.image_path, getMusicCoverUrl)
 
             return {
                 id: song.id,
@@ -115,7 +118,7 @@ export async function GET(request: Request) {
         }
 
         return Response.json({ songs: formattedSongs })
-    } catch (e: any) {
-        return Response.json({ error: e.message || 'Server error' }, { status: 500 })
+    } catch (error: unknown) {
+        return Response.json({ error: getErrorMessage(error) }, { status: 500 })
     }
 }

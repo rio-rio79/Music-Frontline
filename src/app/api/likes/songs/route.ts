@@ -1,4 +1,5 @@
 import { createSupabaseServer } from '@/lib/supabase-server'
+import { resolveMusicCoverUrl } from '@/lib/music-assets'
 
 function getErrorMessage(error: unknown) {
     return error instanceof Error ? error.message : 'Server error'
@@ -7,6 +8,8 @@ function getErrorMessage(error: unknown) {
 export async function GET() {
     try {
         const supabase = await createSupabaseServer()
+        const getMusicCoverUrl = (path: string) =>
+            supabase.storage.from('images').getPublicUrl(path).data.publicUrl
         const { data: { user }, error: authError } = await supabase.auth.getUser()
         if (authError || !user) {
             return Response.json(
@@ -74,11 +77,7 @@ export async function GET() {
                 audioFilePath = data.publicUrl
             }
 
-            let imagePath = song.image_path || '/music_cover_img.png'
-            if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('/')) {
-                const { data } = supabase.storage.from('images').getPublicUrl(imagePath)
-                imagePath = data.publicUrl
-            }
+            const imagePath = resolveMusicCoverUrl(song.image_path, getMusicCoverUrl)
 
             return {
                 id: song.id,

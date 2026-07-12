@@ -1,4 +1,9 @@
 import { createSupabaseServer } from '@/lib/supabase-server'
+import { resolveMusicCoverUrl } from '@/lib/music-assets'
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : 'Server error'
+}
 
 type RouteContext = {
     params: Promise<{ songId: string }>
@@ -13,6 +18,8 @@ export async function GET(request: Request, context: RouteContext) {
         }
 
         const supabase = await createSupabaseServer()
+        const getMusicCoverUrl = (path: string) =>
+            supabase.storage.from('images').getPublicUrl(path).data.publicUrl
 
         const { data: song, error } = await supabase
             .from('songs')
@@ -75,11 +82,7 @@ export async function GET(request: Request, context: RouteContext) {
         }
 
         // image_path の解決
-        let imagePath = song.image_path || '/music_cover_img.png'
-        if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('/')) {
-            const { data } = supabase.storage.from('images').getPublicUrl(imagePath)
-            imagePath = data.publicUrl
-        }
+        const imagePath = resolveMusicCoverUrl(song.image_path, getMusicCoverUrl)
 
         // 総いいね数の取得
         const { count: likesCount } = await supabase
@@ -120,7 +123,7 @@ export async function GET(request: Request, context: RouteContext) {
         }
 
         return Response.json({ song: formattedSong })
-    } catch (e: any) {
-        return Response.json({ error: e.message || 'Server error' }, { status: 500 })
+    } catch (error: unknown) {
+        return Response.json({ error: getErrorMessage(error) }, { status: 500 })
     }
 }

@@ -1,10 +1,23 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { resolveMusicCoverUrl } from "@/lib/music-assets";
 import { notFound } from "next/navigation";
 import JuniorDetailClient from "./JuniorDetailClient";
 import { getBlogListPage } from "@/lib/blog-data";
 
 type JuniorDetailPageProps = {
   params: Promise<{ juniorId: string }>;
+};
+
+type SongRow = {
+  id: string;
+  title: string;
+  audio_path: string | null;
+  image_path: string | null;
+  play_count: number | null;
+  published_at: string | null;
+  lyricist: string | null;
+  composer: string | null;
+  lyrics: string | null;
 };
 
 export default async function Page({ params }: JuniorDetailPageProps) {
@@ -14,6 +27,8 @@ export default async function Page({ params }: JuniorDetailPageProps) {
   }
 
   const supabase = await createSupabaseServer();
+  const getMusicCoverUrl = (path: string) =>
+    supabase.storage.from("images").getPublicUrl(path).data.publicUrl;
 
   // 1. ジュニア情報の取得
   const { data: junior, error: juniorError } = await supabase
@@ -72,7 +87,7 @@ export default async function Page({ params }: JuniorDetailPageProps) {
 
   const rawSongs = (songJuniors || [])
     .map((sj) => sj.songs)
-    .filter(Boolean) as any[];
+    .filter(Boolean) as SongRow[];
 
   // ログインユーザーの取得
   const { data: { user } } = await supabase.auth.getUser();
@@ -88,11 +103,7 @@ export default async function Page({ params }: JuniorDetailPageProps) {
       }
 
       // image_path の解決
-      let imagePath = song.image_path || "/music_cover_img.png";
-      if (imagePath && !imagePath.startsWith("http") && !imagePath.startsWith("/")) {
-        const { data } = supabase.storage.from("images").getPublicUrl(imagePath);
-        imagePath = data.publicUrl;
-      }
+      const imagePath = resolveMusicCoverUrl(song.image_path, getMusicCoverUrl);
 
       // 総いいね数の取得
       const { count: likesCount } = await supabase
@@ -139,8 +150,8 @@ export default async function Page({ params }: JuniorDetailPageProps) {
         audioFilePath,
         imagePath,
         artistName,
-        playCount: song.play_count,
-        publishedAt: song.published_at,
+        playCount: song.play_count ?? undefined,
+        publishedAt: song.published_at ?? undefined,
         juniors: songJuniorsList,
         groups: songGroups,
         lyricist: song.lyricist,
@@ -172,7 +183,7 @@ export default async function Page({ params }: JuniorDetailPageProps) {
     region: junior.region,
     catchphrase: junior.catchphrase,
     imageUrl: juniorImageUrl,
-    groupName: (junior.groups as any)?.name ?? null,
+    groupName: (junior.groups as { name: string | null } | null)?.name ?? null,
     songs,
     blogPosts,
   };

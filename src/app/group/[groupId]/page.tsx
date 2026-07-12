@@ -1,9 +1,22 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { resolveMusicCoverUrl } from "@/lib/music-assets";
 import { notFound } from "next/navigation";
 import GroupDetailClient from "./GroupDetailClient";
 
 type GroupDetailPageProps = {
   params: Promise<{ groupId: string }>;
+};
+
+type SongRow = {
+  id: string;
+  title: string;
+  audio_path: string | null;
+  image_path: string | null;
+  play_count: number | null;
+  published_at: string | null;
+  lyricist: string | null;
+  composer: string | null;
+  lyrics: string | null;
 };
 
 export default async function Page({ params }: GroupDetailPageProps) {
@@ -13,6 +26,8 @@ export default async function Page({ params }: GroupDetailPageProps) {
   }
 
   const supabase = await createSupabaseServer();
+  const getMusicCoverUrl = (path: string) =>
+    supabase.storage.from("images").getPublicUrl(path).data.publicUrl;
 
   // 1. グループ情報の取得
   const { data: group, error: groupError } = await supabase
@@ -79,10 +94,10 @@ export default async function Page({ params }: GroupDetailPageProps) {
 
   const rawSongs = (songGroups || [])
     .map((sg) => sg.songs)
-    .filter(Boolean) as any[];
+    .filter(Boolean) as SongRow[];
 
   // 重複排除（同じグループの複数メンバーが登録されている場合などで重複する可能性があるため）
-  const uniqueSongsMap = new Map<string, any>();
+  const uniqueSongsMap = new Map<string, SongRow>();
   for (const song of rawSongs) {
     uniqueSongsMap.set(song.id, song);
   }
@@ -102,11 +117,7 @@ export default async function Page({ params }: GroupDetailPageProps) {
       }
 
       // image_path の解決
-      let imagePath = song.image_path || "/music_cover_img.png";
-      if (imagePath && !imagePath.startsWith("http") && !imagePath.startsWith("/")) {
-        const { data } = supabase.storage.from("images").getPublicUrl(imagePath);
-        imagePath = data.publicUrl;
-      }
+      const imagePath = resolveMusicCoverUrl(song.image_path, getMusicCoverUrl);
 
       // 総いいね数の取得
       const { count: likesCount } = await supabase
@@ -153,8 +164,8 @@ export default async function Page({ params }: GroupDetailPageProps) {
         audioFilePath,
         imagePath,
         artistName,
-        playCount: song.play_count,
-        publishedAt: song.published_at,
+        playCount: song.play_count ?? undefined,
+        publishedAt: song.published_at ?? undefined,
         juniors: songJuniorsList,
         groups: songGroupsNames,
         lyricist: song.lyricist,

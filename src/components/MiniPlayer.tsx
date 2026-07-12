@@ -169,7 +169,7 @@ export default function MiniPlayer() {
                             type="button"
                             className="mini-heart-button"
                             onClick={handleLike}
-                            aria-label={isCurrentSongLiked ? "お気に入りから削除" : "お気に入りに追加"}
+                            aria-label={isCurrentSongLiked ? "いいねを解除" : "いいねする"}
                             aria-pressed={isCurrentSongLiked}
                             disabled={isLikePending}
                         >

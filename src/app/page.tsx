@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { resolveMusicCoverUrl } from "@/lib/music-assets";
 import TopPageClient, {
   type FeaturedItem,
   type FeaturedTabKey,
@@ -208,7 +209,7 @@ export default async function TopPage() {
     sub: formatSongSubtitle(song),
     meta: `${song.play_count.toLocaleString("ja-JP")} 再生`,
     href: `/music/${song.id}`,
-    imageUrl: resolvePublicImageUrl(song.image_path, getImageUrl),
+    imageUrl: resolveMusicCoverUrl(song.image_path, getImageUrl),
     imageLabel: "MUSIC",
     badge: String(index + 1),
     rank: index + 1,

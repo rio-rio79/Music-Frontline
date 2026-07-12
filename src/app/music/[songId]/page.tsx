@@ -1,4 +1,5 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { resolveMusicCoverUrl } from "@/lib/music-assets";
 import { notFound } from "next/navigation";
 import MusicDetailClient from "./MusicDetailClient";
 
@@ -43,6 +44,8 @@ export default async function MusicDetailPage({
   }
 
   const supabase = await createSupabaseServer();
+  const getMusicCoverUrl = (path: string) =>
+    supabase.storage.from("images").getPublicUrl(path).data.publicUrl;
 
   // 1. 楽曲データのフェッチ
   const { data: song, error: songError } = await supabase
@@ -182,11 +185,7 @@ export default async function MusicDetailPage({
     }
 
     // image_path の解決
-    let imagePath = s.image_path || "/music_cover_img.png";
-    if (imagePath && !imagePath.startsWith("http") && !imagePath.startsWith("/")) {
-      const { data } = supabase.storage.from("images").getPublicUrl(imagePath);
-      imagePath = data.publicUrl;
-    }
+    const imagePath = resolveMusicCoverUrl(s.image_path, getMusicCoverUrl);
 
     return {
       id: s.id,

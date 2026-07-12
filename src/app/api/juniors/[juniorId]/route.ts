@@ -1,7 +1,24 @@
 import { createSupabaseServer } from '@/lib/supabase-server'
+import { resolveMusicCoverUrl } from '@/lib/music-assets'
 
 type RouteContext = {
     params: Promise<{ juniorId: string }>
+}
+
+type SongRow = {
+    id: string
+    title: string
+    audio_path: string | null
+    image_path: string | null
+    play_count: number | null
+    published_at: string | null
+    lyricist: string | null
+    composer: string | null
+    lyrics: string | null
+}
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : 'Server error'
 }
 
 export async function GET(request: Request, context: RouteContext) {
@@ -13,6 +30,8 @@ export async function GET(request: Request, context: RouteContext) {
         }
 
         const supabase = await createSupabaseServer()
+        const getMusicCoverUrl = (path: string) =>
+            supabase.storage.from('images').getPublicUrl(path).data.publicUrl
 
         // 1. ジュニア情報の取得
         const { data: junior, error: juniorError } = await supabase
@@ -42,7 +61,7 @@ export async function GET(request: Request, context: RouteContext) {
         }
 
         // ジュニア画像URLの解決
-        let juniorImageUrl = junior.image_path
+        const juniorImageUrl = junior.image_path
             ? supabase.storage.from('images').getPublicUrl(junior.image_path).data.publicUrl
             : null;
 
@@ -71,7 +90,7 @@ export async function GET(request: Request, context: RouteContext) {
 
         const rawSongs = (songJuniors || [])
             .map((sj) => sj.songs)
-            .filter(Boolean) as any[]
+            .filter(Boolean) as SongRow[]
 
         // 楽曲ごとの詳細項目（いいね、アーティスト名、URL解決）を並列処理
         const songs = await Promise.all(
@@ -84,11 +103,7 @@ export async function GET(request: Request, context: RouteContext) {
                 }
 
                 // image_path の解決
-                let imagePath = song.image_path || '/music_cover_img.png'
-                if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('/')) {
-                    const { data } = supabase.storage.from('images').getPublicUrl(imagePath)
-                    imagePath = data.publicUrl
-                }
+                const imagePath = resolveMusicCoverUrl(song.image_path, getMusicCoverUrl)
 
                 // 総いいね数の取得
                 const { count: likesCount } = await supabase
@@ -159,12 +174,12 @@ export async function GET(request: Request, context: RouteContext) {
             region: junior.region,
             catchphrase: junior.catchphrase,
             imageUrl: juniorImageUrl,
-            groupName: (junior.groups as any)?.name ?? null,
+            groupName: (junior.groups as { name: string | null } | null)?.name ?? null,
             songs,
         }
 
         return Response.json({ junior: formattedJunior })
-    } catch (e: any) {
-        return Response.json({ error: e.message || 'Server error' }, { status: 500 })
+    } catch (error: unknown) {
+        return Response.json({ error: getErrorMessage(error) }, { status: 500 })
     }
 }

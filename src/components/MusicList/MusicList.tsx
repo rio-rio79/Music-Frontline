@@ -110,7 +110,7 @@ export default function MusicList({ songs }: MusicListProps) {
                                 type="button" 
                                 className={styles.actionBtn}
                                 onClick={() => handleLike(song.id)}
-                                aria-label={likedSongIds.includes(song.id) ? "お気に入りから削除" : "お気に入りに追加"}
+                                aria-label={likedSongIds.includes(song.id) ? "いいねを解除" : "いいねする"}
                             >
                                 <Heart filled={likedSongIds.includes(song.id)} />
                             </button>
