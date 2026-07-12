@@ -4,7 +4,9 @@ import { type Song } from "./playerStore";
 export type JuniorLikeItem = {
     id: string;
     name: string;
+    nameKana?: string;
     groupName: string | null;
+    affiliation: string;
     imageUrl: string | null;
 };
 

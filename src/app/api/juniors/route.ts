@@ -1,21 +1,48 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { formatJuniorAffiliation } from "@/lib/junior-affiliation";
+import { compareGroupName, compareJuniorListItems } from "@/lib/junior-sort";
+
+type GroupRelation = { name: string | null } | null;
+type RankingScoreRelation = { score: number | null };
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : "Server error";
+}
 
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const q = searchParams.get("q")?.trim().toLowerCase() || "";
         const tab = searchParams.get("tab") || "personal";
-        const sort = searchParams.get("sort") || "new";
+        const sort = searchParams.get("sort") || "fifty";
+        const prioritizeOshi = searchParams.get("prioritizeOshi") === "true";
 
         const supabase = await createSupabaseServer();
 
         if (tab === "personal") {
+            const { data: { user } } = await supabase.auth.getUser();
+            let oshiJuniorId: string | null = null;
+
+            if (user && prioritizeOshi) {
+                const { data: profileData } = await supabase
+                    .from("profiles")
+                    .select("oshi_junior_id")
+                    .eq("id", user.id)
+                    .maybeSingle();
+
+                oshiJuniorId = profileData?.oshi_junior_id ?? null;
+            }
+
             const { data: juniorsData, error } = await supabase
                 .from("juniors")
                 .select(`
                     id,
                     name,
+                    name_kana,
                     image_path,
+                    region,
+                    birth_date,
+                    join_date,
                     created_at,
                     group_id,
                     groups (
@@ -36,33 +63,42 @@ export async function GET(request: Request) {
                     ? supabase.storage.from("images").getPublicUrl(junior.image_path).data.publicUrl
                     : null;
 
-                const score = (junior.ranking_scores as any)?.[0]?.score ?? 0;
-                const groupName = (junior.groups as any)?.name ?? null;
+                const rankingScores = junior.ranking_scores as RankingScoreRelation[] | null;
+                const group = junior.groups as GroupRelation;
+                const score = rankingScores?.[0]?.score ?? 0;
+                const groupName = group?.name ?? null;
 
                 return {
                     id: junior.id,
                     name: junior.name,
+                    nameKana: junior.name_kana,
                     imageUrl,
                     createdAt: junior.created_at,
+                    birthDate: junior.birth_date,
+                    joinDate: junior.join_date,
                     score,
-                    groupName
+                    groupName,
+                    region: junior.region,
+                    affiliation: formatJuniorAffiliation(groupName, junior.region),
+                    isOshi: junior.id === oshiJuniorId,
                 };
             });
 
-            // 検索フィルタリング（名前またはグループ名）
+            // 検索フィルタリング（名前、グループ名、所属表示のいずれか）
             if (q) {
                 juniors = juniors.filter(
-                    (j) => j.name.toLowerCase().includes(q) || (j.groupName && j.groupName.toLowerCase().includes(q))
+                    (j) => j.name.toLowerCase().includes(q)
+                        || j.nameKana.toLowerCase().includes(q)
+                        || (j.groupName && j.groupName.toLowerCase().includes(q))
+                        || j.affiliation.toLowerCase().includes(q)
                 );
             }
 
             // ソート
-            if (sort === "fifty") {
-                juniors.sort((a, b) => a.name.localeCompare(b.name, "ja"));
-            } else if (sort === "popular") {
-                juniors.sort((a, b) => b.score - a.score);
-            } else if (sort === "new") {
-                juniors.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            juniors.sort((a, b) => compareJuniorListItems(a, b, sort));
+
+            if (prioritizeOshi && oshiJuniorId) {
+                juniors.sort((a, b) => Number(b.isOshi) - Number(a.isOshi));
             }
 
             return Response.json({ juniors });
@@ -95,16 +131,11 @@ export async function GET(request: Request) {
                 groups = groups.filter((g) => g.name.toLowerCase().includes(q));
             }
 
-            // ソート
-            if (sort === "fifty") {
-                groups.sort((a, b) => a.name.localeCompare(b.name, "ja"));
-            } else {
-                groups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-            }
+            groups.sort(compareGroupName);
 
             return Response.json({ groups });
         }
-    } catch (e: any) {
-        return Response.json({ error: e.message || "Server error" }, { status: 500 });
+    } catch (error: unknown) {
+        return Response.json({ error: getErrorMessage(error) }, { status: 500 });
     }
 }

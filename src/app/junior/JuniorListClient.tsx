@@ -7,7 +7,7 @@ import Image from "next/image";
 import PageHeading from "@/components/PageHeading";
 import PageShell from "@/components/PageShell";
 import PageTabs from "@/components/PageTabs";
-import { Heart } from "@/components/Svgs";
+import { TwoPersonIcon } from "@/components/Svgs";
 import { useLikeStore } from "@/stores/likeStore";
 
 // グラデーションの定義（oshi_list.html から移植）
@@ -43,10 +43,14 @@ const JUNIOR_LIST_TABS = [
 export interface JuniorItem {
   id: string;
   name: string;
+  nameKana: string;
   imageUrl: string | null;
   createdAt: string;
+  birthDate: string | null;
+  joinDate: string | null;
   score: number;
   groupName: string | null;
+  affiliation: string;
 }
 
 export interface GroupItem {
@@ -65,7 +69,7 @@ interface JuniorListClientProps {
 export default function JuniorListClient({ initialJuniors, initialGroups }: JuniorListClientProps) {
   const [activeTab, setActiveTab] = useState<"personal" | "group">("personal");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("new");
+  const [sortBy, setSortBy] = useState("fifty");
 
   const [juniors, setJuniors] = useState<JuniorItem[]>(initialJuniors);
   const [groups, setGroups] = useState<GroupItem[]>(initialGroups);
@@ -130,7 +134,7 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
   const handleTabChange = (tab: "personal" | "group") => {
     setActiveTab(tab);
     setSearchQuery("");
-    setSortBy("new");
+    setSortBy("fifty");
     if (tab === "personal") {
       setJuniors(initialJuniors);
     } else {
@@ -151,17 +155,6 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
 
       {/* 検索とソート */}
       <div className={styles.searchContainer}>
-        <select
-          className={styles.dropdown}
-          aria-label="並び替え"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-        >
-          <option value="new">登録日が新しい順</option>
-          <option value="fifty">50音順</option>
-          {activeTab === "personal" && <option value="popular">人気順</option>}
-        </select>
-
         <div className={styles.searchBox}>
           <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="#bbb" strokeWidth="2">
             <circle cx="9" cy="9" r="7" />
@@ -174,6 +167,26 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+        </div>
+
+        <div className={styles.sortControl}>
+          <select
+            className={styles.dropdown}
+            aria-label="並び替え"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="fifty">50音順</option>
+            {activeTab === "personal" && (
+              <>
+                <option value="joinDate">入所日が早い順</option>
+                <option value="age">年齢が高い順</option>
+              </>
+            )}
+          </select>
+          <svg className={styles.sortChevron} viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M5.5 7.5 10 12l4.5-4.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+          </svg>
         </div>
       </div>
 
@@ -212,21 +225,21 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
                     )}
                   </div>
                   <p className={styles.cardName}>{junior.name}</p>
-                  <div className={styles.cardPointsRow}>
-                    <span className={styles.cardPoints}>
-                      推しポイント <b>{junior.score.toLocaleString()}pt</b>
+                  <div className={styles.cardMetaRow}>
+                    <span className={styles.cardAffiliation}>
+                      {junior.affiliation}
                     </span>
                     <button
                       type="button"
-                      className={styles.heartBtn}
+                      className={`${styles.followBtn} ${likedJuniorIds.includes(junior.id) ? styles.followBtnActive : ""}`}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         toggleJuniorLike(junior.id);
                       }}
-                      aria-label="お気に入り登録・解除"
+                      aria-label={likedJuniorIds.includes(junior.id) ? "フォロー解除" : "フォローする"}
                     >
-                      <Heart filled={likedJuniorIds.includes(junior.id)} />
+                      <TwoPersonIcon />
                     </button>
                   </div>
                 </Link>

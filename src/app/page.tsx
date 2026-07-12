@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { formatJuniorAffiliation } from "@/lib/junior-affiliation";
 import { resolveMusicCoverUrl } from "@/lib/music-assets";
 import TopPageClient, {
   type FeaturedItem,
@@ -94,10 +95,7 @@ function formatSongSubtitle(song: SongRow) {
 }
 
 function formatBlogAffiliation(blog: BlogRow) {
-  if (blog.juniors?.groups?.name) return blog.juniors.groups.name;
-  if (blog.juniors?.region === "kanto") return "関東ジュニア";
-  if (blog.juniors?.region === "kansai") return "関西ジュニア";
-  return "無所属";
+  return formatJuniorAffiliation(blog.juniors?.groups?.name, blog.juniors?.region);
 }
 
 function createEmptyFeaturedState(): Record<FeaturedTabKey, FeaturedItem[]> {
@@ -200,6 +198,23 @@ export default async function TopPage() {
   const songs = (songsResult.data ?? []) as unknown as SongRow[];
   const blogs = (blogsResult.data ?? []) as unknown as BlogRow[];
   const rankings = (rankingResult.data ?? []) as unknown as RankingRow[];
+  const rankingJuniorIds = rankings
+    .map((ranking) => ranking.junior_id)
+    .filter((id): id is string => Boolean(id));
+  const { data: rankingJuniorRegions, error: rankingJuniorRegionsError } = rankingJuniorIds.length > 0
+    ? await supabase
+        .from("juniors")
+        .select("id, region")
+        .in("id", rankingJuniorIds)
+    : { data: [], error: null };
+
+  if (rankingJuniorRegionsError) {
+    throw new Error(rankingJuniorRegionsError.message);
+  }
+
+  const regionByRankingJuniorId = new Map(
+    (rankingJuniorRegions ?? []).map((junior) => [junior.id, junior.region]),
+  );
 
   const featuredItems = createEmptyFeaturedState();
 
@@ -237,7 +252,10 @@ export default async function TopPage() {
       {
         id: ranking.junior_id,
         title: ranking.junior_name,
-        sub: ranking.group_name ?? "無所属",
+        sub: formatJuniorAffiliation(
+          ranking.group_name,
+          regionByRankingJuniorId.get(ranking.junior_id),
+        ),
         meta: `${(ranking.score ?? 0).toLocaleString("ja-JP")} pt`,
         href: `/junior/${ranking.junior_id}`,
         imageUrl: resolvePublicImageUrl(ranking.junior_image_path, getImageUrl),

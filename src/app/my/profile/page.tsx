@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 import PageHeading from '@/components/PageHeading'
 import PageShell from '@/components/PageShell'
+import { formatJuniorAffiliation } from '@/lib/junior-affiliation'
 import { createSupabaseServer } from '@/lib/supabase-server'
 import type { BreakdownItem } from '../../../components/GiftPanel/GiftPanel'
 import LogoutButton from './LogoutButton'
@@ -102,12 +103,6 @@ function resolveDefaultSupportPointTab(oshiName: string | null): SupportPointTab
     return oshiName ? 'oshi' : 'all'
 }
 
-function getRegionLabel(region: string | null) {
-    if (region === 'kanto') return '関東ジュニア'
-    if (region === 'kansai') return '関西ジュニア'
-    return '無所属'
-}
-
 export default async function MyProfilePage({ searchParams }: MyProfilePageProps) {
     const query = await searchParams
     const supabase = await createSupabaseServer()
@@ -134,7 +129,7 @@ export default async function MyProfilePage({ searchParams }: MyProfilePageProps
                 name,
                 color_code,
                 plan:plans(id, name, monthly_price, point_multiplier),
-                oshi:juniors(id, name, image_path, region, group:groups(name))
+                oshi:juniors(id, name, name_kana, image_path, region, group:groups(name))
             `)
             .eq('id', user.id)
             .single(),
@@ -144,8 +139,8 @@ export default async function MyProfilePage({ searchParams }: MyProfilePageProps
             .order('monthly_price'),
         supabase
             .from('juniors')
-            .select('id, name, image_path, region, group:groups(name)')
-            .order('name'),
+            .select('id, name, name_kana, image_path, region, group:groups(name)')
+            .order('name_kana'),
         supabase.rpc('get_my_support_point_summary'),
         supabase
             .from('follow_juniors')
@@ -171,8 +166,9 @@ export default async function MyProfilePage({ searchParams }: MyProfilePageProps
         return {
             id: junior.id,
             name: junior.name,
+            nameKana: junior.name_kana,
             imageUrl,
-            affiliation: junior.group?.name ?? getRegionLabel(junior.region),
+            affiliation: formatJuniorAffiliation(junior.group?.name, junior.region),
         }
     })
 
@@ -209,10 +205,11 @@ export default async function MyProfilePage({ searchParams }: MyProfilePageProps
                 initialOshi={profile?.oshi ? {
                     id: profile.oshi.id,
                     name: profile.oshi.name,
+                    nameKana: profile.oshi.name_kana,
                     imageUrl: profile.oshi.image_path
                         ? supabase.storage.from('images').getPublicUrl(profile.oshi.image_path).data.publicUrl
                         : null,
-                    affiliation: profile.oshi.group?.name ?? getRegionLabel(profile.oshi.region),
+                    affiliation: formatJuniorAffiliation(profile.oshi.group?.name, profile.oshi.region),
                 } : null}
                 initialOpenModal={query.modal === 'plan' ? 'plan' : null}
                 plans={plans}

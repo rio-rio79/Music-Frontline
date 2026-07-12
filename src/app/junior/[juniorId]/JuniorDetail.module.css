@@ -1,6 +1,27 @@
 .page {
 }
 
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 18px;
+  color: var(--sub, #8a8a8a);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--pink, #FF4B91);
+  text-decoration: underline;
+}
+
+.backLink span {
+  font-size: 20px;
+  line-height: 1;
+}
+
 /* Profile card */
 .profileCard {
   border: 1px solid var(--line, #ececec);
@@ -54,6 +75,49 @@
   color: var(--sub, #8a8a8a);
   font-size: 14px;
   letter-spacing: .03em;
+}
+
+.followButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 116px;
+  height: 34px;
+  margin: 0 0 16px;
+  padding: 0 13px;
+  border: 1px solid #f0d8e8;
+  border-radius: 999px;
+  background: #fff8fb;
+  color: #8f3157;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .15s ease;
+}
+
+.followButton:hover:not(:disabled) {
+  border-color: #e8a6c2;
+  background: #ffeaf3;
+  color: var(--pink, #FF4B91);
+  transform: translateY(-1px);
+}
+
+.followButton:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+.followButtonActive {
+  border-color: var(--pink, #FF4B91);
+  background: var(--pink-soft, #FFE3EF);
+  color: var(--pink, #FF4B91);
+}
+
+.followButton svg {
+  width: 16px;
+  height: 16px;
 }
 
 .infoTable {

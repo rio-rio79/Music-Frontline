@@ -1,6 +1,11 @@
 import { createSupabaseServer } from '@/lib/supabase-server'
+import { formatJuniorAffiliation } from '@/lib/junior-affiliation'
 
-export async function GET(request: Request) {
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : 'Server error'
+}
+
+export async function GET() {
     try {
         const supabase = await createSupabaseServer()
         const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -21,8 +26,10 @@ export async function GET(request: Request) {
                 juniors (
                     id,
                     name,
+                    name_kana,
                     image_path,
                     group_id,
+                    region,
                     groups (
                         name
                     )
@@ -48,14 +55,16 @@ export async function GET(request: Request) {
             return {
                 id: junior.id,
                 name: junior.name,
+                nameKana: junior.name_kana,
                 groupName: junior.groups?.name || null,
+                affiliation: formatJuniorAffiliation(junior.groups?.name, junior.region),
                 imageUrl: imagePath,
             }
         }).filter(Boolean)
 
         return Response.json({ juniors: formattedJuniors })
-    } catch (e: any) {
-        return Response.json({ error: e.message || 'Server error' }, { status: 500 })
+    } catch (e: unknown) {
+        return Response.json({ error: getErrorMessage(e) }, { status: 500 })
     }
 }
 
@@ -85,9 +94,9 @@ export async function POST(request: Request) {
         }
 
         // toggle_follow_junior は { followed: boolean } 形式で返す
-        const resData = data as any
+        const resData = data as { followed?: boolean }
         return Response.json({ liked: resData.followed })
-    } catch (e: any) {
-        return Response.json({ error: e.message || 'Server error' }, { status: 500 })
+    } catch (e: unknown) {
+        return Response.json({ error: getErrorMessage(e) }, { status: 500 })
     }
 }

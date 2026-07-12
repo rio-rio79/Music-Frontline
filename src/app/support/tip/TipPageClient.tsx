@@ -13,6 +13,7 @@ type Tab = "compose" | "history";
 export type TipJunior = {
   id: string;
   name: string;
+  nameKana: string;
   imageUrl: string | null;
   affiliation: string;
 };
@@ -146,11 +147,11 @@ export default function TipPageClient({ juniors, initialOshiId, initialHistory }
     const query = searchQuery.trim().toLocaleLowerCase("ja");
     return juniors
       .filter((junior) => !query ||
-        `${junior.name} ${junior.affiliation}`.toLocaleLowerCase("ja").includes(query))
+        `${junior.name} ${junior.nameKana} ${junior.affiliation}`.toLocaleLowerCase("ja").includes(query))
       .sort((left, right) => {
         if (left.id === oshiId) return -1;
         if (right.id === oshiId) return 1;
-        return left.name.localeCompare(right.name, "ja");
+        return left.nameKana.localeCompare(right.nameKana, "ja") || left.name.localeCompare(right.name, "ja");
       });
   }, [juniors, oshiId, searchQuery]);
 

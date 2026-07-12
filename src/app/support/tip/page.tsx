@@ -1,15 +1,10 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { formatJuniorAffiliation } from "@/lib/junior-affiliation";
 import TipPageClient, {
   type FanLetterHistoryEntry,
   type TipJunior,
 } from "./TipPageClient";
-
-function getRegionLabel(region: string | null) {
-  if (region === "kanto") return "関東ジュニア";
-  if (region === "kansai") return "関西ジュニア";
-  return "無所属";
-}
 
 export default async function TipPage() {
   const supabase = await createSupabaseServer();
@@ -29,8 +24,8 @@ export default async function TipPage() {
       .single(),
     supabase
       .from("juniors")
-      .select("id, name, image_path, region, group:groups(name)")
-      .order("name"),
+      .select("id, name, name_kana, image_path, region, group:groups(name)")
+      .order("name_kana"),
     supabase
       .from("support_payments")
       .select("id, junior_id, amount, message, created_at")
@@ -45,10 +40,11 @@ export default async function TipPage() {
   const juniors: TipJunior[] = (juniorsResult.data ?? []).map((junior) => ({
     id: junior.id,
     name: junior.name,
+    nameKana: junior.name_kana,
     imageUrl: junior.image_path
       ? supabase.storage.from("images").getPublicUrl(junior.image_path).data.publicUrl
       : null,
-    affiliation: junior.group?.name ?? getRegionLabel(junior.region),
+    affiliation: formatJuniorAffiliation(junior.group?.name, junior.region),
   }));
 
   const initialHistory: FanLetterHistoryEntry[] = (historyResult.data ?? []).map((entry) => ({

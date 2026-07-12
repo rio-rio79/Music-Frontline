@@ -9,9 +9,10 @@ import styles from "./JuniorDetail.module.css";
 import Image from "next/image";
 import { type Song, usePlayerStore } from "@/stores/playerStore";
 import { useLikeStore } from "@/stores/likeStore";
-import { Heart } from "@/components/Svgs";
+import { Heart, TwoPersonIcon } from "@/components/Svgs";
 import BlogPostList from "@/app/blog/BlogPostList";
 import { type BlogListItem } from "@/lib/blog-data";
+import { formatJuniorAffiliation } from "@/lib/junior-affiliation";
 
 interface JuniorDetail {
   id: string;
@@ -65,6 +66,7 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
   const [activeTab, setActiveTab] = useState<"music" | "blog">(
     searchParams.get("tab") === "blog" ? "blog" : "music",
   );
+  const [followPending, setFollowPending] = useState(false);
 
   const currentSong = usePlayerStore((state) => state.currentSong);
   const isPlaying = usePlayerStore((state) => state.isPlaying);
@@ -74,11 +76,18 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
   const toggleLike = useLikeStore((state) => state.toggleLike);
   const likedSongIds = useLikeStore((state) => state.likedSongIds);
   const fetchLikes = useLikeStore((state) => state.fetchLikes);
+  const fetchJuniorLikes = useLikeStore((state) => state.fetchJuniorLikes);
+  const toggleJuniorLike = useLikeStore((state) => state.toggleJuniorLike);
+  const likedJuniorIds = useLikeStore((state) => state.likedJuniorIds);
+  const isFollowed = likedJuniorIds.includes(junior.id);
+  const backHref = searchParams.get("from") === "ranking" ? "/ranking" : "/junior";
+  const backLabel = searchParams.get("from") === "ranking" ? "ランキングに戻る" : "ジュニア一覧に戻る";
 
   // 初回マウント時にお気に入り情報を取得
   useEffect(() => {
     fetchLikes();
-  }, [fetchLikes]);
+    fetchJuniorLikes();
+  }, [fetchJuniorLikes, fetchLikes]);
 
   const handlePlay = (song: Song) => {
     if (currentSong?.id === song.id) {
@@ -97,8 +106,28 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
     }
   };
 
+  const handleFollow = async () => {
+    if (followPending) return;
+    setFollowPending(true);
+    try {
+      const result = await toggleJuniorLike(junior.id);
+      if (result === null) {
+        if (confirm("フォローするにはログインが必要です。ログインページへ移動しますか？")) {
+          router.push("/login");
+        }
+      }
+    } finally {
+      setFollowPending(false);
+    }
+  };
+
   return (
     <PageShell className={styles.page}>
+      <Link href={backHref} className={styles.backLink}>
+        <span aria-hidden="true">‹</span>
+        {backLabel}
+      </Link>
+
       <div className={styles.profileCard}>
         <div className={styles.avatar} style={{ position: "relative" }}>
           {junior.imageUrl ? (
@@ -112,6 +141,16 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
         <div className={styles.profileInfo}>
           <h1>{junior.name}</h1>
           <p className={styles.romaji}>{junior.nameEn || ""}</p>
+          <button
+            type="button"
+            className={`${styles.followButton} ${isFollowed ? styles.followButtonActive : ""}`}
+            onClick={handleFollow}
+            disabled={followPending}
+            aria-pressed={isFollowed}
+          >
+            <TwoPersonIcon />
+            <span>{isFollowed ? "フォロー解除" : "フォローする"}</span>
+          </button>
           <dl className={styles.infoTable}>
             <dt>入社日</dt>
             <dd>{formatDate(junior.joinDate)}</dd>
@@ -124,7 +163,7 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
             <dt>出身地</dt>
             <dd>{junior.birthplace || "不明"}</dd>
             <dt>所属</dt>
-            <dd>{junior.groupName || "無所属"}</dd>
+            <dd>{formatJuniorAffiliation(junior.groupName, junior.region)}</dd>
           </dl>
         </div>
       </div>
@@ -189,7 +228,7 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
                 );
               })
             ) : (
-              <p className={styles.noMusic}>楽曲情報が登録されていません。</p>
+              <p className={styles.noMusic}>楽曲が見つかりません</p>
             )}
           </div>
         </div>
@@ -199,7 +238,7 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
         <div className={styles.blogSection} role="tabpanel">
           <BlogPostList
             posts={junior.blogPosts}
-            emptyMessage={<p className={styles.blogPlaceholder}>ブログ記事がありません。</p>}
+            emptyMessage={<p className={styles.blogPlaceholder}>ブログが見つかりません</p>}
             detailSource={`/junior/${junior.id}`}
           />
         </div>

@@ -1,4 +1,5 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { formatJuniorAffiliation } from "@/lib/junior-affiliation";
 
 export type BlogTab = "all" | "following";
 
@@ -117,10 +118,7 @@ export function formatBlogDate(value: string) {
 }
 
 function formatAffiliation(junior: RelatedJunior) {
-    if (junior.groups?.name) return junior.groups.name;
-    if (junior.region === "kanto") return "関東ジュニア";
-    if (junior.region === "kansai") return "関西ジュニア";
-    return "無所属";
+    return formatJuniorAffiliation(junior.groups?.name, junior.region);
 }
 
 function getInitials(name: string) {

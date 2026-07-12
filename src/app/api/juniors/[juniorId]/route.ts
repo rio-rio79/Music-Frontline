@@ -1,5 +1,6 @@
 import { createSupabaseServer } from '@/lib/supabase-server'
 import { resolveMusicCoverUrl } from '@/lib/music-assets'
+import { formatJuniorAffiliation } from '@/lib/junior-affiliation'
 
 type RouteContext = {
     params: Promise<{ juniorId: string }>
@@ -162,6 +163,7 @@ export async function GET(request: Request, context: RouteContext) {
             })
         )
 
+        const groupName = (junior.groups as { name: string | null } | null)?.name ?? null
         const formattedJunior = {
             id: junior.id,
             name: junior.name,
@@ -174,7 +176,8 @@ export async function GET(request: Request, context: RouteContext) {
             region: junior.region,
             catchphrase: junior.catchphrase,
             imageUrl: juniorImageUrl,
-            groupName: (junior.groups as { name: string | null } | null)?.name ?? null,
+            groupName,
+            affiliation: formatJuniorAffiliation(groupName, junior.region),
             songs,
         }
 

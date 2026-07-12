@@ -11,11 +11,12 @@
   background: var(--bg);
 }
 
-/* 検索ボックスのラッパー（基準位置） */
 .searchContainer {
-  position: relative;
-  padding-top: 25px; /* 上部にドロップダウンが配置されるための余白を確保 */
-  margin: 10px 0 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 154px;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 28px;
 }
 
 /* 検索ボックス */
@@ -25,10 +26,11 @@
   gap: 8px;
   background: #fff;
   border: 1.5px solid #edd0e0;
-  border-radius: 40px;
-  padding: 11px 18px;
-  width: 100%; /* ラッパーいっぱいに広げる */
-  box-sizing: border-box; /* パディングを含めた幅計算 */
+  border-radius: 8px;
+  padding: 0 14px;
+  min-height: 42px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .searchBox input {
@@ -41,19 +43,47 @@
   font-family: inherit;
 }
 
-/* 右上のドロップダウンリスト */
-.dropdown {
-  position: absolute;
-  top: 0;
-  right: 0;
-  font-size: 11px;
-  color: #6a6a6a;
+.sortControl {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 42px;
   border: 1px solid #edd0e0;
-  border-radius: 4px;
-  padding: 2px 4px;
-  background-color: #fff;
+  border-radius: 8px;
+  background: #fff8fb;
+  color: #8f3157;
+  box-sizing: border-box;
+}
+
+.dropdown {
+  appearance: none;
+  min-width: 0;
+  flex: 1;
+  height: 40px;
+  border: 0;
+  padding: 0 34px 0 13px;
+  background: transparent;
+  color: #5d4f57;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
   outline: none;
   cursor: pointer;
+}
+
+.sortControl:focus-within {
+  border-color: #d986ad;
+  box-shadow: 0 0 0 3px rgb(236 72 153 / 10%);
+}
+
+.sortChevron {
+  position: absolute;
+  right: 11px;
+  width: 16px;
+  height: 16px;
+  color: #b04b73;
+  pointer-events: none;
 }
 
 /* Grid */
@@ -109,57 +139,67 @@
   text-align: left;
 }
 
-.cardPointsRow {
+.cardMetaRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
 }
 
-.cardPoints {
-  font-size: 10.5px;
+.cardAffiliation {
+  min-width: 0;
+  overflow: hidden;
   color: var(--text-sub);
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.cardPoints b {
-  color: var(--pink);
-  font-weight: 700;
-  font-size: 11px;
-}
-
-.cardPointsRow .heartIcon {
-  width: 13px;
-  height: 13px;
-  color: var(--pink);
-  flex-shrink: 0;
-}
-
-.heartBtn {
-  background: none;
-  border: none;
-  padding: 2px;
-  cursor: pointer;
-  display: flex;
+.followBtn {
+  flex: 0 0 auto;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  transition: transform 0.2s;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #f0d8e8;
+  border-radius: 999px;
+  background: #fff;
+  color: #c87b9d;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
 }
 
-.heartBtn:hover {
-  transform: scale(1.1);
-}
-
-.heartBtn svg {
-  width: 13px;
-  height: 13px;
+.followBtn:hover {
+  border-color: #e8a6c2;
+  background: #fff8fb;
   color: var(--pink);
+  transform: translateY(-1px);
+}
+
+.followBtnActive {
+  border-color: #e8447a;
+  background: #fff0f6;
+  color: #e8447a;
+}
+
+.followBtn svg {
+  width: 16px;
+  height: 16px;
 }
 
 @media (max-width: 480px) {
+  .searchContainer {
+    grid-template-columns: 1fr;
+    gap: 9px;
+    margin-top: 16px;
+  }
+
+  .sortControl {
+    width: 100%;
+  }
+
   .grid {
     grid-template-columns: repeat(2, 1fr); /* モバイル時は2列にするほうが見やすい */
     gap: 14px 10px;

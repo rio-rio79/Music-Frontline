@@ -1,5 +1,9 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { formatJuniorAffiliation } from "@/lib/junior-affiliation";
+import { compareGroupName, compareJuniorListItems } from "@/lib/junior-sort";
 import JuniorListClient, { type JuniorItem, type GroupItem } from "./JuniorListClient";
+
+type RankingScoreRelation = { score: number | null };
 
 export default async function JuniorTop() {
     const supabase = await createSupabaseServer();
@@ -11,9 +15,13 @@ export default async function JuniorTop() {
             .select(`
                 id,
                 name,
+                name_kana,
                 image_path,
+                birth_date,
+                join_date,
                 created_at,
                 group_id,
+                region,
                 groups (
                     name
                 ),
@@ -37,18 +45,23 @@ export default async function JuniorTop() {
             : null;
 
         // score は ranking_scores 配列から取得（無ければ0）
-        const score = (junior.ranking_scores as any)?.[0]?.score ?? 0;
-        const groupName = (junior.groups as any)?.name ?? null;
+        const rankingScores = junior.ranking_scores as RankingScoreRelation[] | null;
+        const score = rankingScores?.[0]?.score ?? 0;
+        const groupName = (junior.groups as { name: string | null } | null)?.name ?? null;
 
         return {
             id: junior.id,
             name: junior.name,
+            nameKana: junior.name_kana,
             imageUrl,
             createdAt: junior.created_at,
+            birthDate: junior.birth_date,
+            joinDate: junior.join_date,
             score,
-            groupName
+            groupName,
+            affiliation: formatJuniorAffiliation(groupName, junior.region),
         };
-    });
+    }).sort((a, b) => compareJuniorListItems(a, b, "fifty"));
 
     // グループの画像 URL 解決と型変換
     const groups: GroupItem[] = groupsData.map((group) => {
@@ -63,7 +76,7 @@ export default async function JuniorTop() {
             description: group.description,
             createdAt: group.created_at
         };
-    });
+    }).sort(compareGroupName);
 
     return (
         <section style={{ minHeight: "100vh", backgroundColor: "#fff" }}>

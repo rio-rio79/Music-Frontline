@@ -30,6 +30,7 @@ type Plan = {
 type Junior = {
     id: string
     name: string
+    nameKana: string
     imageUrl: string | null
     affiliation: string
 }
@@ -352,6 +353,7 @@ function OshiModal({
 
         return juniors.filter((junior) =>
             junior.name.toLocaleLowerCase('ja-JP').includes(normalizedQuery)
+            || junior.nameKana.toLocaleLowerCase('ja-JP').includes(normalizedQuery)
             || junior.affiliation.toLocaleLowerCase('ja-JP').includes(normalizedQuery)
         )
     }, [juniors, query])

@@ -1,4 +1,5 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { formatJuniorAffiliation } from "@/lib/junior-affiliation";
 import RankingClient, { type RankingItem } from "./RankingClient";
 
 function resolvePublicImageUrl(path: string | null, fallback: string, getPublicUrl: (path: string) => string) {
@@ -30,6 +31,23 @@ export default async function RankingPage() {
   }
 
   const getImageUrl = (path: string) => supabase.storage.from("images").getPublicUrl(path).data.publicUrl;
+  const juniorIds = (data ?? [])
+    .map((row) => row.junior_id)
+    .filter((id): id is string => Boolean(id));
+  const { data: juniorRegions, error: juniorRegionsError } = juniorIds.length > 0
+    ? await supabase
+        .from("juniors")
+        .select("id, region")
+        .in("id", juniorIds)
+    : { data: [], error: null };
+
+  if (juniorRegionsError) {
+    throw new Error(juniorRegionsError.message);
+  }
+
+  const regionByJuniorId = new Map(
+    (juniorRegions ?? []).map((junior) => [junior.id, junior.region]),
+  );
 
   const rankings: RankingItem[] = (data ?? [])
     .filter((row) => row.junior_id && row.junior_name)
@@ -39,7 +57,7 @@ export default async function RankingPage() {
       juniorId: row.junior_id as string,
       name: row.junior_name as string,
       imageUrl: resolvePublicImageUrl(row.junior_image_path, "/music_cover_img.png", getImageUrl),
-      affiliation: row.group_name ?? "無所属",
+      affiliation: formatJuniorAffiliation(row.group_name, regionByJuniorId.get(row.junior_id as string)),
       totalPoints: row.score ?? 0,
     }));
 

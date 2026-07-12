@@ -234,6 +234,7 @@ export type Database = {
           join_date: string | null
           name: string
           name_en: string | null
+          name_kana: string
           profile: string | null
           region: string | null
           updated_at: string
@@ -250,6 +251,7 @@ export type Database = {
           join_date?: string | null
           name: string
           name_en?: string | null
+          name_kana: string
           profile?: string | null
           region?: string | null
           updated_at?: string
@@ -266,6 +268,7 @@ export type Database = {
           join_date?: string | null
           name?: string
           name_en?: string | null
+          name_kana?: string
           profile?: string | null
           region?: string | null
           updated_at?: string

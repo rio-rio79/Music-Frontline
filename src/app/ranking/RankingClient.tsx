@@ -264,7 +264,7 @@ export default function RankingClient({ rankings }: RankingClientProps) {
       ) : (
         <div className="ranking-list">
           {visibleRankings.map((item) => (
-            <Link className="ranking-row" href={`/junior/${item.juniorId}`} key={`${item.category}-${item.juniorId}`}>
+            <Link className="ranking-row" href={`/junior/${item.juniorId}?from=ranking`} key={`${item.category}-${item.juniorId}`}>
               <div className="ranking-rank">{renderRankMarker(item.rank)}</div>
               <img className="ranking-avatar" src={item.imageUrl} alt={`${item.name}の画像`} />
               <div className="ranking-name">
