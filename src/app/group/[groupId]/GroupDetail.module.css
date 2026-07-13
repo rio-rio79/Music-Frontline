@@ -59,6 +59,24 @@
 
 .groupTitle {
   font-size: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.disbandedBadge {
+  font-size: 14px;
+  font-weight: 700;
+  background-color: #8a8b90;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 99px;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: fit-content;
 }
 
 /* ===== Members ===== */

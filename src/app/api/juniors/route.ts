@@ -48,6 +48,11 @@ export async function GET(request: Request) {
                     groups (
                         name
                     ),
+                    song_juniors (
+                        groups (
+                            name
+                        )
+                    ),
                     ranking_scores (
                         score
                     )
@@ -68,6 +73,12 @@ export async function GET(request: Request) {
                 const score = rankingScores?.[0]?.score ?? 0;
                 const groupName = group?.name ?? null;
 
+                // 過去に歌ったグループ（所属履歴）を抽出して重複排除
+                const songJuniors = junior.song_juniors as { groups: { name: string | null } | null }[] | null;
+                const pastGroups = songJuniors
+                    ? Array.from(new Set(songJuniors.map(sj => sj.groups?.name).filter(Boolean))) as string[]
+                    : [];
+
                 return {
                     id: junior.id,
                     name: junior.name,
@@ -81,16 +92,18 @@ export async function GET(request: Request) {
                     region: junior.region,
                     affiliation: formatJuniorAffiliation(groupName, junior.region),
                     isOshi: junior.id === oshiJuniorId,
+                    pastGroups,
                 };
             });
 
-            // 検索フィルタリング（名前、グループ名、所属表示のいずれか）
+            // 検索フィルタリング（名前、グループ名、所属表示、過去の所属グループ名のいずれか）
             if (q) {
                 juniors = juniors.filter(
                     (j) => j.name.toLowerCase().includes(q)
                         || j.nameKana.toLowerCase().includes(q)
                         || (j.groupName && j.groupName.toLowerCase().includes(q))
                         || j.affiliation.toLowerCase().includes(q)
+                        || j.pastGroups.some(name => name.toLowerCase().includes(q))
                 );
             }
 
@@ -106,7 +119,7 @@ export async function GET(request: Request) {
             // グループタブ
             const { data: groupsData, error } = await supabase
                 .from("groups")
-                .select("id, name, image_path, description, created_at");
+                .select("id, name, image_path, description, created_at, is_disbanded");
 
             if (error) {
                 return Response.json({ error: error.message }, { status: 500 });
@@ -122,7 +135,8 @@ export async function GET(request: Request) {
                     name: group.name,
                     imageUrl,
                     description: group.description,
-                    createdAt: group.created_at
+                    createdAt: group.created_at,
+                    isDisbanded: group.is_disbanded
                 };
             });
 

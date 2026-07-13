@@ -200,6 +200,7 @@ export type Database = {
           description: string | null
           id: string
           image_path: string | null
+          is_disbanded: boolean
           name: string
           updated_at: string
         }
@@ -208,6 +209,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_path?: string | null
+          is_disbanded?: boolean
           name: string
           updated_at?: string
         }
@@ -216,6 +218,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_path?: string | null
+          is_disbanded?: boolean
           name?: string
           updated_at?: string
         }

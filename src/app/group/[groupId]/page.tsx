@@ -32,7 +32,7 @@ export default async function Page({ params }: GroupDetailPageProps) {
   // 1. グループ情報の取得
   const { data: group, error: groupError } = await supabase
     .from("groups")
-    .select("id, name, image_path, description")
+    .select("id, name, image_path, description, is_disbanded")
     .eq("id", groupId)
     .single();
 
@@ -45,19 +45,52 @@ export default async function Page({ params }: GroupDetailPageProps) {
     ? supabase.storage.from("images").getPublicUrl(group.image_path).data.publicUrl
     : null;
 
-  // 2. 所属メンバー（ジュニア）の取得
-  const { data: members, error: membersError } = await supabase
-    .from("juniors")
-    .select("id, name, name_en, image_path")
-    .eq("group_id", groupId)
-    .order("name");
+  // 2. 所属メンバー（ジュニア）の取得（通常所属、または song_juniors からの逆引き）
+  // 稼働中グループの場合は group_id から直接取得し、解散済みグループの場合は楽曲の歌唱履歴から逆引きする
+  let uniqueRawMembers = [];
 
-  if (membersError) {
-    throw new Error(membersError.message);
+  if (group.is_disbanded) {
+    const { data: songJuniorsData, error: membersError } = await supabase
+      .from("song_juniors")
+      .select(`
+          juniors (
+              id,
+              name,
+              name_en,
+              image_path
+          )
+      `)
+      .eq("group_id", groupId);
+
+    if (membersError) {
+      throw new Error(membersError.message);
+    }
+
+    const rawMembers = (songJuniorsData || [])
+      .map((sj) => sj.juniors)
+      .filter(Boolean) as { id: string; name: string; name_en: string | null; image_path: string | null }[];
+
+    const uniqueMembersMap = new Map<string, typeof rawMembers[0]>();
+    for (const member of rawMembers) {
+      uniqueMembersMap.set(member.id, member);
+    }
+    uniqueRawMembers = Array.from(uniqueMembersMap.values());
+    uniqueRawMembers.sort((a, b) => a.name.localeCompare(b.name, "ja"));
+  } else {
+    const { data: members, error: membersError } = await supabase
+      .from("juniors")
+      .select("id, name, name_en, image_path")
+      .eq("group_id", groupId)
+      .order("name");
+
+    if (membersError) {
+      throw new Error(membersError.message);
+    }
+    uniqueRawMembers = members || [];
   }
 
   // メンバー画像URLの解決
-  const formattedMembers = (members || []).map((m) => {
+  const formattedMembers = uniqueRawMembers.map((m) => {
     const imageUrl = m.image_path
       ? supabase.storage.from("images").getPublicUrl(m.image_path).data.publicUrl
       : null;
@@ -184,6 +217,7 @@ export default async function Page({ params }: GroupDetailPageProps) {
     imageUrl: groupImageUrl,
     members: formattedMembers,
     songs,
+    isDisbanded: group.is_disbanded,
   };
 
   return <GroupDetailClient group={formattedGroup} />;

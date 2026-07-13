@@ -25,13 +25,18 @@ export default async function JuniorTop() {
                 groups (
                     name
                 ),
+                song_juniors (
+                    groups (
+                        name
+                    )
+                ),
                 ranking_scores (
                     score
                 )
             `),
         supabase
             .from("groups")
-            .select("id, name, image_path, description, created_at")
+            .select("id, name, image_path, description, created_at, is_disbanded")
             .order("name")
     ]);
 
@@ -49,6 +54,11 @@ export default async function JuniorTop() {
         const score = rankingScores?.[0]?.score ?? 0;
         const groupName = (junior.groups as { name: string | null } | null)?.name ?? null;
 
+        const songJuniors = junior.song_juniors as { groups: { name: string | null } | null }[] | null;
+        const pastGroups = songJuniors
+            ? Array.from(new Set(songJuniors.map(sj => sj.groups?.name).filter(Boolean))) as string[]
+            : [];
+
         return {
             id: junior.id,
             name: junior.name,
@@ -60,6 +70,7 @@ export default async function JuniorTop() {
             score,
             groupName,
             affiliation: formatJuniorAffiliation(groupName, junior.region),
+            pastGroups,
         };
     }).sort((a, b) => compareJuniorListItems(a, b, "fifty"));
 
@@ -74,7 +85,8 @@ export default async function JuniorTop() {
             name: group.name,
             imageUrl,
             description: group.description,
-            createdAt: group.created_at
+            createdAt: group.created_at,
+            isDisbanded: group.is_disbanded
         };
     }).sort(compareGroupName);
 

@@ -51,6 +51,7 @@ export interface JuniorItem {
   score: number;
   groupName: string | null;
   affiliation: string;
+  pastGroups?: string[];
 }
 
 export interface GroupItem {
@@ -59,6 +60,7 @@ export interface GroupItem {
   imageUrl: string | null;
   description: string | null;
   createdAt: string;
+  isDisbanded: boolean;
 }
 
 interface JuniorListClientProps {
@@ -199,10 +201,9 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
         <div style={{ textAlign: "center", padding: "2rem", color: "red" }}>
           {error}
         </div>
-      ) : (
+      ) : activeTab === "personal" ? (
         <div className={styles.grid}>
-          {activeTab === "personal" ? (
-            juniors.map((junior) => {
+          {juniors.map((junior) => {
               // IDベースで一貫したグラデーション背景を決定論的に割り当てる
               const gradIndex = getGradientIndex(junior.id, gradients.length);
               const gradientStyle = {
@@ -244,41 +245,86 @@ export default function JuniorListClient({ initialJuniors, initialGroups }: Juni
                   </div>
                 </Link>
               );
-            })
-          ) : (
-            groups.map((group) => {
-              const gradIndex = getGradientIndex(group.id, gradients.length);
-              const gradientStyle = {
-                background: gradients[gradIndex],
-              };
-
-              return (
-                <Link href={`/group/${group.id}`} key={group.id} className={styles.card}>
-                  <div className={styles.cardPhoto} style={group.imageUrl ? undefined : gradientStyle}>
-                    {group.imageUrl ? (
-                      <Image
-                        src={group.imageUrl}
-                        alt={group.name}
-                        fill
-                        sizes="(max-width: 480px) 50vw, 25vw"
-                        style={{ objectFit: "cover" }}
-                      />
-                    ) : (
-                      personIconSvg
-                    )}
-                  </div>
-                  <p className={styles.cardName}>{group.name}</p>
-                  <div className={styles.cardPointsRow}>
-                    <span className={styles.cardPoints} style={{ fontSize: "9px" }}>
-                      {group.description || "グループ"}
-                    </span>
-                  </div>
-                </Link>
-              );
-            })
-          )}
+            })}
         </div>
-      )}
-    </PageShell>
+      ) : (
+        <div className={styles.groupTabContainer}>
+              <div className={styles.grid}>
+                {groups
+                  .filter((group) => !group.isDisbanded)
+                  .map((group) => {
+                    const gradIndex = getGradientIndex(group.id, gradients.length);
+                    const gradientStyle = {
+                      background: gradients[gradIndex],
+                    };
+
+                    return (
+                      <Link href={`/group/${group.id}`} key={group.id} className={styles.card}>
+                        <div className={styles.cardPhoto} style={group.imageUrl ? undefined : gradientStyle}>
+                          {group.imageUrl ? (
+                            <Image
+                              src={group.imageUrl}
+                              alt={group.name}
+                              fill
+                              sizes="(max-width: 480px) 50vw, 25vw"
+                              style={{ objectFit: "cover" }}
+                            />
+                          ) : (
+                            personIconSvg
+                          )}
+                        </div>
+                        <p className={styles.cardName}>{group.name}</p>
+                        <div className={styles.cardPointsRow}>
+                          <span className={styles.cardPoints} style={{ fontSize: "9px" }}>
+                            {group.description || "グループ"}
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+              </div>
+
+              {groups.some((group) => group.isDisbanded) && (
+                <div className={styles.historySection}>
+                  <h3 className={styles.historyTitle}>HISTORY</h3>
+                  <div className={styles.grid}>
+                    {groups
+                      .filter((group) => group.isDisbanded)
+                      .map((group) => {
+                        const gradIndex = getGradientIndex(group.id, gradients.length);
+                        const gradientStyle = {
+                          background: gradients[gradIndex],
+                        };
+
+                        return (
+                          <Link href={`/group/${group.id}`} key={group.id} className={styles.card}>
+                            <div className={styles.cardPhoto} style={group.imageUrl ? undefined : gradientStyle}>
+                              {group.imageUrl ? (
+                                <Image
+                                  src={group.imageUrl}
+                                  alt={group.name}
+                                  fill
+                                  sizes="(max-width: 480px) 50vw, 25vw"
+                                  style={{ objectFit: "cover" }}
+                                />
+                              ) : (
+                                personIconSvg
+                              )}
+                            </div>
+                            <p className={styles.cardName}>{group.name}</p>
+                            <div className={styles.cardPointsRow}>
+                              <span className={styles.cardPoints} style={{ fontSize: "9px" }}>
+                                {group.description || "グループ"}
+                              </span>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </PageShell>
   );
 }

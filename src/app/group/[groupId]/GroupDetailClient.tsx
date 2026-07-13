@@ -24,6 +24,7 @@ interface GroupDetail {
   imageUrl: string | null;
   members: Member[];
   songs: Song[];
+  isDisbanded: boolean;
 }
 
 interface GroupDetailClientProps {
@@ -96,7 +97,12 @@ export default function GroupDetailClient({ group }: GroupDetailClientProps) {
   return (
     <PageShell className={styles.page}>
       {/* Group photo and Title */}
-      <h1 className={`${styles.sectionTitle} ${styles.groupTitle}`}>{group.name}</h1>
+      <h1 className={`${styles.sectionTitle} ${styles.groupTitle}`}>
+        {group.name}
+        {group.isDisbanded && (
+          <span className={styles.disbandedBadge}>解散済</span>
+        )}
+      </h1>
       <div className={styles.sectionTitleUnderline}></div>
 
       <div className={styles.groupPhoto} style={group.imageUrl ? { position: "relative" } : groupGradientStyle}>
