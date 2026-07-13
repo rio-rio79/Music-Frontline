@@ -529,6 +529,28 @@
     font-weight: 800;
 }
 
+.commentFilterNotice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--oshi-line);
+    border-radius: 12px;
+    background: var(--oshi-box);
+    color: #6b6570;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.commentFilterLink {
+    flex-shrink: 0;
+    color: var(--oshi-mid);
+    font-weight: 700;
+    text-decoration: none;
+}
+
 .commentForm {
     margin-bottom: 22px;
     padding: 14px 16px;

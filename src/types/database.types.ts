@@ -312,6 +312,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          comment_filter_mode: string
           color_code: string
           created_at: string
           id: string
@@ -321,6 +322,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          comment_filter_mode?: string
           color_code?: string
           created_at?: string
           id: string
@@ -330,6 +332,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          comment_filter_mode?: string
           color_code?: string
           created_at?: string
           id?: string

@@ -1,4 +1,10 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import {
+    DEFAULT_COMMENT_FILTER_MODE,
+    filterCommentsForViewer,
+    getEffectiveCommentFilterMode,
+    type CommentFilterMode,
+} from "@/lib/comment-filter";
 import { formatJuniorAffiliation } from "@/lib/junior-affiliation";
 
 export type BlogTab = "all" | "following";
@@ -48,6 +54,8 @@ export type BlogJuniorLink = {
 export type BlogDetailItem = BlogListItem & {
     body: string;
     canReadBody: boolean;
+    commentFilterMode: CommentFilterMode;
+    canUseCommentFilter: boolean;
     otherPosts: BlogOtherPost[];
     comments: BlogCommentItem[];
 };
@@ -88,7 +96,7 @@ type RawBlogComment = {
     body: string;
     created_at: string;
     user_id: string;
-    profiles: { name: string } | null;
+    profiles: { name: string; oshi_junior_id: string | null } | null;
 };
 
 const blogPostOverviewSelection = `
@@ -436,7 +444,7 @@ export async function getBlogDetail(
         user
             ? supabase
                   .from("profiles")
-                  .select("oshi_junior_id,plan:plans(monthly_price)")
+                  .select("comment_filter_mode,oshi_junior_id,plan:plans(monthly_price)")
                   .eq("id", user.id)
                   .maybeSingle()
             : Promise.resolve({ data: null, error: null }),
@@ -452,17 +460,38 @@ export async function getBlogDetail(
             .limit(3),
     ]);
 
-    for (const result of [profileResult, likesResult, otherPostsResult]) {
+    for (const result of [likesResult, otherPostsResult]) {
         if (result.error) throw new Error(result.error.message);
     }
 
-    const profileData = profileResult.data as {
+    let rawProfileData: unknown = profileResult.data;
+    if (profileResult.error) {
+        console.error("Failed to fetch blog comment filter profile:", profileResult.error);
+        const fallbackProfileResult = user
+            ? await supabase
+                  .from("profiles")
+                  .select("oshi_junior_id,plan:plans(monthly_price)")
+                  .eq("id", user.id)
+                  .maybeSingle()
+            : { data: null, error: null };
+
+        if (fallbackProfileResult.error) {
+            throw new Error(fallbackProfileResult.error.message);
+        }
+        rawProfileData = fallbackProfileResult.data;
+    }
+
+    const profileData = rawProfileData as {
+        comment_filter_mode?: string | null;
         oshi_junior_id: string | null;
         plan: { monthly_price: number } | null;
     } | null;
     const canReadBody = Boolean(
         user && (profileData?.plan?.monthly_price ?? 0) > 0,
     );
+    const commentFilterMode = getEffectiveCommentFilterMode(profileData);
+    const canUseCommentFilter = commentFilterMode !== DEFAULT_COMMENT_FILTER_MODE
+        || (profileData?.plan?.monthly_price ?? 0) >= 1000;
 
     const [bodyResult, commentsResult] = await Promise.all([
         canReadBody
@@ -475,7 +504,7 @@ export async function getBlogDetail(
         canReadBody
             ? supabase
                   .from("blog_comments")
-                  .select("id,body,created_at,user_id,profiles(name)", {
+                  .select("id,body,created_at,user_id,profiles(name,oshi_junior_id)", {
                       count: "exact",
                   })
                   .eq("blog_posts_id", postId)
@@ -494,9 +523,13 @@ export async function getBlogDetail(
         user &&
         (likesResult.data ?? []).some((like) => like.user_id === user.id),
     );
-    const comments = (
-        (commentsResult.data ?? []) as unknown as RawBlogComment[]
-    ).map(
+    const visibleComments = filterCommentsForViewer({
+        comments: (commentsResult.data ?? []) as unknown as RawBlogComment[],
+        mode: commentFilterMode,
+        viewerId: user?.id,
+        viewerOshiJuniorId: profileData?.oshi_junior_id,
+    });
+    const comments = visibleComments.map(
         (comment): BlogCommentItem => ({
             id: comment.id,
             author: comment.profiles?.name ?? "ユーザー",
@@ -536,9 +569,11 @@ export async function getBlogDetail(
             : "ブログの本文閲覧は有料プランに加入する必要があります",
         canReadBody,
         canInteract: canReadBody,
+        commentFilterMode,
+        canUseCommentFilter,
         viewCount: post.view_count,
         likeCount: likesResult.count ?? 0,
-        commentCount: commentsResult.count ?? 0,
+        commentCount: canReadBody ? comments.length : (commentsResult.count ?? 0),
         liked,
         otherPosts,
         comments,

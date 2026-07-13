@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 import PageHeading from '@/components/PageHeading'
 import PageShell from '@/components/PageShell'
+import { DEFAULT_COMMENT_FILTER_MODE, normalizeCommentFilterMode } from '@/lib/comment-filter'
 import { formatJuniorAffiliation } from '@/lib/junior-affiliation'
 import { createSupabaseServer } from '@/lib/supabase-server'
 import type { BreakdownItem } from '../../../components/GiftPanel/GiftPanel'
@@ -99,6 +100,8 @@ type MyProfilePageProps = {
     }>
 }
 
+type ProfileInitialModal = 'plan' | 'commentFilter' | null
+
 function resolveDefaultSupportPointTab(oshiName: string | null): SupportPointTabKey {
     return oshiName ? 'oshi' : 'all'
 }
@@ -122,6 +125,7 @@ export default async function MyProfilePage({ searchParams }: MyProfilePageProps
         followCountResult,
         blogLikeCountResult,
         songLikeCountResult,
+        commentFilterResult,
     ] = await Promise.all([
         supabase
             .from('profiles')
@@ -154,6 +158,11 @@ export default async function MyProfilePage({ searchParams }: MyProfilePageProps
             .from('song_likes')
             .select('id', { count: 'exact', head: true })
             .eq('user_id', user.id),
+        supabase
+            .from('profiles')
+            .select('comment_filter_mode')
+            .eq('id', user.id)
+            .maybeSingle(),
     ])
 
     const profile = profileResult.data
@@ -179,6 +188,11 @@ export default async function MyProfilePage({ searchParams }: MyProfilePageProps
         supportPointResult.data,
         oshiName
     )
+    const initialOpenModal: ProfileInitialModal = query.modal === 'plan'
+        ? 'plan'
+        : query.modal === 'commentFilter'
+            ? 'commentFilter'
+            : null
 
     if (supportPointResult.error) {
         console.error('Failed to fetch support point summary:', supportPointResult.error)
@@ -192,6 +206,9 @@ export default async function MyProfilePage({ searchParams }: MyProfilePageProps
     if (songLikeCountResult.error) {
         console.error('Failed to fetch song like count:', songLikeCountResult.error)
     }
+    const commentFilterMode = commentFilterResult.error
+        ? DEFAULT_COMMENT_FILTER_MODE
+        : normalizeCommentFilterMode(commentFilterResult.data?.comment_filter_mode)
 
     return (
         <PageShell className="page-wrap">
@@ -211,10 +228,11 @@ export default async function MyProfilePage({ searchParams }: MyProfilePageProps
                         : null,
                     affiliation: formatJuniorAffiliation(profile.oshi.group?.name, profile.oshi.region),
                 } : null}
-                initialOpenModal={query.modal === 'plan' ? 'plan' : null}
+                initialOpenModal={initialOpenModal}
                 plans={plans}
                 juniors={juniors}
                 initialFavoriteColor={profile?.color_code ?? null}
+                initialCommentFilterMode={commentFilterMode}
             />
 
             <h2 className="section-title">マイアクティビティ</h2>

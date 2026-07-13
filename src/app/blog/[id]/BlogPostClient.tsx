@@ -3,11 +3,12 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
+import { COMMENT_FILTER_LABELS } from "@/lib/comment-filter";
 import { type BlogDetailItem, type BlogJuniorLink } from "@/lib/blog-data";
 import { createBlogComment, deleteBlogComment, incrementBlogView, toggleBlogLike } from "../actions";
 import BlogAvatar from "../BlogAvatar";
 import BlogJuniorFinder from "../BlogJuniorFinder";
-import { CommentIcon, HeartIcon } from "../BlogIcons";
+import { CommentIcon } from "../BlogIcons";
 import styles from "../Blog.module.css";
 import { Heart } from "../../../components/Svgs"
 
@@ -229,6 +230,16 @@ export default function BlogPostClient({ post, backLink, juniors }: BlogPostClie
             {post.canInteract && (
                 <section className={styles.commentsSection}>
                     <h2 className={styles.commentsTitle}>コメント {commentCount}</h2>
+
+                    <div className={styles.commentFilterNotice}>
+                        <span>
+                            コメント表示: {COMMENT_FILTER_LABELS[post.commentFilterMode]}
+                            {!post.canUseCommentFilter ? "（プレミアムプランで変更できます）" : ""}
+                        </span>
+                        <Link href="/my/profile?modal=commentFilter" className={styles.commentFilterLink}>
+                            設定を変更
+                        </Link>
+                    </div>
 
                     <form className={styles.commentForm} onSubmit={submitComment}>
                         <textarea

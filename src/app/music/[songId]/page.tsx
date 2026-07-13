@@ -1,4 +1,9 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import {
+  DEFAULT_COMMENT_FILTER_MODE,
+  filterCommentsForViewer,
+  getEffectiveCommentFilterMode,
+} from "@/lib/comment-filter";
 import { resolveMusicCoverUrl } from "@/lib/music-assets";
 import { notFound } from "next/navigation";
 import MusicDetailClient from "./MusicDetailClient";
@@ -32,7 +37,7 @@ type CommentRow = {
   body: string;
   created_at: string;
   user_id: string;
-  profiles: { name: string | null } | null;
+  profiles: { name: string | null; oshi_junior_id: string | null } | null;
 };
 
 export default async function MusicDetailPage({
@@ -78,6 +83,27 @@ export default async function MusicDetailPage({
     notFound();
   }
 
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+  const profileResult = currentUser
+    ? await supabase
+      .from("profiles")
+      .select("comment_filter_mode,oshi_junior_id,plan:plans(monthly_price)")
+      .eq("id", currentUser.id)
+      .maybeSingle()
+    : { data: null, error: null };
+
+  const profileData = profileResult.error
+    ? null
+    : profileResult.data as {
+      comment_filter_mode?: string | null;
+      oshi_junior_id: string | null;
+      plan: { monthly_price: number } | null;
+    } | null;
+  const commentFilterMode = getEffectiveCommentFilterMode(profileData);
+  const canUseCommentFilter = commentFilterMode !== DEFAULT_COMMENT_FILTER_MODE
+    || (profileData?.plan?.monthly_price ?? 0) >= 1000;
+
   // 2. コメントデータのフェッチ
   const { data: comments, error: commentsError } = await supabase
     .from("song_comments")
@@ -87,7 +113,8 @@ export default async function MusicDetailPage({
         created_at,
         user_id,
         profiles (
-            name
+            name,
+            oshi_junior_id
         )
     `)
     .eq("song_id", songId)
@@ -230,7 +257,14 @@ export default async function MusicDetailPage({
     };
   });
 
-  const formattedComments = ((comments || []) as CommentRow[]).map((c) => ({
+  const visibleComments = filterCommentsForViewer({
+    comments: (comments || []) as CommentRow[],
+    mode: commentFilterMode,
+    viewerId: currentUser?.id,
+    viewerOshiJuniorId: profileData?.oshi_junior_id,
+  });
+
+  const formattedComments = visibleComments.map((c) => ({
     id: c.id,
     body: c.body,
     createdAt: c.created_at,
@@ -245,6 +279,8 @@ export default async function MusicDetailPage({
       song={formattedSong}
       allSongs={formattedAllSongs}
       initialComments={formattedComments}
+      commentFilterMode={commentFilterMode}
+      canUseCommentFilter={canUseCommentFilter}
       groupsDetail={mainSongFormatted.groupsDetail}
       juniorsDetail={mainSongFormatted.juniorsDetail}
     />

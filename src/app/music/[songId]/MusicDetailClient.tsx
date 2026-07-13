@@ -6,6 +6,10 @@ import Link from "next/link";
 import Image from "next/image";
 import PageShell from "@/components/PageShell";
 import PageTabs from "@/components/PageTabs";
+import {
+  COMMENT_FILTER_LABELS,
+  type CommentFilterMode,
+} from "@/lib/comment-filter";
 import { type Song, usePlayerStore } from "../../../stores/playerStore";
 import { useLikeStore } from "../../../stores/likeStore";
 import { GraySmallHeart, ThmbSvg, GraySmallPlayMusic, StartMusic, StopMusic } from "@/components/Svgs";
@@ -33,6 +37,8 @@ type MusicDetailClientProps = {
   song: Song;
   allSongs: Song[];
   initialComments: CommentType[];
+  commentFilterMode: CommentFilterMode;
+  canUseCommentFilter: boolean;
   groupsDetail: GroupDetail[];
   juniorsDetail: JuniorDetail[];
 };
@@ -48,6 +54,8 @@ export default function MusicDetailClient({
   song,
   allSongs,
   initialComments,
+  commentFilterMode,
+  canUseCommentFilter,
   groupsDetail,
   juniorsDetail,
 }: MusicDetailClientProps) {
@@ -281,6 +289,15 @@ export default function MusicDetailClient({
           {/* コメントタブ */}
           {activeTab === "comments" && (
             <div className="commentContainer">
+              <div className="commentFilterNotice">
+                <span>
+                  コメント表示: {COMMENT_FILTER_LABELS[commentFilterMode]}
+                  {!canUseCommentFilter ? "（プレミアムプランで変更できます）" : ""}
+                </span>
+                <Link href="/my/profile?modal=commentFilter" className="commentFilterLink">
+                  設定を変更
+                </Link>
+              </div>
 
               {/* コメント入力フォーム */}
               <div className="commentForm">
@@ -555,6 +572,27 @@ const cssStyles = `
   border: 1px solid var(--oshi-line);
   border-radius: 14px;
   padding: 16px;
+}
+
+.commentFilterNotice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--oshi-line);
+  border-radius: 12px;
+  background: var(--oshi-box);
+  color: #6b6570;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.commentFilterLink {
+  flex-shrink: 0;
+  color: var(--oshi-mid);
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .commentForm {

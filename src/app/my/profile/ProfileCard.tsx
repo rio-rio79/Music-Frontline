@@ -3,6 +3,13 @@
 import { useActionState, useEffect, useMemo, useState, useTransition } from 'react'
 import type { FormEvent } from 'react'
 import {
+    COMMENT_FILTER_DESCRIPTIONS,
+    COMMENT_FILTER_LABELS,
+    COMMENT_FILTER_MODES,
+    isPremiumPlan,
+    type CommentFilterMode,
+} from '@/lib/comment-filter'
+import {
     applyFavoriteColor,
     DEFAULT_FAVORITE_COLOR,
     FAVORITE_COLOR_OPTIONS,
@@ -11,10 +18,12 @@ import {
 import {
     changePlan,
     registerOshi,
+    updateCommentFilterMode,
     updateFavoriteColor,
     updateUsername,
     type ChangePlanState,
     type RegisterOshiState,
+    type UpdateCommentFilterState,
     type UpdateFavoriteColorState,
     type UpdateUsernameState,
 } from './actions'
@@ -40,23 +49,26 @@ type ProfileCardProps = {
     initialPlan: Plan | null
     initialOshi: Junior | null
     initialFavoriteColor: string | null
+    initialCommentFilterMode: CommentFilterMode
     initialOpenModal?: ProfileModal
     plans: Plan[]
     juniors: Junior[]
 }
 
-type ProfileModal = 'username' | 'plan' | 'oshi' | 'color' | null
+type ProfileModal = 'username' | 'plan' | 'oshi' | 'color' | 'commentFilter' | null
 
 const initialUsernameState: UpdateUsernameState = { status: 'idle', message: '' }
 const initialPlanState: ChangePlanState = { status: 'idle', message: '' }
 const initialOshiState: RegisterOshiState = { status: 'idle', message: '' }
 const initialFavoriteColorState: UpdateFavoriteColorState = { status: 'idle', message: '' }
+const initialCommentFilterState: UpdateCommentFilterState = { status: 'idle', message: '' }
 
 export default function ProfileCard({
     initialName,
     initialPlan,
     initialOshi,
     initialFavoriteColor,
+    initialCommentFilterMode,
     initialOpenModal = null,
     plans,
     juniors,
@@ -65,7 +77,10 @@ export default function ProfileCard({
     const [currentPlan, setCurrentPlan] = useState(initialPlan)
     const [currentOshi, setCurrentOshi] = useState(initialOshi)
     const [favoriteColor, setFavoriteColor] = useState(initialFavoriteColor ?? DEFAULT_FAVORITE_COLOR)
+    const [commentFilterMode, setCommentFilterMode] = useState(initialCommentFilterMode)
     const [openModal, setOpenModal] = useState<ProfileModal>(initialOpenModal)
+    const canUseCommentFilter = isPremiumPlan(currentPlan?.monthly_price)
+    const effectiveCommentFilterMode = canUseCommentFilter ? commentFilterMode : 'all'
 
     useEffect(() => {
         if (!openModal) return
@@ -160,6 +175,33 @@ export default function ProfileCard({
                             </button>
                         </div>
                     </div>
+
+                    <div className={styles.settingDivider} />
+
+                    <div id="comment-filter" className={styles.settingItem}>
+                        <div className={styles.settingCaption}>コメント表示</div>
+                        <div className={styles.settingContent}>
+                            <span className={styles.settingIcon} aria-hidden="true">
+                                <CommentFilterIcon mode="all" size={12} />
+                            </span>
+                            <span className={styles.settingValue}>
+                                {COMMENT_FILTER_LABELS[effectiveCommentFilterMode]}
+                            </span>
+                            {!canUseCommentFilter && (
+                                <span className={styles.lockedTag}>
+                                    <LockIcon size={9} />
+                                    プレミアム限定
+                                </span>
+                            )}
+                            <button
+                                type="button"
+                                className={styles.changeButton}
+                                onClick={() => setOpenModal('commentFilter')}
+                            >
+                                {canUseCommentFilter ? '変更' : '確認'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -181,6 +223,9 @@ export default function ProfileCard({
                     onClose={() => setOpenModal(null)}
                     onSaved={(plan) => {
                         setCurrentPlan(plan)
+                        if (!isPremiumPlan(plan.monthly_price)) {
+                            setCommentFilterMode('all')
+                        }
                         setOpenModal(null)
                     }}
                 />
@@ -204,6 +249,20 @@ export default function ProfileCard({
                     onClose={() => setOpenModal(null)}
                     onSaved={(color) => {
                         setFavoriteColor(color)
+                        setOpenModal(null)
+                    }}
+                />
+            )}
+
+            {openModal === 'commentFilter' && (
+                <CommentFilterModal
+                    key={`${canUseCommentFilter ? 'premium' : 'locked'}-${effectiveCommentFilterMode}`}
+                    currentMode={effectiveCommentFilterMode}
+                    canUseCommentFilter={canUseCommentFilter}
+                    onClose={() => setOpenModal(null)}
+                    onRequestPlanModal={() => setOpenModal('plan')}
+                    onSaved={(mode) => {
+                        setCommentFilterMode(mode)
                         setOpenModal(null)
                     }}
                 />
@@ -532,6 +591,97 @@ function FavoriteColorModal({
     )
 }
 
+function CommentFilterModal({
+    currentMode,
+    canUseCommentFilter,
+    onClose,
+    onRequestPlanModal,
+    onSaved,
+}: {
+    currentMode: CommentFilterMode
+    canUseCommentFilter: boolean
+    onClose: () => void
+    onRequestPlanModal: () => void
+    onSaved: (mode: CommentFilterMode) => void
+}) {
+    const [selectedMode, setSelectedMode] = useState<CommentFilterMode>(currentMode)
+    const [state, formAction, pending] = useActionState(updateCommentFilterMode, initialCommentFilterState)
+    const visibleSelectedMode = canUseCommentFilter ? selectedMode : 'all'
+
+    useEffect(() => {
+        if (state.status === 'success') onSaved(selectedMode)
+    }, [onSaved, selectedMode, state.status])
+
+    return (
+        <div className={styles.overlay} onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !pending) onClose()
+        }}>
+            <form action={formAction} className={`${styles.modal} ${styles.commentFilterModal}`} role="dialog" aria-modal="true" aria-labelledby="comment-filter-modal-title">
+                <input type="hidden" name="commentFilterMode" value={visibleSelectedMode} />
+                <ModalHeader id="comment-filter-modal-title" title="コメント表示を設定" onClose={onClose} disabled={pending} />
+
+                <div className={styles.commentFilterBody}>
+                    {!canUseCommentFilter && (
+                        <div className={styles.lockedPanel}>
+                            <div className={styles.lockedPanelRow}>
+                                <span className={styles.lockedIconBadge} aria-hidden="true">
+                                    <LockIcon size={15} />
+                                </span>
+                                <div className={styles.lockedPanelBody}>
+                                    <div className={styles.lockedTitle}>プレミアムプラン限定機能です</div>
+                                    <p className={styles.lockedText}>
+                                        同担コメントの非表示や自分のコメントのみ表示は、1,000円のプレミアムプランで利用できます。
+                                    </p>
+                                    <button
+                                        type="button"
+                                        className={styles.lockedUpgradeButton}
+                                        onClick={onRequestPlanModal}
+                                    >
+                                        プランをアップグレード
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className={styles.commentFilterList}>
+                        {COMMENT_FILTER_MODES.map((mode) => {
+                            const selected = mode === visibleSelectedMode
+                            return (
+                                <button
+                                    key={mode}
+                                    type="button"
+                                    className={`${styles.choiceRow} ${selected ? styles.choiceRowSelected : ''}`}
+                                    onClick={() => setSelectedMode(mode)}
+                                    aria-pressed={selected}
+                                    disabled={pending || !canUseCommentFilter}
+                                >
+                                    <span className={`${styles.choiceIcon} ${selected ? styles.choiceIconSelected : ''}`} aria-hidden="true">
+                                        <CommentFilterIcon mode={mode} size={16} />
+                                    </span>
+                                    <span className={styles.choiceContent}>
+                                        <span className={styles.choiceName}>{COMMENT_FILTER_LABELS[mode]}</span>
+                                        <span className={styles.choiceDetail}>{COMMENT_FILTER_DESCRIPTIONS[mode]}</span>
+                                    </span>
+                                    <ChoiceIndicator selected={selected} />
+                                </button>
+                            )
+                        })}
+                    </div>
+
+                    <ActionError message={state.status === 'error' ? state.message : ''} />
+                </div>
+
+                <ModalFooter
+                    onCancel={onClose}
+                    confirmLabel={pending ? '変更中...' : 'この設定に変更'}
+                    disabled={!canUseCommentFilter || pending}
+                />
+            </form>
+        </div>
+    )
+}
+
 function ModalHeader({
     id,
     title,
@@ -573,6 +723,49 @@ function ChoiceIndicator({ selected }: { selected: boolean }) {
         <span className={`${styles.indicator} ${selected ? styles.indicatorSelected : ''}`} aria-hidden="true">
             {selected ? '✓' : ''}
         </span>
+    )
+}
+
+function LockIcon({ size }: { size: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <rect x="5" y="11" width="14" height="10" rx="2.5" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+        </svg>
+    )
+}
+
+function CommentFilterIcon({
+    mode,
+    size,
+}: {
+    mode: CommentFilterMode
+    size: number
+}) {
+    if (mode === 'hide_same_oshi') {
+        return (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                <path d="M3 3l18 18" />
+                <path d="M10.6 5.2A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a15.6 15.6 0 0 1-3.2 4.1M6.6 6.6C4 8.3 2 12 2 12s3.6 7 10 7a10 10 0 0 0 4-.8" />
+                <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+            </svg>
+        )
+    }
+
+    if (mode === 'self_only') {
+        return (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                <circle cx="12" cy="8" r="3.4" />
+                <path d="M5 20c0-3.5 3.1-6.4 7-6.4s7 2.9 7 6.4" />
+            </svg>
+        )
+    }
+
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" />
+            <circle cx="12" cy="12" r="3" />
+        </svg>
     )
 }
 

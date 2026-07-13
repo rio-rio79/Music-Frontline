@@ -122,6 +122,18 @@
   white-space: nowrap;
 }
 
+.settingIcon {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--oshi-bg-side);
+  color: var(--oshi-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .settingValue {
   color: #2b2730;
   font-size: 14px;
@@ -236,6 +248,9 @@
 }
 .colorModal {
   max-width: 360px;
+}
+.commentFilterModal {
+  max-width: 420px;
 }
 
 .modalHeader {
@@ -377,6 +392,20 @@
   font-size: 10.5px;
 }
 
+.lockedTag {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #f3eef1;
+  color: #8b7c84;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .indicator {
   width: 22px;
   height: 22px;
@@ -393,6 +422,23 @@
 
 .indicatorSelected {
   border-color: var(--oshi-mid);
+  background: var(--oshi-mid);
+  color: var(--oshi-on-accent);
+}
+
+.choiceIcon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--oshi-box);
+  color: var(--oshi-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.choiceIconSelected {
   background: var(--oshi-mid);
   color: var(--oshi-on-accent);
 }
@@ -495,6 +541,81 @@
 
 .colorModalBody {
   padding: 18px 20px 4px;
+}
+
+.commentFilterBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 20px 4px;
+}
+
+.commentFilterList {
+  display: grid;
+  gap: 10px;
+}
+
+.commentFilterList .choiceRow:disabled {
+  cursor: not-allowed;
+}
+
+.lockedPanel {
+  margin-bottom: 14px;
+  padding: 14px;
+  border: 1px solid var(--oshi-soft);
+  border-radius: 14px;
+  background: var(--oshi-bg-side);
+}
+
+.lockedPanelRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.lockedIconBadge {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--oshi-box);
+  color: var(--oshi-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lockedPanelBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.lockedTitle {
+  color: #2b2730;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.lockedText {
+  margin: 4px 0 10px;
+  color: #6b6570;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.lockedUpgradeButton {
+  padding: 7px 16px;
+  border: none;
+  border-radius: 999px;
+  background: var(--oshi-mid);
+  color: var(--oshi-on-accent);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lockedUpgradeButton:hover {
+  background: var(--oshi-accent);
 }
 
 .colorGrid {
