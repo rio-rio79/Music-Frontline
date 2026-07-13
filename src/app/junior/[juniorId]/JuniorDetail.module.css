@@ -13,7 +13,7 @@
 }
 
 .backLink:hover {
-  color: var(--pink, #FF4B91);
+  color: var(--pink, var(--oshi-accent));
   text-decoration: underline;
 }
 
@@ -86,10 +86,10 @@
   height: 34px;
   margin: 0 0 16px;
   padding: 0 13px;
-  border: 1px solid #f0d8e8;
+  border: 1px solid var(--oshi-line);
   border-radius: 999px;
-  background: #fff8fb;
-  color: #8f3157;
+  background: var(--oshi-box);
+  color: var(--oshi-deep);
   cursor: pointer;
   font: inherit;
   font-size: 12px;
@@ -98,9 +98,9 @@
 }
 
 .followButton:hover:not(:disabled) {
-  border-color: #e8a6c2;
-  background: #ffeaf3;
-  color: var(--pink, #FF4B91);
+  border-color: var(--oshi-soft);
+  background: var(--oshi-bg-side);
+  color: var(--pink, var(--oshi-accent));
   transform: translateY(-1px);
 }
 
@@ -110,9 +110,9 @@
 }
 
 .followButtonActive {
-  border-color: var(--pink, #FF4B91);
-  background: var(--pink-soft, #FFE3EF);
-  color: var(--pink, #FF4B91);
+  border-color: var(--pink, var(--oshi-accent));
+  background: var(--pink-soft, var(--oshi-bg-side));
+  color: var(--pink, var(--oshi-accent));
 }
 
 .followButton svg {
@@ -233,7 +233,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--pink-soft, #FFE3EF);
+  background: var(--pink-soft, var(--oshi-bg-side));
   border: none;
   display: flex;
   align-items: center;
@@ -244,7 +244,7 @@
 }
 
 .playBtn:hover {
-  background: var(--pink, #FF4B91);
+  background: var(--pink, var(--oshi-accent));
   transform: scale(1.05);
 }
 
@@ -253,7 +253,7 @@
 }
 
 .playBtn svg {
-  fill: var(--pink, #FF4B91);
+  fill: var(--pink, var(--oshi-accent));
   width: 16px;
   height: 16px;
   transition: fill .2s ease;

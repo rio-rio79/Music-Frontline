@@ -74,8 +74,8 @@ export default function RankingClient({ rankings }: RankingClientProps) {
     <PageShell className="ranking-page">
       <style>{`
         .ranking-page {
-          --pink: #e8447a;
-          --pink-soft: #fff0f6;
+          --pink: var(--oshi-accent);
+          --pink-soft: var(--oshi-bg-side);
           --ink: #22202a;
           --muted: #77717d;
           --line: #ece6ee;

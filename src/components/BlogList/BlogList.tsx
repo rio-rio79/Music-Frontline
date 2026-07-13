@@ -108,8 +108,8 @@ export default function BlogList({ blogs }: BlogListProps) {
 
         .blog-list__category {
           font-size: 12px;
-          color: #d4537e;
-          background: #fbeaf0;
+          color: var(--oshi-mid);
+          background: var(--oshi-bg-side);
           padding: 2px 10px;
           border-radius: 10px;
         }

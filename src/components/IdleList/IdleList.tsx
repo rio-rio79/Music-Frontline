@@ -132,10 +132,10 @@ export default function IdleList({ idles, onToggleLike }: IdleListProps) {
           min-width: 72px;
           height: 32px;
           padding: 0 10px;
-          border: 1px solid #f0d8e8;
+          border: 1px solid var(--oshi-line);
           border-radius: 999px;
-          background: #fff8fb;
-          color: #8f3157;
+          background: var(--oshi-box);
+          color: var(--oshi-deep);
           cursor: pointer;
           font: inherit;
           font-size: 12px;
@@ -145,9 +145,9 @@ export default function IdleList({ idles, onToggleLike }: IdleListProps) {
         }
 
         .idle-list__unfollow-btn:hover {
-          border-color: #e8a6c2;
-          background: #ffeaf3;
-          color: #E8447A;
+          border-color: var(--oshi-soft);
+          background: var(--oshi-bg-side);
+          color: var(--oshi-accent);
           transform: translateY(-1px);
         }
 

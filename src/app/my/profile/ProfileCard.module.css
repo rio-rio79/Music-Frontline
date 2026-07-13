@@ -1,15 +1,15 @@
 .card {
   background: #fff;
-  border: 1px solid #f0e3e8;
+  border: 1px solid var(--oshi-line);
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(255, 110, 160, 0.08);
+  box-shadow: 0 6px 20px rgba(var(--oshi-mid-rgb), 0.08);
   margin-bottom: 34px;
 }
 
 .banner {
-  background: linear-gradient(90deg, #ffb0cb, #ff6ea0);
-  color: #fff;
+  background: linear-gradient(90deg, var(--oshi-soft), var(--oshi-mid));
+  color: var(--oshi-on-accent);
   text-align: center;
   font-weight: 700;
   font-size: 14px;
@@ -34,14 +34,14 @@
   width: 96px;
   height: 96px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff8fb3, #ff4f8b);
+  background: linear-gradient(135deg, var(--oshi-soft), var(--oshi-mid));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--oshi-on-accent);
   font-size: 40px;
   font-weight: 800;
-  box-shadow: 0 8px 18px rgba(255, 79, 139, 0.3);
+  box-shadow: 0 8px 18px rgba(var(--oshi-mid-rgb), 0.3);
 }
 
 .nameRow {
@@ -69,9 +69,9 @@
   height: 26px;
   padding: 0;
   border-radius: 50%;
-  border: 1px solid #f0d8e2;
-  background: #fff6f9;
-  color: #ff4f8b;
+  border: 1px solid var(--oshi-line);
+  background: var(--oshi-box);
+  color: var(--oshi-mid);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,7 +95,7 @@
 
 .settingCaption {
   margin-bottom: 3px;
-  color: #b58a9a;
+  color: var(--oshi-mauve);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -109,7 +109,7 @@
 
 .settingDivider {
   height: 1px;
-  background: #f5eaef;
+  background: var(--oshi-line);
 }
 
 .settingValue,
@@ -158,8 +158,8 @@
   display: inline-block;
   padding: 2px 9px;
   border-radius: 12px;
-  background: #fbeaf0;
-  color: #993556;
+  background: var(--oshi-bg-side);
+  color: var(--oshi-deep);
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
@@ -185,9 +185,9 @@
   flex-shrink: 0;
   padding: 5px 14px;
   border-radius: 999px;
-  border: 1px solid #ff9ec2;
-  background: #fff6f9;
-  color: #ff4f8b;
+  border: 1px solid var(--oshi-soft);
+  background: var(--oshi-box);
+  color: var(--oshi-mid);
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
@@ -196,7 +196,7 @@
 
 .editNameButton:hover,
 .changeButton:hover {
-  background: #ffeaf2;
+  background: var(--oshi-bg-side);
 }
 
 .overlay {
@@ -241,7 +241,7 @@
 .modalHeader {
   flex-shrink: 0;
   padding: 16px 20px 12px;
-  border-bottom: 1px solid #f0e3e8;
+  border-bottom: 1px solid var(--oshi-line);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -260,7 +260,7 @@
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: #f5eef1;
+  background: var(--oshi-line);
   color: #6b6570;
   font-size: 14px;
   cursor: pointer;
@@ -284,7 +284,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 11px 14px;
-  border: 1.5px solid #f0d8e2;
+  border: 1.5px solid var(--oshi-line);
   border-radius: 10px;
   color: #2b2730;
   font: inherit;
@@ -294,7 +294,7 @@
 
 .textInput:focus,
 .searchBox:focus-within {
-  border-color: #ff6ea0;
+  border-color: var(--oshi-mid);
 }
 
 .helpText {
@@ -326,14 +326,14 @@
 .choiceRow {
   margin-bottom: 10px;
   padding: 14px;
-  border: 1.5px solid #f0e3e8;
+  border: 1.5px solid var(--oshi-line);
   border-radius: 14px;
   background: transparent;
 }
 
 .choiceRowSelected {
-  background: #ffe1ec;
-  border-color: #ff6ea0 !important;
+  background: var(--oshi-bg-side);
+  border-color: var(--oshi-mid) !important;
 }
 
 .choiceContent {
@@ -367,8 +367,8 @@
   display: inline-block;
   padding: 2px 8px;
   border-radius: 12px;
-  background: #fbeaf0;
-  color: #993556;
+  background: var(--oshi-bg-side);
+  color: var(--oshi-deep);
   font-size: 10px;
   font-weight: 700;
 }
@@ -392,8 +392,9 @@
 }
 
 .indicatorSelected {
-  border-color: #ff4f8b;
-  background: #ff4f8b;
+  border-color: var(--oshi-mid);
+  background: var(--oshi-mid);
+  color: var(--oshi-on-accent);
 }
 
 .searchArea {
@@ -403,9 +404,9 @@
 
 .searchBox {
   padding: 10px 16px;
-  border: 1px solid #f0e3e8;
+  border: 1px solid var(--oshi-line);
   border-radius: 40px;
-  background: #fdfafb;
+  background: var(--oshi-box);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -447,11 +448,11 @@
   height: 40px;
   flex-shrink: 0;
   border-radius: 50%;
-  background-color: #ff4f8b;
-  background-image: linear-gradient(135deg, #ff8fb3, #ff4f8b);
+  background-color: var(--oshi-mid);
+  background-image: linear-gradient(135deg, var(--oshi-soft), var(--oshi-mid));
   background-position: center;
   background-size: cover;
-  color: #fff;
+  color: var(--oshi-on-accent);
   font-size: 15px;
   font-weight: 800;
   display: flex;
@@ -520,7 +521,7 @@
 }
 
 .colorOptionSelected {
-  box-shadow: 0 0 0 3px #ff6ea0, 0 6px 14px rgba(255, 79, 139, 0.24);
+  box-shadow: 0 0 0 3px var(--oshi-mid), 0 6px 14px rgba(var(--oshi-mid-rgb), 0.24);
 }
 
 .colorOption span {
@@ -538,7 +539,7 @@
   flex-shrink: 0;
   box-sizing: border-box;
   padding: 14px 20px;
-  border-top: 1px solid #f0e3e8;
+  border-top: 1px solid var(--oshi-line);
   display: flex;
   gap: 10px;
 }
@@ -567,14 +568,14 @@
 .confirmButton {
   flex: 1;
   border: none;
-  background: #ff4f8b;
-  color: #fff;
+  background: var(--oshi-mid);
+  color: var(--oshi-on-accent);
   font-weight: 800;
 }
 
 .confirmButton:disabled {
-  background: #f3d9e3;
-  color: #b98a9a;
+  background: var(--oshi-bg-side);
+  color: var(--oshi-mauve);
   cursor: not-allowed;
 }
 

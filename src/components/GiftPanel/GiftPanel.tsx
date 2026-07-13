@@ -149,12 +149,12 @@ export default function GiftPanel({ breakdown, helpButton }: GiftPanelProps) {
                                         <path d="M40 130 L160 158 L280 130 L280 235 L160 263 L40 235 Z"/>
                                     </clipPath>
                                     <linearGradient id="boxFront" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0" stopColor="#ffd3e3"/>
-                                        <stop offset="1" stopColor="#ffb9d2"/>
+                                        <stop offset="0" stopColor="var(--oshi-soft)"/>
+                                        <stop offset="1" stopColor="var(--oshi-soft)"/>
                                     </linearGradient>
                                     <linearGradient id="boxSide" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0" stopColor="#ffc1d8"/>
-                                        <stop offset="1" stopColor="#ff9fc0"/>
+                                        <stop offset="0" stopColor="var(--oshi-soft)"/>
+                                        <stop offset="1" stopColor="var(--oshi-soft)"/>
                                     </linearGradient>
                                 </defs>
 
@@ -180,11 +180,11 @@ export default function GiftPanel({ breakdown, helpButton }: GiftPanelProps) {
                                     <rect x="220" y="120" width="20" height="150" fill="#ffffff"/>
                                     <rect x="265" y="120" width="20" height="150" fill="#ffffff"/>
                                 </g>
-                                <path d="M40 130 L160 158 L280 130" fill="none" stroke="#ff8fb6" strokeWidth="3"/>
+                                <path d="M40 130 L160 158 L280 130" fill="none" stroke="var(--oshi-soft)" strokeWidth="3"/>
 
                                 <g transform="translate(0 -8)">
                                     <path d="M58 70 L165 40 L280 78 L165 112 Z" fill="url(#boxSide)"/>
-                                    <path d="M58 70 L165 40 L165 112 Z" fill="#ffd6e7" opacity="0.5"/>
+                                    <path d="M58 70 L165 40 L165 112 Z" fill="var(--oshi-soft)" opacity="0.5"/>
                                     <g opacity="0.5">
                                         <path d="M85 64 L92 80" stroke="#ffffff" strokeWidth="5"/>
                                         <path d="M115 56 L122 73" stroke="#ffffff" strokeWidth="5"/>
@@ -193,7 +193,7 @@ export default function GiftPanel({ breakdown, helpButton }: GiftPanelProps) {
                                         <path d="M215 60 L221 77" stroke="#ffffff" strokeWidth="5"/>
                                         <path d="M248 70 L253 86" stroke="#ffffff" strokeWidth="5"/>
                                     </g>
-                                    <path d="M58 70 L165 40 L280 78 L165 112 Z" fill="none" stroke="#ff8fb6" strokeWidth="3" strokeLinejoin="round"/>
+                                    <path d="M58 70 L165 40 L280 78 L165 112 Z" fill="none" stroke="var(--oshi-soft)" strokeWidth="3" strokeLinejoin="round"/>
                                 </g>
                             </>
                         )}
@@ -211,7 +211,7 @@ export default function GiftPanel({ breakdown, helpButton }: GiftPanelProps) {
                             ))}
                         </g>
 
-                        <g fill="#ffd9e8">
+                        <g fill="var(--oshi-soft)">
                             <path d="M28 60 l4 8 8 4 -8 4 -4 8 -4 -8 -8 -4 8 -4z" opacity="0.8"/>
                             <path d="M296 150 l3 6 6 3 -6 3 -3 6 -3 -6 -6 -3 6 -3z" opacity="0.7"/>
                             <path d="M250 30 l3 6 6 3 -6 3 -3 6 -3 -6 -6 -3 6 -3z" opacity="0.6"/>

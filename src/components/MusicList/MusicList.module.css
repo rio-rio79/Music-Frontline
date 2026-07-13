@@ -1,7 +1,7 @@
 .songList {
   list-style: none;
   background: #fff;
-  border: 1px solid #f0d8e8;
+  border: 1px solid var(--oshi-line);
   border-radius: 14px;
   /* margin: 0 14px; */
   overflow: hidden;
@@ -14,7 +14,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border-bottom: 1px solid #f5e8ee;
+  border-bottom: 1px solid var(--oshi-line);
   transition: background-color 0.2s ease;
 }
 
@@ -23,7 +23,7 @@
 }
 
 .songRow:hover {
-  background: #fff8fb;
+  background: var(--oshi-box);
 }
 
 /* サムネイル */
@@ -31,7 +31,7 @@
   width: 56px;
   height: 56px;
   flex-shrink: 0;
-  background: #ffe8f2;
+  background: var(--oshi-bg-side);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -91,8 +91,8 @@
 .groupTag {
   font-size: 10px;
   font-weight: 700;
-  background-color: #FBEAF0;
-  color: #993556;
+  background-color: var(--oshi-bg-side);
+  color: var(--oshi-deep);
   padding: 2px 8px;
   border-radius: 12px;
   display: inline-block;

@@ -204,8 +204,8 @@ export default function MyListClient({
         <PageShell className="like-page">
             <style>{`
                 .like-page {
-                    --pink: #FF69B4;
-                    --pink-light: #FFEAF3;
+                    --pink: var(--oshi-accent);
+                    --pink-light: var(--oshi-bg-side);
                     --text: #222;
                     --sub: #999;
                     --border: #eee;
@@ -228,7 +228,7 @@ export default function MyListClient({
                 .like-page .like-sub-tab {
                     min-width: 92px;
                     padding: 8px 18px;
-                    border: 1px solid #f0e3e8;
+                    border: 1px solid var(--oshi-line);
                     border-radius: 999px;
                     background: #fff;
                     color: #6b6570;
@@ -239,9 +239,9 @@ export default function MyListClient({
                 }
 
                 .like-page .like-sub-tab.active {
-                    border-color: #ff6ea0;
-                    background: #ffe1ec;
-                    color: #ff4f8b;
+                    border-color: var(--oshi-mid);
+                    background: var(--oshi-bg-side);
+                    color: var(--oshi-mid);
                 }
 
                 .like-page .like-empty-note {
@@ -279,7 +279,7 @@ export default function MyListClient({
                 .like-page .like-pagination button:hover:not(:disabled) {
                     border-color: var(--pink);
                     color: var(--pink);
-                    background: #fff8fb;
+                    background: var(--oshi-box);
                 }
 
                 .like-page .like-pagination button:disabled {
@@ -290,7 +290,7 @@ export default function MyListClient({
                 .like-page .like-pagination .current {
                     border-color: var(--pink);
                     background: var(--pink);
-                    color: #fff;
+                    color: var(--oshi-on-accent);
                     cursor: default;
                     opacity: 1;
                 }
@@ -298,7 +298,7 @@ export default function MyListClient({
                 .like-page .like-pagination .current:hover {
                     color: var(--pink);
                     background: var(--pink);
-                    color: #fff;
+                    color: var(--oshi-on-accent);
                 }
             `}</style>
 

@@ -15,12 +15,12 @@
     background:
         radial-gradient(
             120% 80% at 50% -10%,
-            rgb(248 67 142 / 12%),
+            rgba(var(--oshi-mid-rgb), 0.12),
             transparent 60%
         ),
         #fff;
     box-shadow:
-        0 4px 24px rgb(248 67 142 / 10%),
+        0 4px 24px rgba(var(--oshi-mid-rgb), 0.1),
         0 1px 3px rgb(0 0 0 / 6%);
     overflow: hidden;
 }
@@ -50,7 +50,7 @@
 }
 
 .login-tab.active {
-    color: rgb(248, 67, 142);
+    color: var(--oshi-mid);
 }
 
 .login-tab.active::after {
@@ -61,7 +61,7 @@
     right: 16px;
     height: 3px;
     border-radius: 3px 3px 0 0;
-    background: rgb(248, 67, 142);
+    background: var(--oshi-mid);
 }
 
 /* ─── フォーム ─── */
@@ -97,8 +97,8 @@
 }
 
 .login-field input:focus {
-    border-color: rgb(248, 67, 142);
-    box-shadow: 0 0 0 3px rgb(248 67 142 / 12%);
+    border-color: var(--oshi-mid);
+    box-shadow: 0 0 0 3px rgba(var(--oshi-mid-rgb), 0.12);
     background: #fff;
 }
 
@@ -112,19 +112,19 @@
     padding: 14px 0;
     border: none;
     border-radius: 12px;
-    background: linear-gradient(135deg, rgb(248, 67, 142), rgb(220, 40, 120));
-    color: #fff;
+    background: linear-gradient(135deg, var(--oshi-mid), var(--oshi-accent));
+    color: var(--oshi-on-accent);
     font-size: 15px;
     font-weight: 700;
     letter-spacing: 0.04em;
     cursor: pointer;
     transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
-    box-shadow: 0 4px 16px rgb(248 67 142 / 30%);
+    box-shadow: 0 4px 16px rgba(var(--oshi-mid-rgb), 0.3);
 }
 
 .login-submit:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 6px 24px rgb(248 67 142 / 40%);
+    box-shadow: 0 6px 24px rgba(var(--oshi-mid-rgb), 0.4);
 }
 
 .login-submit:active:not(:disabled) {

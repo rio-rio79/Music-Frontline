@@ -2,6 +2,22 @@
 
 :root {
     --favorite-color: #f8bbd0;
+    --oshi-accent: #e8447a;
+    --oshi-mid: #ff4f8b;
+    --oshi-soft: #f8bbd0;
+    --oshi-bg: #fff2f7;
+    --oshi-bg-side: #ffe1ec;
+    --oshi-line: #f0e3e8;
+    --oshi-deep: #5d153f;
+    --oshi-mauve: #b58a9a;
+    --oshi-box: #fdfdfd;
+    --oshi-on-accent: #ffffff;
+    --oshi-accent-rgb: 232, 68, 122;
+    --oshi-mid-rgb: 255, 79, 139;
+    --oshi-soft-rgb: 248, 187, 208;
+    --oshi-bg-rgb: 255, 242, 247;
+    --oshi-bg-side-rgb: 255, 225, 236;
+    --oshi-line-rgb: 240, 227, 232;
 }
 
 body {
@@ -52,7 +68,7 @@ body {
     justify-content: space-between;
     gap: 16px;
     padding: 12px 16px;
-    border: 1px solid rgb(248 67 142 / 25%);
+    border: 1px solid rgba(var(--oshi-mid-rgb), 0.25);
     border-radius: 12px;
 }
 
@@ -130,7 +146,7 @@ body {
     border: 0;
     border-radius: 50%;
     background: transparent;
-    color: #8a7180;
+    color: var(--oshi-mauve);
     cursor: pointer;
     transition:
         background 0.15s ease,
@@ -138,8 +154,8 @@ body {
 }
 
 .mini-controls button:hover {
-    background: #f6dbe8;
-    color: #e8447a;
+    background: var(--oshi-bg-side);
+    color: var(--oshi-accent);
 }
 
 .mini-controls button:disabled {
@@ -151,14 +167,14 @@ body {
 .mini-controls .mini-primary-control {
     width: 44px;
     height: 44px;
-    background: #e8447a;
-    color: #fff;
-    box-shadow: 0 3px 10px rgba(232, 68, 122, 0.35);
+    background: var(--oshi-accent);
+    color: var(--oshi-on-accent);
+    box-shadow: 0 3px 10px rgba(var(--oshi-accent-rgb), 0.35);
 }
 
 .mini-controls .mini-primary-control:hover {
-    background: #d6386a;
-    color: #fff;
+    background: color-mix(in srgb, var(--oshi-accent) 88%, black);
+    color: var(--oshi-on-accent);
 }
 
 .mini-controls .mini-primary-control:disabled {
@@ -183,7 +199,7 @@ body {
     height: 56px;
     overflow: hidden;
     border-radius: 4px;
-    background: #fff8fb;
+    background: var(--oshi-box);
 }
 
 .mini-artwork {
@@ -194,12 +210,12 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: 3px 0 0 3px;
-    background: linear-gradient(135deg, #ff9fc4, #ff5e9b);
+    background: linear-gradient(135deg, var(--oshi-soft), var(--oshi-mid));
 }
 
 .mini-player-idle .mini-artwork {
-    background: #fff8fb;
-    border-right: 1px solid #f0d8e8;
+    background: var(--oshi-box);
+    border-right: 1px solid var(--oshi-line);
 }
 
 .mini-player-idle .mini-artwork svg path {
@@ -238,7 +254,7 @@ body {
 
 .mini-meta small {
     margin-top: 1px;
-    color: #a98aa0;
+    color: var(--oshi-mauve);
     font-size: 10px;
 }
 
@@ -254,7 +270,7 @@ body {
 }
 
 .mini-idle-note {
-    color: #a98aa0;
+    color: var(--oshi-mauve);
     font-size: 13px;
     font-weight: 800;
 }
@@ -310,7 +326,7 @@ body {
     height: 0;
     border-radius: 0;
     appearance: none;
-    background: #e8447a;
+    background: var(--oshi-accent);
     box-shadow: none;
     transition:
         width 0.12s ease,
@@ -332,7 +348,7 @@ body {
     height: 0;
     border: 0;
     border-radius: 0;
-    background: #e8447a;
+    background: var(--oshi-accent);
     transition:
         width 0.12s ease,
         height 0.12s ease;
@@ -355,20 +371,20 @@ body {
 .mini-seek::-moz-range-track {
     height: 3px;
     border-radius: 0;
-    background: #f0d8e8;
+    background: var(--oshi-line);
 }
 
 .mini-seek::-moz-range-progress {
     height: 3px;
     border-radius: 0;
-    background: #e8447a;
+    background: var(--oshi-accent);
 }
 
 .mini-time-label {
     position: absolute;
     bottom: 5px;
-    background: #fff8fb;
-    color: #a98aa0;
+    background: var(--oshi-box);
+    color: var(--oshi-mauve);
     font-size: 10px;
     opacity: 0;
     pointer-events: none;
@@ -414,7 +430,7 @@ body {
 }
 
 .mini-volume-button:hover {
-    background: #f6dbe8;
+    background: var(--oshi-bg-side);
 }
 
 .mini-volume-range {
@@ -440,7 +456,7 @@ body {
     height: 0;
     border-radius: 50%;
     appearance: none;
-    background: #e8447a;
+    background: var(--oshi-accent);
     box-shadow: none;
     transition:
         width 0.12s ease,
@@ -462,7 +478,7 @@ body {
     height: 0;
     border: 0;
     border-radius: 50%;
-    background: #e8447a;
+    background: var(--oshi-accent);
     transition:
         width 0.12s ease,
         height 0.12s ease;
@@ -481,13 +497,13 @@ body {
 .mini-volume-range::-moz-range-track {
     height: 5px;
     border-radius: 999px;
-    background: #f0d8e8;
+    background: var(--oshi-line);
 }
 
 .mini-volume-range::-moz-range-progress {
     height: 5px;
     border-radius: 999px;
-    background: #e8447a;
+    background: var(--oshi-accent);
 }
 
 /* フッター */
@@ -496,9 +512,9 @@ footer {
     width: calc(100% - 220px);
     margin-left: 220px;
     padding: 15px;
-    background: #fff2f7;
+    background: var(--oshi-bg);
     text-align: center;
-    color: #b3789a;
+    color: var(--oshi-mauve);
 
     p {
         margin: 0;
@@ -568,11 +584,7 @@ footer {
 }
 
 .sidebar {
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--favorite-color) 30%, white 70%),
-        white
-    );
+    background: linear-gradient(180deg, var(--oshi-bg-side), white);
 }
 
 /* body {

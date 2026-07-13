@@ -8,7 +8,7 @@
 .bar {
   width: 2px;
   height: 34px;
-  background: #ff6ea0;
+  background: var(--oshi-mid);
   flex: 0 0 auto;
 }
 

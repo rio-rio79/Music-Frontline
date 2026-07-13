@@ -4,7 +4,7 @@ export function ThmbSvg() {
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
                 <path 
                     d="M9 18V5l12-2v13M9 18c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3zm12-2c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3z"
-                    stroke="#E8A0C0" 
+                    stroke="var(--oshi-soft)"
                     strokeWidth="1.5" 
                     strokeLinecap="round" 
                     strokeLinejoin="round"
@@ -14,7 +14,7 @@ export function ThmbSvg() {
 }
 
 // 停止ボタン
-export function StopMusic({color = "#E8447A"}) { 
+export function StopMusic({color = "var(--oshi-accent)"}) {
     return(
         <svg width="20" height="20" viewBox="0 0 24 24" fill={color}>
             <rect x="4" y="4" width="4" height="16" rx="1" />
@@ -24,7 +24,7 @@ export function StopMusic({color = "#E8447A"}) {
  }
 
 // 再生ボタン
-export function StartMusic({ color = "#E8447A" }) {
+export function StartMusic({ color = "var(--oshi-accent)" }) {
     return (
         <svg width="20" height="20" viewBox="0 0 20 20" fill={color}>
             <polygon points="4,2 18,10 4,18"/>
@@ -53,7 +53,7 @@ export function SkipForward(){
 }
 
 // いいねボタン
-export function Heart({ color = "#E8447A", filled = false }: { color?: string; filled?: boolean }) {
+export function Heart({ color = "var(--oshi-accent)", filled = false }: { color?: string; filled?: boolean }) {
     return (
         <svg width="20" height="20" viewBox="0 0 22 22" fill={filled ? color : "none"} stroke={color} strokeWidth="1.8">
             <path d="M11 19.5S3 14.5 3 8.5a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 8 2.8c0 6-8 11-8 11z" />
@@ -82,7 +82,7 @@ export function GraySmallHeart({ color = "#bbb", filled = false }: { color?: str
  }
 
 // 楽曲一覧用アイコン
-export function CdSvg({ color = "#E8447A" }) {
+export function CdSvg({ color = "var(--oshi-accent)" }) {
     return (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="1.5" />
@@ -93,7 +93,7 @@ export function CdSvg({ color = "#E8447A" }) {
 }
 
 // マイページ用アイコン
-export function PersonSvg({ color = "#E8447A" }) {
+export function PersonSvg({ color = "var(--oshi-accent)" }) {
     return (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="8" r="4" stroke={color} strokeWidth="1.5" />

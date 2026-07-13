@@ -52,7 +52,7 @@
 .sectionTitleUnderline {
   width: 36px;
   height: 3px;
-  background: var(--pink, #FF4B91);
+  background: var(--pink, var(--oshi-accent));
   border-radius: 2px;
   margin-bottom: 22px;
 }
@@ -233,7 +233,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--pink-soft, #FFE3EF);
+  background: var(--pink-soft, var(--oshi-bg-side));
   border: none;
   display: flex;
   align-items: center;
@@ -244,7 +244,7 @@
 }
 
 .playBtn:hover {
-  background: var(--pink, #FF4B91);
+  background: var(--pink, var(--oshi-accent));
   transform: scale(1.05);
 }
 
@@ -253,7 +253,7 @@
 }
 
 .playBtn svg {
-  fill: var(--pink, #FF4B91);
+  fill: var(--pink, var(--oshi-accent));
   width: 16px;
   height: 16px;
   transition: fill .2s ease;
