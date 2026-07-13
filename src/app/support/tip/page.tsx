@@ -6,7 +6,12 @@ import TipPageClient, {
   type TipJunior,
 } from "./TipPageClient";
 
-export default async function TipPage() {
+type TipPageProps = {
+  searchParams: Promise<{ juniorId?: string }>;
+};
+
+export default async function TipPage({ searchParams }: TipPageProps) {
+  const { juniorId } = await searchParams;
   const supabase = await createSupabaseServer();
   const {
     data: { user },
@@ -60,6 +65,7 @@ export default async function TipPage() {
       juniors={juniors}
       initialOshiId={profileResult.data.oshi_junior_id}
       initialHistory={initialHistory}
+      defaultJuniorId={juniorId}
     />
   );
 }

@@ -22,6 +22,7 @@ type TipPageClientProps = {
   juniors: TipJunior[];
   initialOshiId: string | null;
   initialHistory: FanLetterHistoryEntry[];
+  defaultJuniorId?: string;
 };
 
 type HistoryEntry = {
@@ -100,7 +101,7 @@ function JuniorAvatar({ junior, sizes }: { junior: TipJunior; sizes: string }) {
   );
 }
 
-export default function TipPageClient({ juniors, initialOshiId, initialHistory }: TipPageClientProps) {
+export default function TipPageClient({ juniors, initialOshiId, initialHistory, defaultJuniorId }: TipPageClientProps) {
   const oshiId = juniors.some((junior) => junior.id === initialOshiId) ? initialOshiId : null;
   const initialEntries = initialHistory.map<HistoryEntry>((entry) => ({
     id: entry.id,
@@ -110,7 +111,9 @@ export default function TipPageClient({ juniors, initialOshiId, initialHistory }
     amount: entry.amount,
   }));
   const [activeTab, setActiveTab] = useState<Tab>("compose");
-  const [currentJuniorId, setCurrentJuniorId] = useState<string | null>(oshiId);
+  const [currentJuniorId, setCurrentJuniorId] = useState<string | null>(
+    defaultJuniorId && juniors.some((junior) => junior.id === defaultJuniorId) ? defaultJuniorId : oshiId
+  );
   const [message, setMessage] = useState("");
   const [tierIndex, setTierIndex] = useState(DEFAULT_TIER_INDEX);
   const [customAmount, setCustomAmount] = useState<number | null>(null);

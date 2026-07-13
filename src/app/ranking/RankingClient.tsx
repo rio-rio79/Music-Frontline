@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import PageHeading from "@/components/PageHeading";
 import PageShell from "@/components/PageShell";
@@ -57,6 +57,45 @@ export default function RankingClient({ rankings }: RankingClientProps) {
     group_affiliated: rankings.filter((item) => item.category === "group_affiliated"),
     independent: rankings.filter((item) => item.category === "independent"),
   }), [rankings]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash && hash.startsWith("#junior-")) {
+        const juniorId = hash.replace("#junior-", "");
+        const found = rankings.find((r) => r.juniorId === juniorId);
+        if (found) {
+          setCurrentTab(found.category);
+
+          const categoryList = groupedRankings[found.category];
+          const index = categoryList.findIndex((r) => r.juniorId === juniorId);
+          if (index !== -1) {
+            const requiredCount = Math.ceil((index + 1) / PAGE_SIZE) * PAGE_SIZE;
+            setVisibleCounts((prev) => ({
+              ...prev,
+              [found.category]: Math.max(prev[found.category], requiredCount),
+            }));
+
+            setTimeout(() => {
+              const element = document.getElementById(`junior-${juniorId}`);
+              if (element) {
+                element.scrollIntoView({ behavior: "smooth", block: "center" });
+              }
+            }, 150);
+          }
+        }
+      }
+    };
+
+    // 初期マウント時の処理
+    handleHashChange();
+
+    // ハッシュ変更イベントの監視
+    window.addEventListener("hashchange", handleHashChange);
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, [rankings, groupedRankings]);
 
   const currentTabInfo = TABS.find((tab) => tab.key === currentTab)!;
   const currentList = groupedRankings[currentTab];
@@ -287,7 +326,7 @@ export default function RankingClient({ rankings }: RankingClientProps) {
       ) : (
         <div className="ranking-list">
           {visibleRankings.map((item) => (
-            <Link className="ranking-row" href={`/junior/${item.juniorId}?from=ranking`} key={`${item.category}-${item.juniorId}`}>
+            <Link className="ranking-row" href={`/junior/${item.juniorId}?from=ranking`} id={`junior-${item.juniorId}`} key={`${item.category}-${item.juniorId}`}>
               <div className="ranking-rank">{renderRankMarker(item.rank)}</div>
               <img className="ranking-avatar" src={item.imageUrl} alt={`${item.name}の画像`} />
               <div className="ranking-name">

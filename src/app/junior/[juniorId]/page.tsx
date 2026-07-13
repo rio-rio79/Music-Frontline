@@ -62,6 +62,16 @@ export default async function Page({ params }: JuniorDetailPageProps) {
     ? supabase.storage.from("images").getPublicUrl(junior.image_path).data.publicUrl
     : null;
 
+  // 1.5. 順位の取得（カテゴリを考慮）
+  const category = junior.group_id ? "group_affiliated" : "independent";
+  const { data: rankData } = await supabase
+    .from("ranking_leaderboard")
+    .select("ranking_position")
+    .eq("junior_id", juniorId)
+    .eq("category", category)
+    .maybeSingle();
+  const rank = rankData?.ranking_position ?? null;
+
   // 2. ジュニアに関連する楽曲情報の取得
   const { data: songJuniors, error: songsError } = await supabase
     .from("song_juniors")
@@ -93,6 +103,31 @@ export default async function Page({ params }: JuniorDetailPageProps) {
 
   // ログインユーザーの取得
   const { data: { user } } = await supabase.auth.getUser();
+
+  // 現在の推し情報を取得
+  let currentOshiId: string | null = null;
+  let currentOshiName: string | null = null;
+  let currentOshiImageUrl: string | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("oshi_junior_id")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profile?.oshi_junior_id) {
+      currentOshiId = profile.oshi_junior_id;
+      const { data: oshiJunior } = await supabase
+        .from("juniors")
+        .select("name, image_path")
+        .eq("id", currentOshiId)
+        .maybeSingle();
+      currentOshiName = oshiJunior?.name ?? null;
+      currentOshiImageUrl = oshiJunior?.image_path
+        ? supabase.storage.from("images").getPublicUrl(oshiJunior.image_path).data.publicUrl
+        : null;
+    }
+  }
 
   // 各楽曲の詳細項目を解決
   const songs = await Promise.all(
@@ -188,6 +223,10 @@ export default async function Page({ params }: JuniorDetailPageProps) {
     groupName: (junior.groups as { name: string | null } | null)?.name ?? null,
     songs,
     blogPosts,
+    rank,
+    currentOshiId,
+    currentOshiName,
+    currentOshiImageUrl,
   };
 
   return <JuniorDetailClient junior={formattedJunior} />;

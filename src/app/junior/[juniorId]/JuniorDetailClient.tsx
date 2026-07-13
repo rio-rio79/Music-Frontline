@@ -31,6 +31,10 @@ interface JuniorDetail {
   groupName: string | null;
   songs: Song[];
   blogPosts: BlogListItem[];
+  rank: number | null;
+  currentOshiId: string | null;
+  currentOshiName: string | null;
+  currentOshiImageUrl: string | null;
 }
 
 interface JuniorDetailClientProps {
@@ -69,6 +73,11 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
     searchParams.get("tab") === "blog" ? "blog" : "music",
   );
   const [followPending, setFollowPending] = useState(false);
+  const [currentOshiId, setCurrentOshiId] = useState<string | null>(junior.currentOshiId);
+  const [currentOshiName, setCurrentOshiName] = useState<string | null>(junior.currentOshiName);
+  const [currentOshiImageUrl, setCurrentOshiImageUrl] = useState<string | null>(junior.currentOshiImageUrl);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [oshiPending, setOshiPending] = useState(false);
 
   const currentSong = usePlayerStore((state) => state.currentSong);
   const isPlaying = usePlayerStore((state) => state.isPlaying);
@@ -122,6 +131,55 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
     }
   };
 
+  const handleOshiRegister = async () => {
+    if (oshiPending) return;
+
+    if (currentOshiId === junior.id) {
+      return;
+    }
+
+    if (currentOshiId) {
+      setIsConfirmOpen(true);
+      return;
+    }
+
+    await executeOshiRegister();
+  };
+
+  const executeOshiRegister = async () => {
+    setOshiPending(true);
+    setIsConfirmOpen(false);
+    try {
+      const res = await fetch("/api/oshi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ juniorId: junior.id }),
+      });
+
+      if (res.status === 401) {
+        if (confirm("推しを登録するにはログインが必要です。ログインページへ移動しますか？")) {
+          router.push("/login");
+        }
+        return;
+      }
+
+      if (res.ok) {
+        setCurrentOshiId(junior.id);
+        setCurrentOshiName(junior.name);
+        setCurrentOshiImageUrl(junior.imageUrl);
+        router.refresh();
+      } else {
+        const data = await res.json();
+        alert(data.error || "推しの登録に失敗しました。");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("エラーが発生しました。");
+    } finally {
+      setOshiPending(false);
+    }
+  };
+
   return (
     <PageShell className={styles.page}>
       <Link href={backHref} className={styles.backLink}>
@@ -137,11 +195,18 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
           <div className={styles.nameBlock}>
             <div className={styles.nameRow}>
               <h1>{junior.name}</h1>
-              {/* 順位は3位で直書き */}
-              <span className={styles.rankBadge}>
-                <span className={styles.rankNum}>3</span>
-                <span className={styles.rankUnit}>位</span>
-              </span>
+              {/* 順位を動的に取得してランキングページへのハッシュリンクにする */}
+              {junior.rank !== null ? (
+                <Link href={`/ranking#junior-${junior.id}`} className={styles.rankBadge}>
+                  <span className={styles.rankNum}>{junior.rank}</span>
+                  <span className={styles.rankUnit}>位</span>
+                </Link>
+              ) : (
+                <span className={styles.rankBadge}>
+                  <span className={styles.rankNum}>-</span>
+                  <span className={styles.rankUnit}>位</span>
+                </span>
+              )}
             </div>
             {/* ローマ字は名前の下に表示 */}
             <p className={styles.romaji}>{junior.nameEn || ""}</p>
@@ -159,14 +224,22 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
               <span>{isFollowed ? "フォロー解除" : "フォローする"}</span>
             </button>
 
-            {/* 新設ボタン：動作なし（onClickなし） */}
-            <button type="button" className={styles.iconBtn} data-tip="推しに登録">
+            {/* 推しに登録ボタン */}
+            <button
+              type="button"
+              className={`${styles.iconBtn} ${currentOshiId === junior.id ? styles.iconBtnOshi : ""}`}
+              onClick={handleOshiRegister}
+              disabled={oshiPending}
+              data-tip={currentOshiId === junior.id ? "推しに登録済" : "推しに登録"}
+              aria-pressed={currentOshiId === junior.id}
+            >
               <StarIcon />
             </button>
 
-            <button type="button" className={styles.iconBtn} data-tip="ファンレターを送る">
+            {/* ファンレターボタン: 詳細から引き継ぎ */}
+            <Link href={`/support/tip?juniorId=${junior.id}`} className={styles.iconBtn} data-tip="ファンレターを送る">
               <LetterIcon />
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -273,6 +346,74 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
             emptyMessage={<p className={styles.blogPlaceholder}>ブログが見つかりません</p>}
             detailSource={`/junior/${junior.id}`}
           />
+        </div>
+      )}
+
+      {/* カスタム確認モーダル */}
+      {isConfirmOpen && (
+        <div className={styles.overlay} onMouseDown={() => setIsConfirmOpen(false)}>
+          <div className={styles.modal} onMouseDown={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2 className={styles.modalTitle}>推しの変更</h2>
+              <button
+                type="button"
+                className={styles.closeBtn}
+                onClick={() => setIsConfirmOpen(false)}
+                disabled={oshiPending}
+                aria-label="閉じる"
+              >
+                &times;
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.comparisonRow}>
+                <div className={styles.comparisonOshi}>
+                  <div className={styles.comparisonAvatar}>
+                    <Image
+                      src={currentOshiImageUrl || "/images/no-avatar.png"}
+                      alt={currentOshiName || ""}
+                      width={70}
+                      height={70}
+                      className={styles.comparisonAvatarImg}
+                    />
+                  </div>
+                  <span className={styles.comparisonName}>{currentOshiName}</span>
+                </div>
+                <div className={styles.comparisonArrow}>➔</div>
+                <div className={styles.comparisonOshi}>
+                  <div className={styles.comparisonAvatar}>
+                    <Image
+                      src={junior.imageUrl || "/images/no-avatar.png"}
+                      alt={junior.name}
+                      width={70}
+                      height={70}
+                      className={styles.comparisonAvatarImg}
+                    />
+                  </div>
+                  <span className={styles.comparisonName}>{junior.name}</span>
+                </div>
+              </div>
+              <p className={styles.confirmComment}>推しを変更しますか？</p>
+            </div>
+            <div className={styles.modalFooter}>
+              <button
+                type="button"
+                className={styles.cancelBtn}
+                onClick={() => setIsConfirmOpen(false)}
+                disabled={oshiPending}
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                className={styles.confirmBtn}
+                onClick={executeOshiRegister}
+                disabled={oshiPending}
+              >
+                {oshiPending ? "変更中..." : "変更する"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </PageShell>
