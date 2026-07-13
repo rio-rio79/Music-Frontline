@@ -1,7 +1,7 @@
 /* 変数定義 */
 .page {
-  --pink: #ec4899;
-  --pink-dark: #db2777;
+  --pink: var(--oshi-accent);
+  --pink-dark: color-mix(in srgb, var(--oshi-accent) 88%, black);
   --text-main: #1f2024;
   --text-sub: #8a8b90;
   --border: #ececef;
@@ -25,7 +25,7 @@
   align-items: center;
   gap: 8px;
   background: #fff;
-  border: 1.5px solid #edd0e0;
+  border: 1.5px solid var(--oshi-line);
   border-radius: 8px;
   padding: 0 14px;
   min-height: 42px;
@@ -49,10 +49,10 @@
   align-items: center;
   min-width: 0;
   min-height: 42px;
-  border: 1px solid #edd0e0;
+  border: 1px solid var(--oshi-line);
   border-radius: 8px;
-  background: #fff8fb;
-  color: #8f3157;
+  background: var(--oshi-box);
+  color: var(--oshi-deep);
   box-sizing: border-box;
 }
 
@@ -73,8 +73,8 @@
 }
 
 .sortControl:focus-within {
-  border-color: #d986ad;
-  box-shadow: 0 0 0 3px rgb(236 72 153 / 10%);
+  border-color: var(--oshi-soft);
+  box-shadow: 0 0 0 3px rgba(var(--oshi-mid-rgb), 0.1);
 }
 
 .sortChevron {
@@ -82,7 +82,7 @@
   right: 11px;
   width: 16px;
   height: 16px;
-  color: #b04b73;
+  color: var(--oshi-deep);
   pointer-events: none;
 }
 
@@ -163,25 +163,25 @@
   justify-content: center;
   width: 26px;
   height: 26px;
-  border: 1px solid #f0d8e8;
+  border: 1px solid var(--oshi-line);
   border-radius: 999px;
   background: #fff;
-  color: #c87b9d;
+  color: var(--oshi-mauve);
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
 }
 
 .followBtn:hover {
-  border-color: #e8a6c2;
-  background: #fff8fb;
+  border-color: var(--oshi-soft);
+  background: var(--oshi-box);
   color: var(--pink);
   transform: translateY(-1px);
 }
 
 .followBtnActive {
-  border-color: #e8447a;
-  background: #fff0f6;
-  color: #e8447a;
+  border-color: var(--oshi-accent);
+  background: var(--oshi-bg-side);
+  color: var(--oshi-accent);
 }
 
 .followBtn svg {

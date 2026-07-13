@@ -1,8 +1,8 @@
 .page {
-  --pink: #ff69b4;
-  --pink-light: #ffeaf3;
-  --pink-deep: #d4537e;
-  --pink-tag-bg: #fbeaf0;
+  --pink: var(--oshi-accent);
+  --pink-light: var(--oshi-bg-side);
+  --pink-deep: var(--oshi-mid);
+  --pink-tag-bg: var(--oshi-bg-side);
   --text: #222;
   --sub: #999;
   --border: #eee;
@@ -117,7 +117,7 @@
   text-align: center;
 }
 .sliderWrap { position: relative; height: 30px; margin: 12px 10px 0; }
-.sliderTrack { position: absolute; top: 13px; right: 0; left: 0; height: 4px; border-radius: 999px; background: #f2c7d8; }
+.sliderTrack { position: absolute; top: 13px; right: 0; left: 0; height: 4px; border-radius: 999px; background: var(--oshi-soft); }
 .sliderFill { position: absolute; top: 0; bottom: 0; left: 0; border-radius: inherit; background: var(--pink); }
 .sliderTick {
   position: absolute;
@@ -126,7 +126,7 @@
   height: 8px;
   border: 2px solid #fff;
   border-radius: 50%;
-  background: #efb3cb;
+  background: var(--oshi-soft);
   transform: translate(-50%, -50%);
 }
 .sliderThumb {
@@ -138,7 +138,7 @@
   border: 3px solid #fff;
   border-radius: 50%;
   background: var(--pink);
-  box-shadow: 0 1px 5px rgba(212, 83, 126, .35);
+  box-shadow: 0 1px 5px rgba(var(--oshi-mid-rgb), 0.35);
   pointer-events: none;
   transform: translate(-50%, -50%);
 }
@@ -152,10 +152,10 @@
   opacity: 0;
   cursor: pointer;
 }
-.sliderLabels { display: flex; justify-content: space-between; gap: 4px; margin: 0 2px; color: #a66b82; font-size: 9.5px; }
+.sliderLabels { display: flex; justify-content: space-between; gap: 4px; margin: 0 2px; color: var(--oshi-mauve); font-size: 9.5px; }
 .amountHint { margin: 10px 0 0; color: var(--sub); font-size: 11px; text-align: center; }
 .sendRow { display: flex; justify-content: flex-end; margin-top: 22px; }
-.sendButton { padding: 12px 28px; border: 0; border-radius: 8px; background: var(--pink); color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.sendButton { padding: 12px 28px; border: 0; border-radius: 8px; background: var(--pink); color: var(--oshi-on-accent); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
 .sendButton:disabled { background: #ddd; color: #999; cursor: not-allowed; }
 
 .historyFilter { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-bottom: 16px; }

@@ -13,7 +13,7 @@
 }
 
 .backLink:hover {
-  color: var(--pink, #ff4b91);
+  color: var(--pink, var(--oshi-accent));
   text-decoration: underline;
 }
 
@@ -68,7 +68,7 @@
   align-items: center;
   font-size: 22px;
   font-weight: 700;
-  color: var(--pink, #ff4b91);
+  color: var(--pink, var(--oshi-accent));
   white-space: nowrap;
 }
 
@@ -103,24 +103,37 @@
   min-width: 116px;
   height: 34px;
   padding: 0 13px;
-  border: 1px solid #f0d8e8;
+  border: 1px solid var(--oshi-line);
   border-radius: 999px;
-  background: #fff8fb;
-  color: #8f3157;
+  background: var(--oshi-box);
+  color: var(--oshi-deep);
   cursor: pointer;
   font: inherit;
   font-size: 12px;
   font-weight: 800;
   transition:
-    background-color 0.2s,
-    border-color 0.2s,
-    color 0.2s;
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.followButton:hover:not(:disabled) {
+  border-color: var(--oshi-soft);
+  background: var(--oshi-bg-side);
+  color: var(--pink, var(--oshi-accent));
+  transform: translateY(-1px);
+}
+
+.followButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .followButtonActive {
-  border-color: var(--pink, #ff4b91);
-  background: var(--pink-soft, #ffe3ef);
-  color: var(--pink, #ff4b91);
+  border-color: var(--pink, var(--oshi-accent));
+  background: var(--pink-soft, var(--oshi-bg-side));
+  color: var(--pink, var(--oshi-accent));
 }
 
 .iconBtn {
@@ -128,9 +141,9 @@
   height: 34px;
   flex: none;
   border-radius: 50%;
-  border: 1px solid #f0d8e8;
-  background: #fff8fb;
-  color: #8f3157;
+  border: 1px solid var(--oshi-line);
+  background: var(--oshi-box);
+  color: var(--oshi-deep);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,7 +186,7 @@
   width: 140px;
   height: 190px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ffd7e8, #ffb0d1);
+  background: linear-gradient(135deg, var(--oshi-bg-side), var(--oshi-soft));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -189,10 +202,10 @@
 .infoBox {
   flex: 1;
   min-width: 0;
-  border: 1px solid var(--line, #ececec);
+  border: 1px solid var(--oshi-line);
   border-radius: 12px;
   padding: 16px 18px;
-  background: #fbfbfb;
+  background: var(--oshi-box);
   display: flex;
   align-items: center; /* 縦長写真と高さのバランスを取るため中央揃え */
 }
@@ -307,7 +320,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--pink-soft, #ffe3ef);
+  background: var(--pink-soft, var(--oshi-bg-side));
   border: none;
   display: flex;
   align-items: center;
@@ -317,11 +330,11 @@
     background 0.2s ease,
     transform 0.15s ease;
   padding: 0;
-  color: var(--pink, #ff4b91);
+  color: var(--pink, var(--oshi-accent));
 }
 
 .playBtn:hover {
-  background: var(--pink, #ff4b91);
+  background: var(--pink, var(--oshi-accent));
   transform: scale(1.05);
 }
 

@@ -1,7 +1,7 @@
 .tabs {
   display: flex;
   margin-bottom: 6px;
-  border-bottom: 1px solid #f0e3e8;
+  border-bottom: 1px solid var(--oshi-line);
 }
 
 .tab {
@@ -29,7 +29,7 @@
   width: 64px;
   height: 3px;
   border-radius: 3px;
-  background: #ff4f8b;
+  background: var(--oshi-mid);
   content: "";
   transform: translateX(-50%);
 }

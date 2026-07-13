@@ -140,6 +140,8 @@ export default function MiniPlayer() {
                 </button>
             </div>
 
+            <span className="mini-spacer" aria-hidden="true" />
+
             <div className="mini-info-box">
                 <div className="mini-artwork" aria-hidden="true">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -173,7 +175,7 @@ export default function MiniPlayer() {
                             aria-pressed={isCurrentSongLiked}
                             disabled={isLikePending}
                         >
-                            <svg width="13" height="13" viewBox="0 0 22 22" fill={isCurrentSongLiked ? "#E8447A" : "none"} stroke="#E8447A" strokeWidth="1.8" aria-hidden="true">
+                            <svg width="13" height="13" viewBox="0 0 22 22" fill={isCurrentSongLiked ? "var(--oshi-accent)" : "none"} stroke="var(--oshi-accent)" strokeWidth="1.8" aria-hidden="true">
                                 <path d="M11 19.5S3 14.5 3 8.5a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 8 2.8c0 6-8 11-8 11z" />
                             </svg>
                         </button>
@@ -195,12 +197,14 @@ export default function MiniPlayer() {
                             aria-label="再生位置"
                             disabled={!safeDuration}
                             style={{
-                                background: `linear-gradient(to right, #E8447A ${seekProgress}%, #f0d8e8 ${seekProgress}%)`,
+                                background: `linear-gradient(to right, var(--oshi-accent) ${seekProgress}%, var(--oshi-line) ${seekProgress}%)`,
                             }}
                         />
                     </>
                 )}
             </div>
+
+            <span className="mini-spacer" aria-hidden="true" />
 
             <div className="mini-volume" aria-label="音量操作">
                 <button
@@ -210,7 +214,7 @@ export default function MiniPlayer() {
                     aria-label={volume > 0 ? "ミュート" : "ミュート解除"}
                     aria-pressed={volume === 0}
                 >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a98aa0" strokeWidth="1.8" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--oshi-mauve)" strokeWidth="1.8" aria-hidden="true">
                         <path d="M4 9v6h4l5 4V5L8 9H4z" />
                         {volume > 0 ? (
                             <path d="M16.5 8.5a5 5 0 0 1 0 7" />
@@ -229,7 +233,7 @@ export default function MiniPlayer() {
                     aria-label="音量"
                     className="mini-volume-range"
                     style={{
-                        background: `linear-gradient(to right, #E8447A ${volumeProgress}%, #f0d8e8 ${volumeProgress}%)`,
+                        background: `linear-gradient(to right, var(--oshi-accent) ${volumeProgress}%, var(--oshi-line) ${volumeProgress}%)`,
                     }}
                 />
             </div>

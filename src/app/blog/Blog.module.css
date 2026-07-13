@@ -11,7 +11,7 @@
 .tabs {
     display: flex;
     margin-bottom: 6px;
-    border-bottom: 1px solid #f0e3e8;
+    border-bottom: 1px solid var(--oshi-line);
 }
 
 .tab {
@@ -39,7 +39,7 @@
     width: 64px;
     height: 3px;
     border-radius: 3px;
-    background: #ff4f8b;
+    background: var(--oshi-mid);
     content: "";
     transform: translateX(-50%);
 }
@@ -48,18 +48,18 @@
     display: flex;
     gap: 14px;
     padding: 20px 4px;
-    border-bottom: 1px solid #f0e3e8;
+    border-bottom: 1px solid var(--oshi-line);
     cursor: pointer;
     transition: background 0.12s;
 }
 
 .postCard:hover {
-    background: #fdfafb;
+    background: var(--oshi-box);
 }
 
 .postCard:focus-visible {
     border-radius: 10px;
-    outline: 2px solid #ff6ea0;
+    outline: 2px solid var(--oshi-mid);
     outline-offset: 2px;
 }
 
@@ -72,7 +72,7 @@
     justify-content: center;
     overflow: hidden;
     border-radius: 50%;
-    color: #fff;
+    color: var(--oshi-on-accent);
     font-weight: 800;
 }
 
@@ -87,7 +87,7 @@
 .avatar {
     width: 44px;
     height: 44px;
-    background: linear-gradient(135deg, #ff8fb3, #ff4f8b);
+    background: linear-gradient(135deg, var(--oshi-soft), var(--oshi-mid));
     font-size: 15px;
 }
 
@@ -183,12 +183,12 @@
 }
 
 .likeButtonLiked {
-    color: #ff4f8b;
+    color: var(--oshi-mid);
 }
 
 .likeButtonLiked svg {
-    fill: #ff4f8b;
-    stroke: #ff4f8b;
+    fill: var(--oshi-mid);
+    stroke: var(--oshi-mid);
 }
 
 .likeButton span,
@@ -207,7 +207,7 @@
 .emptyState {
     margin-top: 8px;
     padding: 70px 20px;
-    border: 1px dashed #f0e3e8;
+    border: 1px dashed var(--oshi-line);
     border-radius: 16px;
     color: #9a8f95;
     font-size: 13px;
@@ -239,7 +239,7 @@
     min-width: 34px;
     height: 34px;
     padding: 0 9px;
-    border: 1px solid #f0e3e8;
+    border: 1px solid var(--oshi-line);
     border-radius: 10px;
     background: #fff;
     color: #6b6570;
@@ -251,25 +251,25 @@
 
 .paginationLink:hover,
 .paginationArrow:hover {
-    border-color: #ffb1cb;
-    color: #ff4f8b;
-    background: #fff8fa;
+    border-color: var(--oshi-soft);
+    color: var(--oshi-mid);
+    background: var(--oshi-box);
 }
 
 .paginationCurrent {
-    border-color: #ff4f8b;
-    background: #ff4f8b;
-    color: #fff;
+    border-color: var(--oshi-mid);
+    background: var(--oshi-mid);
+    color: var(--oshi-on-accent);
     pointer-events: none;
 }
 
 .paginationCurrent:hover {
-    color: #fff;
-    background: #ff4f8b;
+    color: var(--oshi-on-accent);
+    background: var(--oshi-mid);
 }
 
 .paginationArrow {
-    color: #ff4f8b;
+    color: var(--oshi-mid);
     font-size: 19px;
 }
 
@@ -342,9 +342,9 @@
 .lockedBodyCard {
     margin: 0;
     padding: 40px 28px;
-    border: 1px solid #f7dbe7;
+    border: 1px solid var(--oshi-line);
     border-radius: 18px;
-    background: #fff8fa;
+    background: var(--oshi-box);
     text-align: center;
 }
 
@@ -356,7 +356,7 @@
     height: 52px;
     margin: 0 auto;
     border-radius: 50%;
-    background: #ffe1ec;
+    background: var(--oshi-bg-side);
 }
 
 .lockBadge svg,
@@ -366,7 +366,7 @@
 }
 
 .lockBadge svg {
-    color: #ff4f8b;
+    color: var(--oshi-mid);
 }
 
 .lockedBodyTitle {
@@ -389,22 +389,22 @@
     margin-top: 20px;
     padding: 12px 30px;
     border-radius: 10px;
-    background: #ff4f8b;
-    color: #fff;
+    background: var(--oshi-mid);
+    color: var(--oshi-on-accent);
     font-size: 13.5px;
     font-weight: 700;
     text-decoration: none;
 }
 
 .planCta:hover {
-    background: #f23f7e;
+    background: var(--oshi-accent);
 }
 
 .detailActions {
     gap: 26px;
     margin-top: 24px;
     padding: 16px 0;
-    border-bottom: 1px solid #f0e3e8;
+    border-bottom: 1px solid var(--oshi-line);
 }
 
 .detailActions .likeButton,
@@ -423,8 +423,8 @@
     gap: 6px;
     margin-top: 2px;
     padding: 16px 2px;
-    border-bottom: 1px solid #f0e3e8;
-    color: #ff4f8b;
+    border-bottom: 1px solid var(--oshi-line);
+    color: var(--oshi-mid);
     font-size: 13.5px;
     font-weight: 700;
     text-decoration: none;
@@ -456,19 +456,19 @@
     align-items: center;
     gap: 12px;
     padding: 12px 2px;
-    border-bottom: 1px solid #f5eef1;
+    border-bottom: 1px solid var(--oshi-line);
     color: inherit;
     text-decoration: none;
 }
 
 .otherPostLink:hover {
-    background: #fdfafb;
+    background: var(--oshi-box);
 }
 
 .smallAvatar {
     width: 34px;
     height: 34px;
-    background: linear-gradient(135deg, #ff8fb3, #ff4f8b);
+    background: linear-gradient(135deg, var(--oshi-soft), var(--oshi-mid));
     font-size: 11.5px;
 }
 
@@ -506,7 +506,7 @@
 .lockedCommentsNote {
     margin-top: 38px;
     padding: 30px 20px;
-    border: 1px dashed #e6d3db;
+    border: 1px dashed var(--oshi-line);
     border-radius: 14px;
     background: #faf6f8;
     color: #9a8f95;
@@ -532,7 +532,7 @@
 .commentForm {
     margin-bottom: 22px;
     padding: 14px 16px;
-    border: 1px solid #f0e3e8;
+    border: 1px solid var(--oshi-line);
     border-radius: 14px;
 }
 
@@ -565,8 +565,8 @@
     padding: 9px 22px;
     border: 0;
     border-radius: 10px;
-    background: #ff4f8b;
-    color: #fff;
+    background: var(--oshi-mid);
+    color: var(--oshi-on-accent);
     font: inherit;
     font-size: 13px;
     font-weight: 700;
@@ -574,8 +574,8 @@
 }
 
 .commentSubmit:disabled {
-    background: #f3d9e3;
-    color: #b98a9a;
+    background: var(--oshi-bg-side);
+    color: var(--oshi-mauve);
     cursor: not-allowed;
 }
 
@@ -583,7 +583,7 @@
     display: flex;
     gap: 12px;
     padding: 14px 4px;
-    border-bottom: 1px solid #f0e3e8;
+    border-bottom: 1px solid var(--oshi-line);
 }
 
 .commentAvatar {
@@ -621,7 +621,7 @@
     padding: 0;
     border: 0;
     background: transparent;
-    color: #ff4f8b;
+    color: var(--oshi-mid);
     font: inherit;
     font-size: 11px;
     font-weight: 700;
@@ -643,7 +643,7 @@
 .juniorFinder {
     margin-top: 42px;
     padding-top: 26px;
-    border-top: 1px solid #f0e3e8;
+    border-top: 1px solid var(--oshi-line);
 }
 
 .juniorFinderHeader {
@@ -657,7 +657,7 @@
 .juniorFinderLabel {
     display: block;
     margin-bottom: 3px;
-    color: #ff4f8b;
+    color: var(--oshi-mid);
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 1.6px;
@@ -672,7 +672,7 @@
 
 .juniorFinderAllLink {
     flex: 0 0 auto;
-    color: #ff4f8b;
+    color: var(--oshi-mid);
     font-size: 12.5px;
     font-weight: 800;
     text-decoration: none;
@@ -712,7 +712,7 @@
     flex-direction: column;
     min-height: 238px;
     padding: 10px;
-    border: 1px solid #f0e3e8;
+    border: 1px solid var(--oshi-line);
     border-radius: 8px;
     background: #fff;
     color: inherit;
@@ -721,15 +721,15 @@
 }
 
 .juniorFinderCard:hover {
-    border-color: #ffb1cb;
-    background: #fff8fa;
+    border-color: var(--oshi-soft);
+    background: var(--oshi-box);
     transform: translateY(-1px);
 }
 
 .juniorFinderCard:focus-visible,
 .juniorFinderNavButton:focus-visible,
 .juniorFinderDot:focus-visible {
-    outline: 2px solid #ff6ea0;
+    outline: 2px solid var(--oshi-mid);
     outline-offset: 2px;
 }
 
@@ -741,7 +741,7 @@
     aspect-ratio: 1;
     overflow: hidden;
     border-radius: 8px;
-    background: linear-gradient(135deg, #ffe5ef, #f6eef2);
+    background: linear-gradient(135deg, var(--oshi-bg-side), var(--oshi-line));
 }
 
 .juniorFinderImage {
@@ -751,7 +751,7 @@
 }
 
 .juniorFinderInitials {
-    color: #ff4f8b;
+    color: var(--oshi-mid);
     font-size: 26px;
     font-weight: 800;
 }
@@ -785,7 +785,7 @@
 .juniorFinderAction {
     margin-top: auto;
     padding-top: 12px;
-    color: #ff4f8b;
+    color: var(--oshi-mid);
     font-size: 12px;
     font-weight: 800;
 }
@@ -799,10 +799,10 @@
     justify-content: center;
     width: 34px;
     height: 34px;
-    border: 1px solid #f0e3e8;
+    border: 1px solid var(--oshi-line);
     border-radius: 50%;
     background: #fff;
-    color: #ff4f8b;
+    color: var(--oshi-mid);
     font: inherit;
     font-size: 22px;
     font-weight: 800;
@@ -833,13 +833,13 @@
     padding: 0;
     border: 0;
     border-radius: 999px;
-    background: #ead5df;
+    background: var(--oshi-bg-side);
     cursor: pointer;
 }
 
 .juniorFinderDotActive {
     width: 22px;
-    background: #ff4f8b;
+    background: var(--oshi-mid);
 }
 
 @media (width <=600px) {

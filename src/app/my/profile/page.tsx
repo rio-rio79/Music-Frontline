@@ -281,7 +281,7 @@ function ActivityMetric({
 
 function PeopleIcon() {
     return (
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ff4f8b" strokeWidth="1.7" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--oshi-mid)" strokeWidth="1.7" aria-hidden="true">
             <circle cx="9" cy="7" r="3" />
             <path d="M3 19c0-3 2.7-5 6-5s6 2 6 5" />
             <circle cx="17" cy="8" r="2.4" />
@@ -292,7 +292,7 @@ function PeopleIcon() {
 
 function PenIcon() {
     return (
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ff4f8b" strokeWidth="1.7" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--oshi-mid)" strokeWidth="1.7" aria-hidden="true">
             <path d="M4 19l1.2-4L16 4.2c.5-.5 1.3-.5 1.8 0l2 2c.5.5.5 1.3 0 1.8L9 18.8 4 19z" />
         </svg>
     )
@@ -300,7 +300,7 @@ function PenIcon() {
 
 function NoteIcon() {
     return (
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ff4f8b" strokeWidth="1.7" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--oshi-mid)" strokeWidth="1.7" aria-hidden="true">
             <path d="M9 18V5l11-2v13" />
             <circle cx="6" cy="18" r="2.4" />
             <circle cx="17" cy="16" r="2.4" />
@@ -311,16 +311,16 @@ function NoteIcon() {
 const pageStyles = `
 
   :root {
-    --pink-main: #ff6ea0;
-    --pink-deep: #ff4f8b;
-    --pink-pale: #ffe1ec;
-    --pink-stripe: #ffc4d9;
+    --pink-main: var(--oshi-mid);
+    --pink-deep: var(--oshi-mid);
+    --pink-pale: var(--oshi-bg-side);
+    --pink-stripe: var(--oshi-soft);
     --ink: #2b2730;
     --ink-soft: #6b6570;
-    --line: #f0e3e8;
-    --bg: #fdfafb;
+    --line: var(--oshi-line);
+    --bg: var(--oshi-box);
     --card: #ffffff;
-    --heart-blog: #ff6ea0;
+    --heart-blog: var(--oshi-mid);
     --heart-song: #6ec3ff;
     --heart-vote: #ffd66e;
     --heart-fund: #8ee69b;
@@ -525,7 +525,7 @@ const pageStyles = `
   .gift-divider {
     width: 0;
     height: 160px;
-    border-left: 2px dashed #f3cfdc;
+    border-left: 2px dashed var(--oshi-soft);
     justify-self: center;
     transform: translateX(16px);
   }
@@ -600,7 +600,7 @@ const pageStyles = `
     height: 28px;
     border: 0;
     border-radius: 50%;
-    background: #f8eef2;
+    background: var(--oshi-bg-side);
     color: var(--ink-soft);
     font-size: 20px;
     line-height: 1;

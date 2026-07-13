@@ -3,7 +3,9 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AudioPlayerController from "../components/AudioPlayerController";
 import LikeInitializer from "../components/LikeInitializer";
+import { getFavoriteColorCssVariables } from "@/lib/favorite-color";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import type { CSSProperties } from "react";
 
 async function getInitialFavoriteColor() {
     const supabase = await createSupabaseServer()
@@ -33,9 +35,10 @@ export default async function RootLayout({
     children: React.ReactNode;
 }) {
     const initialFavoriteColor = await getInitialFavoriteColor()
+    const favoriteThemeStyle = getFavoriteColorCssVariables(initialFavoriteColor) as CSSProperties
 
     return (
-        <html lang="ja">
+        <html lang="ja" style={favoriteThemeStyle}>
             <body>
                 <LikeInitializer />
                 <AudioPlayerController />

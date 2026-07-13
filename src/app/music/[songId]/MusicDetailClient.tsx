@@ -205,7 +205,7 @@ export default function MusicDetailClient({
                     style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
                     aria-label="いいね"
                   >
-                    <GraySmallHeart color={isLiked ? "#E8447A" : "#888"} filled={isLiked} />
+                    <GraySmallHeart color={isLiked ? "var(--oshi-accent)" : "#888"} filled={isLiked} />
                     {likesCount.toLocaleString()}
                   </button>
                 </div>
@@ -375,7 +375,7 @@ const cssStyles = `
 
 .mainCard {
   background: #fff;
-  border: 1px solid #f0d8e8;
+  border: 1px solid var(--oshi-line);
   border-radius: 14px;
   padding: 18px 16px 20px;
   position: relative;
@@ -406,7 +406,7 @@ const cssStyles = `
   width: 130px;
   height: 130px;
   flex-shrink: 0;
-  background: #ffe8f2;
+  background: var(--oshi-bg-side);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -459,7 +459,7 @@ const cssStyles = `
   height: 54px;
   padding: 0;
   border: none;
-  background: #e8447a;
+  background: var(--oshi-accent);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -468,7 +468,7 @@ const cssStyles = `
 }
 
 .playBtn:hover {
-  background: #d93b70;
+  background: color-mix(in srgb, var(--oshi-accent) 88%, black);
 }
 
 .songTabs {
@@ -477,7 +477,7 @@ const cssStyles = `
 
 .infoCard {
   background: #fff;
-  border: 1px solid #f0d8e8;
+  border: 1px solid var(--oshi-line);
   border-radius: 14px;
   overflow: hidden;
   margin-top: 14px;
@@ -485,7 +485,7 @@ const cssStyles = `
 
 .infoRow {
   padding: 14px 18px;
-  border-bottom: 1px solid #f5e8ee;
+  border-bottom: 1px solid var(--oshi-line);
 }
 
 .infoRow:last-child {
@@ -529,8 +529,8 @@ const cssStyles = `
 }
 
 .groupTag {
-  background-color: #fbeaf0;
-  color: #993556;
+  background-color: var(--oshi-bg-side);
+  color: var(--oshi-deep);
   border-radius: 20px;
   padding: 4px 14px;
   font-size: 12.5px;
@@ -552,14 +552,14 @@ const cssStyles = `
   flex-direction: column;
   gap: 14px;
   background: #fff;
-  border: 1px solid #f0d8e8;
+  border: 1px solid var(--oshi-line);
   border-radius: 14px;
   padding: 16px;
 }
 
 .commentForm {
   background: #fff;
-  border: 1px solid #fdf0f6;
+  border: 1px solid var(--oshi-line);
   border-radius: 14px;
   padding: 12px;
   transition: all 0.3s ease;
@@ -574,22 +574,22 @@ const cssStyles = `
 
 .commentInput {
   flex: 1;
-  border: 1px solid #e8d0dc;
+  border: 1px solid var(--oshi-line);
   border-radius: 20px;
   padding: 8px 14px;
   font-size: 14px;
   outline: none;
-  background: #fdf8fa;
+  background: var(--oshi-box);
 }
 
 .commentInput:focus {
-  border-color: #e8447a;
+  border-color: var(--oshi-accent);
   background: #fff;
 }
 
 .sendButton {
-  background: #e8447a;
-  color: #fff;
+  background: var(--oshi-accent);
+  color: var(--oshi-on-accent);
   border: none;
   border-radius: 20px;
   padding: 8px 16px;
@@ -599,7 +599,7 @@ const cssStyles = `
 }
 
 .sendButton:disabled {
-  background: #e8d0dc;
+  background: var(--oshi-line);
   color: #fff;
   cursor: not-allowed;
 }
@@ -613,7 +613,7 @@ const cssStyles = `
 
 .commentItem {
   background: #fff;
-  border: 1px solid #fdf0f6;
+  border: 1px solid var(--oshi-line);
   border-radius: 12px;
   padding: 12px 14px;
 }
@@ -638,7 +638,7 @@ const cssStyles = `
 .commentDeleteBtn {
   background: none;
   border: none;
-  color: #e8447a;
+  color: var(--oshi-accent);
   font-size: 11px;
   cursor: pointer;
   padding: 2px 6px;
@@ -647,7 +647,7 @@ const cssStyles = `
 }
 
 .commentDeleteBtn:hover {
-  background-color: #ffe3f1;
+  background-color: var(--oshi-bg-side);
 }
 
 .commentText {
