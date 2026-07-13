@@ -13,8 +13,8 @@ type SongRow = {
   title: string;
   audio_path: string | null;
   image_path: string | null;
-  play_count: number | null;
-  published_at: string | null;
+  play_count: number;
+  published_at: string;
   lyricist: string | null;
   composer: string | null;
   lyrics: string | null;

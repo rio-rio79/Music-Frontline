@@ -9,10 +9,12 @@ import styles from "./JuniorDetail.module.css";
 import Image from "next/image";
 import { type Song, usePlayerStore } from "@/stores/playerStore";
 import { useLikeStore } from "@/stores/likeStore";
-import { Heart, TwoPersonIcon } from "@/components/Svgs";
 import BlogPostList from "@/app/blog/BlogPostList";
 import { type BlogListItem } from "@/lib/blog-data";
 import { formatJuniorAffiliation } from "@/lib/junior-affiliation";
+
+import { TwoPersonIcon, Heart, LetterIcon, StarIcon } from "@/components/Svgs";
+
 
 interface JuniorDetail {
   id: string;
@@ -83,7 +85,6 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
   const backHref = searchParams.get("from") === "ranking" ? "/ranking" : "/junior";
   const backLabel = searchParams.get("from") === "ranking" ? "ランキングに戻る" : "ジュニア一覧に戻る";
 
-  // 初回マウント時にお気に入り情報を取得
   useEffect(() => {
     fetchLikes();
     fetchJuniorLikes();
@@ -128,44 +129,77 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
         {backLabel}
       </Link>
 
+      {/* 新しいHTML構造に合わせたプロフィールカード */}
       <div className={styles.profileCard}>
-        <div className={styles.avatar} style={{ position: "relative" }}>
-          {junior.imageUrl ? (
-            <Image src={junior.imageUrl} alt={junior.name} className={styles.avatarImg} fill style={{ objectFit: "cover" }} />
-          ) : (
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.5c-3.3 0-9.8 1.6-9.8 4.9v2.4h19.6v-2.4c0-3.3-6.5-4.9-9.8-4.9z" />
-            </svg>
-          )}
+        
+        {/* 上段:名前+順位 / 各種ボタン */}
+        <div className={styles.topRow}>
+          <div className={styles.nameBlock}>
+            <div className={styles.nameRow}>
+              <h1>{junior.name}</h1>
+              {/* 順位は3位で直書き */}
+              <span className={styles.rankBadge}>
+                <span className={styles.rankNum}>3</span>
+                <span className={styles.rankUnit}>位</span>
+              </span>
+            </div>
+            {/* ローマ字は名前の下に表示 */}
+            <p className={styles.romaji}>{junior.nameEn || ""}</p>
+          </div>
+
+          <div className={styles.actionRow}>
+            <button
+              type="button"
+              className={`${styles.followButton} ${isFollowed ? styles.followButtonActive : ""}`}
+              onClick={handleFollow}
+              disabled={followPending}
+              aria-pressed={isFollowed}
+            >
+              <TwoPersonIcon />
+              <span>{isFollowed ? "フォロー解除" : "フォローする"}</span>
+            </button>
+
+            {/* 新設ボタン：動作なし（onClickなし） */}
+            <button type="button" className={styles.iconBtn} data-tip="推しに登録">
+              <StarIcon />
+            </button>
+
+            <button type="button" className={styles.iconBtn} data-tip="ファンレターを送る">
+              <LetterIcon />
+            </button>
+          </div>
         </div>
-        <div className={styles.profileInfo}>
-          <h1>{junior.name}</h1>
-          <p className={styles.romaji}>{junior.nameEn || ""}</p>
-          <button
-            type="button"
-            className={`${styles.followButton} ${isFollowed ? styles.followButtonActive : ""}`}
-            onClick={handleFollow}
-            disabled={followPending}
-            aria-pressed={isFollowed}
-          >
-            <TwoPersonIcon />
-            <span>{isFollowed ? "フォロー解除" : "フォローする"}</span>
-          </button>
-          <dl className={styles.infoTable}>
-            <dt>入社日</dt>
-            <dd>{formatDate(junior.joinDate)}</dd>
-            <dt>誕生日</dt>
-            <dd>{formatDate(junior.birthDate)}</dd>
-            <dt>年齢</dt>
-            <dd>{calculateAge(junior.birthDate)}</dd>
-            <dt>身長</dt>
-            <dd>{junior.height ? `${junior.height}cm` : "不明"}</dd>
-            <dt>出身地</dt>
-            <dd>{junior.birthplace || "不明"}</dd>
-            <dt>所属</dt>
-            <dd>{formatJuniorAffiliation(junior.groupName, junior.region)}</dd>
-          </dl>
+
+        {/* 下段:写真とプロフィールの横並び */}
+        <div className={styles.bottomRow}>
+          <div className={styles.avatar} style={{ position: "relative" }}>
+            <Image 
+              src={junior.imageUrl || "/images/no-avatar.png"} // 代替画像のパス
+              alt={junior.name} 
+              className={styles.avatarImg} 
+              fill 
+              style={{ objectFit: "cover" }} 
+            />
+          </div>
+
+          <div className={styles.infoBox}>
+            <dl className={styles.infoTable}>
+              <dt>入社日</dt>
+              <dd>{formatDate(junior.joinDate)}</dd>
+              <dt>誕生日</dt>
+              <dd>{formatDate(junior.birthDate)}</dd>
+              <dt>年齢</dt>
+              <dd>{calculateAge(junior.birthDate)}</dd>
+              <dt>身長</dt>
+              <dd>{junior.height ? `${junior.height}cm` : "不明"}</dd>
+              <dt>出身地</dt>
+              <dd>{junior.birthplace || "不明"}</dd>
+              <dt>所属</dt>
+              <dd>{formatJuniorAffiliation(junior.groupName, junior.region)}</dd>
+            </dl>
+          </div>
         </div>
+
       </div>
 
       <PageTabs
@@ -183,8 +217,6 @@ export default function JuniorDetailClient({ junior }: JuniorDetailClientProps) 
                 const isCurrentSong = currentSong?.id === song.id;
                 const isCurrentPlaying = isCurrentSong && isPlaying;
                 const isLiked = likedSongIds.includes(song.id);
-                
-                // profile 1.html の track-art グラデーションを再現するためのクラス指定
                 const artClass = styles[`art${(index % 4) + 1}`];
 
                 return (

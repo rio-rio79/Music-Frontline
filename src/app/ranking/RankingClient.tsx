@@ -17,6 +17,7 @@ export type RankingItem = {
   imageUrl: string;
   affiliation: string;
   totalPoints: number;
+  isOshi?: boolean;
 };
 
 type RankingClientProps = {
@@ -149,8 +150,14 @@ export default function RankingClient({ rankings }: RankingClientProps) {
           min-width: 0;
         }
 
+        .ranking-name-container {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
         .ranking-name strong {
-          display: block;
+          flex: 0 1 auto;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -161,8 +168,23 @@ export default function RankingClient({ rankings }: RankingClientProps) {
         .ranking-name span {
           display: block;
           margin-top: 3px;
-          color: var(--muted);
+          color: #111;
           font-size: 12px;
+        }
+
+        .oshi-badge {
+          flex: 0 0 auto;
+          padding: 2px 8px;
+          border-radius: 10px;
+          background: #e8b64f;
+          color: #fff;
+          font-size: 10px;
+          font-weight: 700;
+          line-height: 1;
+        }
+
+        span.oshi-badge {
+          color: #fff;
         }
 
         .ranking-score {
@@ -241,6 +263,7 @@ export default function RankingClient({ rankings }: RankingClientProps) {
             grid-row: 1 / 3;
           }
         }
+
       `}</style>
 
       <div className="ranking-heading">
@@ -268,7 +291,10 @@ export default function RankingClient({ rankings }: RankingClientProps) {
               <div className="ranking-rank">{renderRankMarker(item.rank)}</div>
               <img className="ranking-avatar" src={item.imageUrl} alt={`${item.name}の画像`} />
               <div className="ranking-name">
-                <strong>{item.name}</strong>
+                <div className="ranking-name-container">
+                  <strong>{item.name}</strong>
+                  {item.isOshi && <span className="oshi-badge">推し</span>}
+                </div>
                 <span>{item.affiliation}</span>
               </div>
               <div className="ranking-score">
