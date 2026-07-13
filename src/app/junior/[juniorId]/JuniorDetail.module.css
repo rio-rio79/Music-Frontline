@@ -13,7 +13,7 @@
 }
 
 .backLink:hover {
-  color: var(--pink, #FF4B91);
+  color: var(--pink, #ff4b91);
   text-decoration: underline;
 }
 
@@ -22,22 +22,157 @@
   line-height: 1;
 }
 
-/* Profile card */
+/* ---- Profile card ---- */
 .profileCard {
   border: 1px solid var(--line, #ececec);
   border-radius: 16px;
   padding: 28px;
   display: flex;
-  gap: 24px;
-  margin-bottom: 28px;
+  flex-direction: column;
+  gap: 20px;
   background: #fff;
+  margin-bottom: 28px;
 }
 
+/* 上段:名前+順位 / 各種ボタン */
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 2px;
+}
+
+.nameRow h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.rankBadge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--pink, #ff4b91);
+  white-space: nowrap;
+}
+
+.rankNum {
+  line-height: 1;
+}
+
+.rankUnit {
+  font-size: 0.6em;
+  margin-left: 1px;
+}
+
+.romaji {
+  margin: 0;
+  color: var(--sub, #8a8a8a);
+  font-size: 14px;
+  letter-spacing: 0.03em;
+}
+
+.actionRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.followButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 116px;
+  height: 34px;
+  padding: 0 13px;
+  border: 1px solid #f0d8e8;
+  border-radius: 999px;
+  background: #fff8fb;
+  color: #8f3157;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}
+
+.followButtonActive {
+  border-color: var(--pink, #ff4b91);
+  background: var(--pink-soft, #ffe3ef);
+  color: var(--pink, #ff4b91);
+}
+
+.iconBtn {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid #f0d8e8;
+  background: #fff8fb;
+  color: #8f3157;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.iconBtn[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 3px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+.iconBtn[data-tip]:hover::after {
+  opacity: 1;
+}
+
+/* 下段: 写真とプロフィールテーブル */
+.bottomRow {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+}
+
+/* 上半身の画像が綺麗に収まる縦長アスペクト比アバター */
 .avatar {
   flex: none;
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
+  width: 140px;
+  height: 190px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #ffd7e8, #ffb0d1);
   display: flex;
   align-items: center;
@@ -51,81 +186,24 @@
   object-fit: cover;
 }
 
-.avatar svg {
-  width: 60%;
-  height: 60%;
-  color: #ffffff;
-  opacity: .9;
-}
-
-.profileInfo {
+.infoBox {
   flex: 1;
-}
-
-.profileInfo h1 {
-  margin: 0 0 2px;
-  font-size: 26px;
-  letter-spacing: .05em;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.romaji {
-  margin: 0 0 14px;
-  color: var(--sub, #8a8a8a);
-  font-size: 14px;
-  letter-spacing: .03em;
-}
-
-.followButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-width: 116px;
-  height: 34px;
-  margin: 0 0 16px;
-  padding: 0 13px;
-  border: 1px solid #f0d8e8;
-  border-radius: 999px;
-  background: #fff8fb;
-  color: #8f3157;
-  cursor: pointer;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 800;
-  transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .15s ease;
-}
-
-.followButton:hover:not(:disabled) {
-  border-color: #e8a6c2;
-  background: #ffeaf3;
-  color: var(--pink, #FF4B91);
-  transform: translateY(-1px);
-}
-
-.followButton:disabled {
-  cursor: wait;
-  opacity: .65;
-}
-
-.followButtonActive {
-  border-color: var(--pink, #FF4B91);
-  background: var(--pink-soft, #FFE3EF);
-  color: var(--pink, #FF4B91);
-}
-
-.followButton svg {
-  width: 16px;
-  height: 16px;
+  min-width: 0;
+  border: 1px solid var(--line, #ececec);
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: #fbfbfb;
+  display: flex;
+  align-items: center; /* 縦長写真と高さのバランスを取るため中央揃え */
 }
 
 .infoTable {
   display: grid;
   grid-template-columns: 84px 1fr;
-  row-gap: 6px;
+  row-gap: 8px;
   font-size: 14px;
   margin: 0;
+  width: 100%;
 }
 
 .infoTable dt {
@@ -138,6 +216,7 @@
   color: var(--ink, #1a1a1a);
 }
 
+/* ---- Track List ---- */
 .trackList {
   margin-top: 6px;
 }
@@ -155,23 +234,18 @@
   width: 64px;
   height: 64px;
   border-radius: 10px;
-  background-size: cover;
-  background-position: center;
   object-fit: cover;
 }
 
 .art1 {
   background: linear-gradient(160deg, #f7c9d9, #e28aa8 60%, #8a5c78);
 }
-
 .art2 {
   background: linear-gradient(160deg, #cfe8f7, #7fb8e0 60%, #3a6b93);
 }
-
 .art3 {
   background: linear-gradient(160deg, #26314f, #0d1220 70%);
 }
-
 .art4 {
   background: linear-gradient(160deg, #ffd9c2, #f2a98f 55%, #d9748f);
 }
@@ -220,7 +294,7 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  transition: transform .15s ease;
+  transition: transform 0.15s ease;
   padding: 0;
 }
 
@@ -233,55 +307,71 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--pink-soft, #FFE3EF);
+  background: var(--pink-soft, #ffe3ef);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background .2s ease, transform .15s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
   padding: 0;
+  color: var(--pink, #ff4b91);
 }
 
 .playBtn:hover {
-  background: var(--pink, #FF4B91);
+  background: var(--pink, #ff4b91);
   transform: scale(1.05);
+}
+
+.playBtn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
 }
 
 .playBtn:hover svg {
   fill: #fff;
 }
 
-.playBtn svg {
-  fill: var(--pink, #FF4B91);
-  width: 16px;
-  height: 16px;
-  transition: fill .2s ease;
-}
-
-.playBtn svg.playIcon {
-  margin-left: 2px;
-}
-
-/* Blog section */
 .blogSection {
   margin-top: 6px;
 }
 
-.noMusic, .blogPlaceholder {
+.noMusic,
+.blogPlaceholder {
   text-align: center;
   font-size: 16px;
   color: var(--sub, #8a8a8a);
   margin-top: 24px;
 }
 
+/* レスポンシブ */
 @media (max-width: 560px) {
-  .profileCard {
+  .topRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .actionRow {
+    width: 100%;
+  }
+
+  .bottomRow {
     flex-direction: column;
     align-items: center;
-    text-align: center;
-    gap: 16px;
-    padding: 20px;
+  }
+
+  .avatar {
+    width: 100%;
+    max-width: 240px;
+    height: 320px; /* スマホ表示時は上半身がよりしっかり見えるよう縦幅を確保 */
+  }
+
+  .infoBox {
+    width: 100%;
   }
 
   .infoTable {

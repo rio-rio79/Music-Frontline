@@ -165,6 +165,13 @@ export default function RankingClient({ rankings }: RankingClientProps) {
           line-height: 1.35;
         }
 
+        .ranking-name span {
+          display: block;
+          margin-top: 3px;
+          color: #111;
+          font-size: 12px;
+        }
+
         .oshi-badge {
           flex: 0 0 auto;
           padding: 2px 8px;
@@ -176,11 +183,8 @@ export default function RankingClient({ rankings }: RankingClientProps) {
           line-height: 1;
         }
 
-        .ranking-name span {
-          display: block;
-          margin-top: 3px;
+        span.oshi-badge {
           color: #fff;
-          font-size: 12px;
         }
 
         .ranking-score {
@@ -259,6 +263,7 @@ export default function RankingClient({ rankings }: RankingClientProps) {
             grid-row: 1 / 3;
           }
         }
+
       `}</style>
 
       <div className="ranking-heading">
