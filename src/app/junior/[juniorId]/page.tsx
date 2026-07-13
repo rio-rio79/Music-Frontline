@@ -87,7 +87,9 @@ export default async function Page({ params }: JuniorDetailPageProps) {
 
   const rawSongs = (songJuniors || [])
     .map((sj) => sj.songs)
-    .filter(Boolean) as SongRow[];
+    .filter((song, index, arr): song is SongRow =>
+      Boolean(song) && arr.findIndex((s) => s?.id === song.id) === index
+    );
 
   // ログインユーザーの取得
   const { data: { user } } = await supabase.auth.getUser();
