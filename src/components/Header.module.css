@@ -11,26 +11,47 @@
 }
 
 .logo {
-  display: block;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+  overflow: hidden;
   padding: 0 24px 28px;
-  color: var(--oshi-deep);
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1.2;
   text-decoration: none;
 }
 
-.logo span {
+.logoMark {
   display: block;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  align-self: center;
+  background-color: var(--oshi-accent, #e8447a);
+  mask: url("/logo.png") center / contain no-repeat;
+  -webkit-mask: url("/logo.png") center / contain no-repeat;
 }
 
-.logo i {
-  display: block;
-  width: 46px;
-  height: 4px;
-  margin-top: 8px;
-  border-radius: 2px;
-  background: var(--oshi-mid);
+.brandText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--oshi-accent, #e8447a);
+  line-height: 1.02;
+}
+
+.brandWord {
+  overflow: hidden;
+  font-family: "Poppins", "Noto Sans JP", sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.brandWordStrong {
+  font-weight: 700;
 }
 
 .navList {
@@ -98,6 +119,21 @@
   }
 }
 
+@media (width <= 980px) and (width >= 860px) {
+  .logo {
+    justify-content: center;
+  }
+
+  .logoMark {
+    display: none;
+  }
+
+  .brandText {
+    align-items: center;
+    text-align: center;
+  }
+}
+
 @media (width < 860px) and (width > 760px) {
   .sideNav {
     padding-top: 20px;
@@ -105,13 +141,17 @@
 
   .logo {
     padding: 0 0 20px;
+    justify-content: center;
     text-align: center;
   }
 
-  .logo span,
-  .logo i,
+  .brandText,
   .navLink span {
     display: none;
+  }
+
+  .logoMark {
+    display: block;
   }
 
   .navList {
@@ -134,15 +174,18 @@
 
   .logo {
     padding: 0 18px 14px;
+    justify-content: flex-start;
     text-align: left;
   }
 
-  .logo span {
+  .logoMark {
     display: block;
   }
 
-  .logo i {
-    display: block;
+  .brandText {
+    display: flex;
+    align-items: flex-start;
+    text-align: left;
   }
 
   .navList {

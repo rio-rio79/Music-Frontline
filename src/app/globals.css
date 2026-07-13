@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Poppins:wght@400;700&display=swap");
 
 :root {
     --mf-side: clamp(150px, calc(150px + (100vw - 860px) * 0.28), 220px);

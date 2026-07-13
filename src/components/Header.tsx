@@ -38,9 +38,11 @@ export default function Header({
 
             <nav className={styles.sideNav} aria-label="メインナビゲーション">
                 <Link href="/" className={styles.logo} aria-label="Music Frontline ホーム">
-                    <span className={styles.navLabel}>Music</span>
-                    <span className={styles.navLabel}>Frontline</span>
-                    <i className={styles.navLabel} aria-hidden="true" />
+                    <span className={styles.logoMark} aria-hidden="true" />
+                    <span className={styles.brandText}>
+                        <span className={styles.brandWord}>Music</span>
+                        <span className={`${styles.brandWord} ${styles.brandWordStrong}`}>Frontline</span>
+                    </span>
                 </Link>
 
                 <ul className={styles.navList}>
