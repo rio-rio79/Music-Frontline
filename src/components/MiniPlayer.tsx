@@ -140,6 +140,8 @@ export default function MiniPlayer() {
                 </button>
             </div>
 
+            <span className="mini-spacer" aria-hidden="true" />
+
             <div className="mini-info-box">
                 <div className="mini-artwork" aria-hidden="true">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -201,6 +203,8 @@ export default function MiniPlayer() {
                     </>
                 )}
             </div>
+
+            <span className="mini-spacer" aria-hidden="true" />
 
             <div className="mini-volume" aria-label="音量操作">
                 <button

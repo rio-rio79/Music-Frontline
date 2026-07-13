@@ -38,9 +38,9 @@ export default function Header({
 
             <nav className={styles.sideNav} aria-label="メインナビゲーション">
                 <Link href="/" className={styles.logo} aria-label="Music Frontline ホーム">
-                    <span>Music</span>
-                    <span>Frontline</span>
-                    <i aria-hidden="true" />
+                    <span className={styles.navLabel}>Music</span>
+                    <span className={styles.navLabel}>Frontline</span>
+                    <i className={styles.navLabel} aria-hidden="true" />
                 </Link>
 
                 <ul className={styles.navList}>
@@ -53,9 +53,10 @@ export default function Header({
                                     href={item.href}
                                     className={`${styles.navLink} ${active ? styles.navLinkActive : ""}`}
                                     aria-current={active ? "page" : undefined}
+                                    title={item.name}
                                 >
                                     <NavIcon type={item.key} />
-                                    <span>{item.name}</span>
+                                    <span className={styles.navLabel}>{item.name}</span>
                                 </Link>
                             </li>
                         );

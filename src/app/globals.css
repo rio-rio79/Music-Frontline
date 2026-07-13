@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap");
 
 :root {
+    --mf-side: clamp(150px, calc(150px + (100vw - 860px) * 0.28), 220px);
     --favorite-color: #f8bbd0;
     --oshi-accent: #e8447a;
     --oshi-mid: #ff4f8b;
@@ -34,8 +35,8 @@ body {
 .content-layout {
     flex: 1;
     box-sizing: border-box;
-    width: calc(100% - 220px);
-    margin-left: 220px;
+    width: calc(100% - var(--mf-side));
+    margin-left: var(--mf-side);
     display: flex;
     align-items: stretch;
 }
@@ -110,25 +111,22 @@ body {
 }
 
 .mini-player {
-    --mini-player-gap: 180px;
     --mini-info-width: 458px;
 
     display: grid;
     grid-template-columns:
-        max-content minmax(0, var(--mini-info-width))
+        max-content minmax(16px, 1fr) minmax(0, var(--mini-info-width))
+        minmax(16px, 1fr)
         max-content;
     align-items: center;
-    justify-content: center;
-    gap: var(--mini-player-gap);
+    gap: 0;
     box-sizing: border-box;
-    width: min(
-        100%,
-        calc(
-            282px + var(--mini-info-width) + var(--mini-player-gap) +
-                var(--mini-player-gap)
-        )
-    );
+    width: 100%;
     margin: 0 auto;
+}
+
+.mini-spacer {
+    min-width: 0;
 }
 
 .mini-controls {
@@ -509,8 +507,8 @@ body {
 /* フッター */
 footer {
     box-sizing: border-box;
-    width: calc(100% - 220px);
-    margin-left: 220px;
+    width: calc(100% - var(--mf-side));
+    margin-left: var(--mf-side);
     padding: 15px;
     background: var(--oshi-bg);
     text-align: center;
@@ -591,6 +589,12 @@ footer {
   background: #fffafc;
 } */
 
+@media (width < 860px) {
+    :root {
+        --mf-side: 76px;
+    }
+}
+
 @media (width <= 760px) {
     .content-layout,
     footer {
@@ -602,6 +606,10 @@ footer {
         grid-template-columns: max-content minmax(0, 1fr);
         gap: 12px;
         width: 100%;
+    }
+
+    .mini-spacer {
+        display: none;
     }
 
     .mini-info-box {
