@@ -53,9 +53,26 @@ export function SkipForward(){
 }
 
 // いいねボタン
-export function Heart({ color = "var(--oshi-accent)", filled = false }: { color?: string; filled?: boolean }) {
+export function Heart({
+    color = "var(--oshi-accent)",
+    filled = false,
+    width = 20,  // 初期値を20に設定
+    height = 20, // 初期値を20に設定
+}: {
+    color?: string;
+    filled?: boolean;
+    width?: number | string;  // 型定義を追加
+    height?: number | string; // 型定義を追加
+}) {
     return (
-        <svg width="20" height="20" viewBox="0 0 22 22" fill={filled ? color : "none"} stroke={color} strokeWidth="1.8">
+        <svg 
+            width={width} 
+            height={height} 
+            viewBox="0 0 22 22" 
+            fill={filled ? color : "none"} 
+            stroke={color} 
+            strokeWidth="1.8"
+        >
             <path d="M11 19.5S3 14.5 3 8.5a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 8 2.8c0 6-8 11-8 11z" />
         </svg>
     );

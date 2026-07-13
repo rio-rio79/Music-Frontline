@@ -11,6 +11,7 @@ import BlogAvatar from "./BlogAvatar";
 import BlogJuniorFinder from "./BlogJuniorFinder";
 import { CommentIcon, HeartIcon } from "./BlogIcons";
 import styles from "./Blog.module.css";
+import {Heart} from "../../components/Svgs";
 
 
 type BlogListClientProps = {
@@ -189,12 +190,12 @@ export default function BlogListClient({
                                                     void handleToggleLike(post);
                                                 }}
                                             >
-                                                <HeartIcon />
+                                                <Heart width={16} height={16} color="#9a8f95"/>
                                                 <span>{likeState.likeCount.toLocaleString()}</span>
                                             </button>
                                         ) : (
                                             <span className={styles.stat} aria-label={`いいね数 ${post.likeCount.toLocaleString()}`}>
-                                                <HeartIcon />
+                                                <Heart width={16} height={16} color="#9a8f95"/>
                                                 <span>{post.likeCount.toLocaleString()}</span>
                                             </span>
                                         )}

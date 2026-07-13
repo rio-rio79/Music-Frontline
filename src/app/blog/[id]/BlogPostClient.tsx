@@ -9,6 +9,7 @@ import BlogAvatar from "../BlogAvatar";
 import BlogJuniorFinder from "../BlogJuniorFinder";
 import { CommentIcon, HeartIcon } from "../BlogIcons";
 import styles from "../Blog.module.css";
+import { Heart } from "../../../components/Svgs"
 
 type BlogPostClientProps = {
     post: BlogDetailItem;
@@ -172,12 +173,12 @@ export default function BlogPostClient({ post, backLink, juniors }: BlogPostClie
                             void handleToggleLike();
                         }}
                     >
-                        <HeartIcon size={19} />
+                        <Heart width={19} height={19} color="#9a8f95"/>
                         <span>{likeCount.toLocaleString()}</span>
                     </button>
                 ) : (
                     <span className={styles.stat} aria-label={`いいね数 ${likeCount.toLocaleString()}`}>
-                        <HeartIcon size={19} />
+                        <Heart width={19} height={19} color="#9a8f95"/>
                         <span>{likeCount.toLocaleString()}</span>
                     </span>
                 )}
